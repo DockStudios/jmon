@@ -25,6 +25,8 @@ class Config:
     # Default to 1 week for checks to expire in UI
     UI_RESULT_EXPIRE = int(os.environ.get("UI_RESULT_EXPIRE", "604800"))
 
+    API_KEY = os.environ.get("API_KEY")
+
     @property
     def DATABASE_URL(self):
         """Return database url"""

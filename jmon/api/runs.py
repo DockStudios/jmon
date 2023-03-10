@@ -8,7 +8,7 @@ from jmon.models import Run
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/runs', methods=["GET"])
 def get_check_runs(check_name, environment_name):
-    """Register check"""
+    """Get list of runs for check"""
     check, _, error = get_check_and_environment_by_name(
         check_name=check_name, environment_name=environment_name)
     if error:
