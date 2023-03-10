@@ -30,7 +30,7 @@ def require_api_key(func):
         # If an API key is defined in config and is either not provided or
         # does not match the required API key, return error
         if required_api_key and (not api_key or api_key != required_api_key):
-            return {"message": "An API key is required"}, 403
+            return {"message": "API key is not provided or invalid"}, 403
 
         return func(*args, **kwargs)
     return decorator
