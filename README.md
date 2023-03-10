@@ -27,7 +27,7 @@ For a list of upcoming features and issues being worked on, please see https://g
 docker-compose up -d
 
 # Add check for W3Schools
-curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
+curl -XPOST localhost:5000/api/v1/checks -H 'X-JMon-Api-Key: 3fc1ce69-d9a2-43f9-ba0d-9f4e21c20eac' -H 'Content-Type: application/yml' -d '
 
 name: Check_W3Schools
 
@@ -54,7 +54,7 @@ steps:
 '
 
 # Add check for Wikipedia
-curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
+curl -XPOST localhost:5000/api/v1/checks -H 'X-JMon-Api-Key: 3fc1ce69-d9a2-43f9-ba0d-9f4e21c20eac' -H 'Content-Type: application/yml' -d '
 name: Check_Wikipedia
 
 # Disable screenshots on error
@@ -123,6 +123,8 @@ For an example, see the `jmon/plugins/notifications/example_notification.py` plu
 It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availability clusters.
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
+
+Create unique API key (see `.env`). Alternatively, disable API key access by removing or setting to an empty string.
 
 ### s3 artifact storage
 
