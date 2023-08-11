@@ -15,6 +15,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update && \
     apt-get install --assume-yes \
         python3.10 python3-pip \
+        git \
         pkg-config fonts-liberation xdg-utils \
         software-properties-common curl unzip wget \
         xvfb firefox firefox-geckodriver \
@@ -40,3 +41,5 @@ RUN pip install -r requirements.txt
 COPY . .
 COPY --from=builder /app/build /app/jmon/ui
 
+# Create version file
+RUN git describe --tag --abbrev=0 > /app/VERSION
