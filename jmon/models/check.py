@@ -107,7 +107,10 @@ class Check(jmon.database.Base):
             raise CheckCreateError(str(exc))
 
         # Add custom attributes
-        instance.attributes = content.get("attributes", {})
+        content_attributes = content.get("attributes", {})
+        if type(content_attributes) is not dict:
+            raise CheckCreateError("attributes must be a map of key-value pairs")
+        instance.attributes = content_attributes
 
         session.add(instance)
         session.commit()
@@ -156,12 +159,14 @@ class Check(jmon.database.Base):
     @property
     def attributes(self):
         """Return attributes dictionary"""
-        return json.loads(self._attributes)
+        if self._attributes:
+            return json.loads(self._attributes)
+        return {}
 
-    @steps.setter
+    @attributes.setter
     def attributes(self, value):
         """Set attributes column value"""
-        self._attributes = json.dumps(value)
+        self._attributes = json.dumps(value) if value else "{}"
 
     @property
     def should_screenshot_on_error(self):
