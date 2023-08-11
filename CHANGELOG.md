@@ -1,5 +1,12 @@
 # Changelog
 
+## [3.0.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v3.0.0...v3.0.1) (2023-08-11)
+
+
+### Bug Fixes
+
+* Add missing attributes kwarg for base methods for plugins ([5da3d35](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/5da3d355385bc3a38ed76e7f00777beee1b4eb8e))
+
 # [3.0.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v2.1.0...v3.0.0) (2023-08-11)
 
 ### Breaking Changes
