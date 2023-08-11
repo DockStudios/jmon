@@ -158,7 +158,7 @@ class Check(jmon.database.Base):
         """Return attributes dictionary"""
         return json.loads(self._attributes)
 
-    @steps.setter
+    @attributes.setter
     def attributes(self, value):
         """Set attributes column value"""
         self._attributes = json.dumps(value)
