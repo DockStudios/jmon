@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v3.0.1...v3.0.2) (2023-08-11)
+
+
+### Bug Fixes
+
+* Add configuration for maximum tasks per worker, to force restart of worker and avoid memory leaks ([1ee001e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/1ee001ed4f8a4d82479aa0466805392d80663f7e))
+* Create singleton instance of ArtifactStorage class to avoid additional memory and possible leaks in boto3 ([72fb622](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/72fb6222694b9a1583ef707dd875fb02a578da70)), closes [#71](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/71)
+
 ## [3.0.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v3.0.0...v3.0.1) (2023-08-11)
 
 
