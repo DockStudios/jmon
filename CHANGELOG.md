@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.0...v4.0.1) (2023-08-11)
+
+
+### Bug Fixes
+
+* Fix JSON check description when a selector is not provided ([10507bb](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/10507bb0b8ada2e8b4c951c684a2b35f833e9a95))
+
 # [4.0.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v3.0.2...v4.0.0) (2023-08-11)
 
 
