@@ -156,12 +156,14 @@ class Check(jmon.database.Base):
     @property
     def attributes(self):
         """Return attributes dictionary"""
-        return json.loads(self._attributes)
+        if self._attributes:
+            return json.loads(self._attributes)
+        return {}
 
     @attributes.setter
     def attributes(self, value):
         """Set attributes column value"""
-        self._attributes = json.dumps(value)
+        self._attributes = json.dumps(value) if value else "{}"
 
     @property
     def should_screenshot_on_error(self):
