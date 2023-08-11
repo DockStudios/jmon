@@ -34,12 +34,12 @@ class JsonCheck(BaseCheck):
     ```
     - check:
         json:
-          selector: '.images[0]'
+          selector: '$.images[0]'
           contains: 1.jpg
 
     - check:
         json:
-          selector: '.id'
+          selector: '$.id'
           equals: 1
     ```
     """
@@ -109,6 +109,11 @@ class JsonCheck(BaseCheck):
         if parser:
             actual_value = parser.parse(actual_value)
             parser_message = f", from JSON selector '{parser.lpath}'"
+
+            # Handle jsonpath return an array with single element when matching a single value
+            if type(actual_value) is list and len(actual_value) == 1:
+                actual_value = actual_value[0]
+
         if match_type is JsonCheckMatchType.EQUALS and match_value != actual_value:
             return False, f"Value '{actual_value}' does not match expected '{match_value}'{parser_message}"
         if match_type is JsonCheckMatchType.CONTAINS and match_value not in actual_value:

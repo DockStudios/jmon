@@ -262,12 +262,12 @@ If a selector is not provided, the entire JSON response will be checked.
 ```
 - check:
     json:
-      selector: '.images[0]'
+      selector: '$.images[0]'
       contains: 1.jpg
 
 - check:
     json:
-      selector: '.id'
+      selector: '$.id'
       equals: 1
 ```
 
