@@ -61,9 +61,13 @@ class JsonCheck(BaseCheck):
     @property
     def description(self):
         """Friendly description of step"""
-        message = "Check JSON response {}"
-        if selector := self._config.get("selector", None):
-            return f"Check JSON response matches: {self._config}"
+        parser, match_type, match_value = self._extract_selector_match_type()
+        message = f"Check JSON response {match_type.value} {match_value}"
+
+        if parser:
+            message += f", using selector: {self._config.get('selector')}"
+
+        return message
 
     def _extract_selector_match_type(self):
         """Return extractor and match type"""
@@ -108,7 +112,7 @@ class JsonCheck(BaseCheck):
         parser_message = ""
         if parser:
             actual_value = parser.parse(actual_value)
-            parser_message = f", from JSON selector '{parser.lpath}'"
+            parser_message = f", from JSON selector '{self._config.get('selector')}'"
 
             # Handle jsonpath return an array with single element when matching a single value
             if type(actual_value) is list and len(actual_value) == 1:
