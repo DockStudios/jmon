@@ -11,6 +11,23 @@ from jmon.logger import logger
 
 
 class GotoStep(BaseStep):
+    """
+    Directive for loading a page.
+
+    This should generally always be used as a first directive of a step.
+
+    It can be used multiple times during a check.
+
+    This can be placed in the root of the check, e.g.
+    ```
+     - goto: https://example.com
+     - find:
+       - tag: input
+       - url: https://example.com/?followed=redirect
+
+     - goto: https://example.com/login
+    ```
+    """
 
     CONFIG_KEY = "goto"
 

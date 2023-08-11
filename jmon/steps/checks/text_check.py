@@ -10,6 +10,25 @@ from jmon.utils import RetryStatus, retry
 
 
 class TextCheck(BaseCheck):
+    """
+    Directive for verifying text content.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        text: "It's good"
+    ```
+
+    This directive can be used within a find element. E.g.:
+    ```
+    - goto: https://example.com
+    - find:
+      - id: login
+      - check:
+          text: Please Login
+    ```
+    """
 
     CONFIG_KEY = "text"
 

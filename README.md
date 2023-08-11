@@ -107,6 +107,11 @@ Goto http://localhost:5555 to view the celary tasks.
 Goto http://localhost:9001 to view minio for s3 bucket, logging in with AWS credentials from .env
 
 
+## Step reference
+
+For a full reference of steps, please see [docs/step_reference.md](docs/step_reference.md)
+
+
 ## Creating Notifications
 
 Create a new python module in `jmon/plugins/notifications` with a class inheriting from `NotificationPlugin`, implementing one or more of the following methods:

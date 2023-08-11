@@ -11,6 +11,23 @@ from jmon.logger import logger
 
 
 class ScreenshotAction(BaseAction):
+    """
+    Directive for capturing a screenshot of the current page.
+
+    A value must be provided, which will be the name given to the screenshot.
+
+    This action can be performed multiple times.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - actions:
+      - screenshot: example
+    - goto: https://example.com/login
+    - actions:
+      - screenshot: example-login
+    ```
+    """
 
     CONFIG_KEY = "screenshot"
     NAME_REGEX = re.compile(r'[^\w^_^-]')

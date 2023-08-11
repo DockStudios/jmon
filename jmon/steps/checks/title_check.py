@@ -10,6 +10,16 @@ from jmon.utils import RetryStatus, retry
 
 
 class TitleCheck(BaseCheck):
+    """
+    Directive for verifying HTML page title.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        title: "Example - Homepage"
+    ```
+    """
 
     CONFIG_KEY = "title"
 
