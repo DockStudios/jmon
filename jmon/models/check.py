@@ -106,6 +106,9 @@ class Check(jmon.database.Base):
         except StepValidationError as exc:
             raise CheckCreateError(str(exc))
 
+        # Add custom attributes
+        instance.attributes = content.get("attributes", {})
+
         session.add(instance)
         session.commit()
 
@@ -128,6 +131,7 @@ class Check(jmon.database.Base):
     client = sqlalchemy.Column(sqlalchemy.Enum(ClientType), default=None)
     _steps = sqlalchemy.Column(jmon.database.Database.LargeString, name="steps")
     _enabled = sqlalchemy.Column(sqlalchemy.Boolean, default=True, name="enabled")
+    _attributes = sqlalchemy.Column(jmon.database.Database.LargeString, name="attributes")
 
     environment_id = sqlalchemy.Column(
         sqlalchemy.ForeignKey("environment.id", name="fk_check_environment_id_environment_id"),
@@ -148,6 +152,16 @@ class Check(jmon.database.Base):
     def steps(self, value):
         """Set steps in database"""
         self._steps = json.dumps(value)
+
+    @property
+    def attributes(self):
+        """Return attributes dictionary"""
+        return json.loads(self._attributes)
+
+    @steps.setter
+    def attributes(self, value):
+        """Set attributes column value"""
+        self._attributes = json.dumps(value)
 
     @property
     def should_screenshot_on_error(self):
