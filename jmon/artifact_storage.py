@@ -11,6 +11,15 @@ from jmon.logger import logger
 
 class ArtifactStorage:
 
+    _INSTANCE = None
+
+    @classmethod
+    def get_instance(cls):
+        """Return singleton instance of class"""
+        if cls._INSTANCE is None:
+            cls._INSTANCE = cls()
+        return cls._INSTANCE
+
     def __init__(self):
         """Create client"""
         s3_kwargs = {}
