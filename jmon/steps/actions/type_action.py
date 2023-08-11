@@ -11,6 +11,22 @@ from jmon.utils import RetryStatus, retry
 
 
 class TypeAction(BaseAction):
+    """
+    Directive for typing characters into the selected element.
+
+    Supported keys:
+     * `enter`
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - find:
+      - id: login
+      - actions:
+        - click
+        - type: my-username
+    ```
+    """
 
     CONFIG_KEY = "type"
 

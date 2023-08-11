@@ -10,6 +10,16 @@ from jmon.utils import RetryStatus, retry
 
 
 class UrlCheck(BaseCheck):
+    """
+    Directive for verifying current page URL.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        url: https://example.com/redirect-was-followed
+    ```
+    """
 
     CONFIG_KEY = "url"
 

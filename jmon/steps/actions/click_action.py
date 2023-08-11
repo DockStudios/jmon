@@ -12,6 +12,18 @@ from jmon.utils import RetryStatus, retry
 
 
 class ClickAction(BaseAction):
+    """
+    Directive for clicking the current element, simulating a mouse left-click.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - find:
+      - id: login
+      - actions:
+        - click
+    ```
+    """
 
     CONFIG_KEY = "click"
 
