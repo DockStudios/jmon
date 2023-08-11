@@ -1,7 +1,10 @@
 # Changelog
 
-# [2.2.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v2.1.0...v2.2.0) (2023-08-11)
+# [3.0.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v2.1.0...v3.0.0) (2023-08-11)
 
+### Breaking Changes
+
+* Add 'attributes' argument to plugins calls. ([2263903](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/2263903998101208e7fa42f3b7279de8c750343e)), closes [#58](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/67)
 
 ### Bug Fixes
 
