@@ -147,7 +147,8 @@ class Run:
                     getattr(notification_plugin(), method_to_call)(
                         check_name=self._check.name,
                         run_status=run_status,
-                        run_log=self.read_log_stream()
+                        run_log=self.read_log_stream(),
+                        attributes=self.check.attributes
                     )
                 except Exception as exc:
                     logger.warn(f"Failed to call notification method: {str(exc)}")
