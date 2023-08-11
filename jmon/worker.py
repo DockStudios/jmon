@@ -19,3 +19,7 @@ app.task(jmon.tasks.check_queue_timeouts.check_queue_timeouts)
 # Set pre-fetch multiplier to 1 so that workers only pull the message
 # they are currently working on
 app.conf.worker_prefetch_multiplier = 1
+
+# Set maximum tasks per worker to avoid memory leaks.
+# The source of these leaks is not entirely known
+app.conf.worker_max_tasks_per_child = 100
