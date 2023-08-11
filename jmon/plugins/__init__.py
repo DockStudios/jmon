@@ -4,23 +4,23 @@ from jmon.logger import logger
 
 class NotificationPlugin:
 
-    def on_first_failure(self, check_name, run_status, run_log):
+    def on_first_failure(self, check_name, run_status, run_log, attributes):
         """Handle result on first failure"""
         pass
 
-    def on_every_failure(self, check_name, run_status, run_log):
+    def on_every_failure(self, check_name, run_status, run_log, attributes):
         """Handle result on each failure"""
         pass
 
-    def on_first_success(self, check_name, run_status, run_log):
+    def on_first_success(self, check_name, run_status, run_log, attributes):
         """Handle result on first success after a failure"""
         pass
 
-    def on_every_success(self, check_name, run_status, run_log):
+    def on_every_success(self, check_name, run_status, run_log, attributes):
         """Handle result on success failure"""
         pass
 
-    def on_complete(self, check_name, run_status, run_log):
+    def on_complete(self, check_name, run_status, run_log, attributes):
         """Handle result on run completion"""
         pass
 
