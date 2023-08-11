@@ -14,6 +14,38 @@ from jmon.utils import RetryStatus, retry
 
 
 class FindStep(BaseStep):
+    """
+    Directive for finding an element of a page.
+
+    Each find can use on of the following attributes, some of which can be combined:
+     * `id` - Search by ID of element on the page.
+     * `class` - Search for element by class name.
+     * `text` - Search for element by visible text. Can be combined with `tag`.
+     * `placeholder` - Search for input element by placeholder value. Can be combined with `tag`.
+     * `tag` - Search for element by tag (e.g. `a` for links). Can be combined with `placeholder` or `text`.
+
+    If an element cannot be found using the given parameters, the step will fail. No `check` action is required for validating this.
+
+    This can be placed in the root of the check, e.g.
+    ```
+     - goto: https://example.com
+     - find:
+       - tag: input
+       - url: https://example.com/?followed=redirect
+    ```
+
+    Find elements can be nested to find elements within other elements. E.g.:
+    ```
+     - goto: https://example.com
+     - find:
+       - id: content
+       - find:
+         - class: loginForm
+           - find:
+             - tag: input
+             - placeholder: Username
+    ```
+    """
 
     CONFIG_KEY = "find"
     _SUPPORTED_ATTRIBUTES = [

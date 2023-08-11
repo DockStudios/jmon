@@ -7,6 +7,28 @@ import jmon.steps.actions
 from jmon.logger import logger
 
 class ActionStep(BaseStep):
+    """
+    Directive for performing an action task.
+
+    Each action directive may one or more actions.
+
+    This can be placed in the root of the check, e.g.
+    ```
+     - goto: https://example.com
+     - actions:
+       - click
+    ```
+
+    It can also be placed within a find directive, e.g.:
+    ```
+     - goto: https://example.com
+     - find:
+       - tag: input
+       - actions:
+         - type: Pabalonium
+         - press: enter
+    ```
+    """
 
     CONFIG_KEY = "actions"
     CHILD_STEPS_FORM_STEP = True

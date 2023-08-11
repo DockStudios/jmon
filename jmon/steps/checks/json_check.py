@@ -20,6 +20,29 @@ UNSET = object()
 
 
 class JsonCheck(BaseCheck):
+    """
+    Directive for verifying the content of a JSON repsonse.
+
+    One of two validation attributes must be used:
+    * equals - Checks the value matches the provided content
+    * contains - Checks that the provided value is within the content.
+
+    A "selector" attribute may be provided to verify the value of a single element of the JSON response.
+    The selector uses the syntax provided by [jsonpath](https://pypi.org/project/jsonpath-python).
+    If a selector is not provided, the entire JSON response will be checked.
+
+    ```
+    - check:
+        json:
+          selector: '.images[0]'
+          contains: 1.jpg
+
+    - check:
+        json:
+          selector: '.id'
+          equals: 1
+    ```
+    """
 
     CONFIG_KEY = "json"
 

@@ -8,6 +8,16 @@ from jmon.steps.checks.base_check import BaseCheck
 
 
 class ResponseCheck(BaseCheck):
+    """
+    Directive for verifying HTTP response code
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        response: 200
+    ```
+    """
 
     CONFIG_KEY = "response"
 
