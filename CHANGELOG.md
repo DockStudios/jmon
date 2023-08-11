@@ -1,5 +1,25 @@
 # Changelog
 
+# [4.0.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v3.0.2...v4.0.0) (2023-08-11)
+
+
+### Features
+
+* Add support for matching JSON response using selectors and support partial matches of value ([5912b6d](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/5912b6d5b3fd84be5d8430751bf7f23ac5e28383)), closes [#70](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/70)
+
+
+### BREAKING CHANGES
+
+* The original format of JSON response checking is not longer supported.
+```
+ - check:
+    json: {"ok": true}
+```
+is no longer supported and must now be
+ - check:
+    json:
+      equals: {"ok": true}
+
 ## [3.0.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v3.0.1...v3.0.2) (2023-08-11)
 
 
