@@ -107,7 +107,10 @@ class Check(jmon.database.Base):
             raise CheckCreateError(str(exc))
 
         # Add custom attributes
-        instance.attributes = content.get("attributes", {})
+        content_attributes = content.get("attributes", {})
+        if type(content_attributes) is not dict:
+            raise CheckCreateError("attributes must be a map of key-value pairs")
+        instance.attributes = content_attributes
 
         session.add(instance)
         session.commit()
