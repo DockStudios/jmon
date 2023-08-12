@@ -3,6 +3,8 @@ import sys
 
 sys.path.append(".")
 
+import yaml
+
 import jmon.steps
 import jmon.steps.actions
 import jmon.steps.checks
@@ -29,6 +31,27 @@ def print_class_docs(class_, indentation):
 Client Support: {client_support}
 """)
 
+    # Vaidate any steps
+    if class_.__doc__:
+        in_code_block = False
+        code = ""
+        for line in class_.__doc__.split("\n"):
+            if line.strip() == "```":
+                if in_code_block:
+                    in_code_block = False
+                    try:
+                        root_step = jmon.steps.RootStep(run=None, config=yaml.safe_load(code), parent=None)
+                        root_step.validate_steps()
+                    except Exception as exc:
+                        print(f"Code block for {class_.__name__} has an error: {exc}\n{code}")
+
+                    # Test found code block
+                    code = ""
+                else:
+                    in_code_block = True
+            elif in_code_block:
+                code += f"{line[4:]}\n"
+
 processed_classes = []
 def process_child_classes(parent_class, indentation):
     if parent_class in processed_classes:
@@ -52,5 +75,5 @@ Compatibility between clients differ and compatibility across all used elements 
 
 """)
 
-for class_ in jmon.steps.BaseStep.__subclasses__():
+for class_ in jmon.steps.RootStep(None, None, None).supported_child_steps:
     process_child_classes(class_, indentation=2)

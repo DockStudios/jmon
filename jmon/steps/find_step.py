@@ -41,9 +41,9 @@ class FindStep(BaseStep):
        - id: content
        - find:
          - class: loginForm
-           - find:
-             - tag: input
-             - placeholder: Username
+         - find:
+           - tag: input
+           - placeholder: Username
     ```
     """
 
