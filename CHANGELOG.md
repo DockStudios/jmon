@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.0.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.1...v4.0.2) (2023-08-12)
+
+
+### Bug Fixes
+
+* **docs:** Add validation of YAML of dostring examples and fix incorrect find indentation ([33f3264](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/33f326428148a390d27b9bea3f302b79bccba786)), closes [#70](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/70)
+
 ## [4.0.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.0...v4.0.1) (2023-08-11)
 
 
