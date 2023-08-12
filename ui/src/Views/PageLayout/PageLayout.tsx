@@ -1,7 +1,7 @@
 
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { AppBar, Box, CssBaseline, Toolbar, Typography } from '@mui/material';
+import { AppBar, Box, CssBaseline, Toolbar, Typography, Alert } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 
 class PageLayout extends React.Component {
@@ -27,10 +27,10 @@ class PageLayout extends React.Component {
         <Box sx={{ display: 'flex' }}>
 
           <CssBaseline />
-          <AppBar position="fixed">
+          <AppBar>
             <Toolbar
               sx={{
-                pr: '24px', // keep right padding when drawer closed
+                pr: '48px', // keep right padding when drawer closed
               }}
             >
               <Typography
@@ -50,6 +50,7 @@ class PageLayout extends React.Component {
                 Made with &lt;3 - github.com/matthewjohn/jmon
               </Typography>
             </Toolbar>
+            <Alert severity="error">This is an error alert — check it out!</Alert>
           </AppBar>
           <Box
             component="main"
