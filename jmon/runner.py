@@ -100,7 +100,7 @@ class Runner:
                         run=run,
                         config="failure",
                         parent=run.root_step,
-                        enable_log=False
+                        run_logger=None
                     )
                     error_screenshot.execute(
                         execution_method='execute_selenium',
