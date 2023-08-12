@@ -1,5 +1,6 @@
 
 from jmon.logger import logger
+from jmon.step_logger import StepLogger
 from jmon.step_state import StepState
 from jmon.step_status import StepStatus
 
@@ -22,7 +23,7 @@ class BaseStep:
         self._child_steps = None
         self._status = StepStatus.NOT_RUN
 
-        self._logger = run_logger if run_logger else logger
+        self._logger = StepLogger(step=self) if run_logger else logger
 
         logger.debug(f"Creating step: {self.__class__.__name__}: {config}")
 

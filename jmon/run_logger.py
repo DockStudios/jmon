@@ -47,7 +47,6 @@ class RunLogger:
         self._logger = logger
         self._log_stream = StringIO()
 
-        self._run = run
         self._should_log = enable_log
 
         # Create local log handler
@@ -62,15 +61,15 @@ class RunLogger:
         self._log_handler.setFormatter(formatter)
         self._logger.addHandler(self._log_handler)
 
-        self._log_prefix = ""
+        self.log_prefix = ""
         # Add log handlder from root of run, if configured to log
-        if self._should_log and self._run and self._run._db_run:
-            self._log_prefix = f"{self._run._db_run.id}: "
+        if self._should_log and run and run._db_run:
+            self.log_prefix = f"{run._db_run.id}: "
 
     def _get_log_args(self, msg):
         """Get log arguments for logging"""
         return {
-            "msg": f"{self._log_prefix}{msg}",
+            "msg": f"{self.log_prefix}{msg}",
             #"extra": {'c_thread_id': multiprocessing.current_process().pid}
         }
 
