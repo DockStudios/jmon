@@ -12,6 +12,8 @@ from jmon.steps.action_step import ActionStep
 
 class RootStep(BaseStep):
 
+    SHOULD_INFO_DEBUG_LOG = False
+
     @property
     def supported_clients(self):
         """Return list of supported clients"""
