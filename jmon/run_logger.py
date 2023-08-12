@@ -42,6 +42,8 @@ class RunLogger:
        as loggers are stored in the logging module globally.
     """
 
+    should_info_debug_log = True
+
     def __init__(self, run, enable_log):
         """Create handler, filter and store member variables"""
         self._logger = logger
@@ -87,11 +89,13 @@ class RunLogger:
 
     def debug(self, msg):
         """Debug log"""
-        logger.debug(**self._get_log_args(msg))
+        if self.should_info_debug_log:
+            logger.debug(**self._get_log_args(msg))
 
     def info(self, msg):
         """Info log"""
-        logger.info(**self._get_log_args(msg))
+        if self.should_info_debug_log:
+            logger.info(**self._get_log_args(msg))
 
     def warn(self, msg):
         """Warn log"""

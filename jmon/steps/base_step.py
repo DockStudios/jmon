@@ -15,6 +15,9 @@ class BaseStep:
     # @TODO Come up with a better name (meta-step?/collection step?)
     CHILD_STEPS_FORM_STEP = False
 
+    """Allow some step types to debug/info logging"""
+    SHOULD_INFO_DEBUG_LOG = True
+
     def __init__(self, run, config, parent, run_logger=None):
         """Store member variables"""
         self._config = config
@@ -23,7 +26,11 @@ class BaseStep:
         self._child_steps = None
         self._status = StepStatus.NOT_RUN
 
-        self._logger = StepLogger(step=self) if run_logger else logger
+        self._logger = (
+            StepLogger(step=self, should_info_debug_log=self.SHOULD_INFO_DEBUG_LOG)
+            if run_logger else
+            logger
+        )
 
         logger.debug(f"Creating step: {self.__class__.__name__}: {config}")
 
