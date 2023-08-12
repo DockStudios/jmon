@@ -84,7 +84,8 @@ class ActionStep(BaseStep):
                                 supported_actions[action_name](
                                     run=self._run,
                                     config=action_config[action_name],
-                                    parent=self
+                                    parent=self,
+                                    run_logger=self._logger
                                 )
                             )
                 elif type(action_config) is str:
