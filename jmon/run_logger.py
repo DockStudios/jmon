@@ -88,16 +88,16 @@ class RunLogger:
 
     def debug(self, msg):
         """Debug log"""
-        logger.debug(self._get_log_args(msg))
+        logger.debug(**self._get_log_args(msg))
 
     def info(self, msg):
         """Info log"""
-        logger.info(self._get_log_args(msg))
+        logger.info(**self._get_log_args(msg))
 
     def warn(self, msg):
         """Warn log"""
-        logger.warn(self._get_log_args(msg))
+        logger.warn(**self._get_log_args(msg))
 
     def error(self, msg):
         """Error log"""
-        logger.error(self._get_log_args(msg))
+        logger.error(**self._get_log_args(msg))
