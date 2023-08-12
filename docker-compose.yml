@@ -85,7 +85,7 @@ services:
 
   scheduler:
     build: .
-    command: celery -A jmon.scheduler.app beat -S redbeat.RedBeatScheduler
+    command: celery -A jmon.scheduler.app beat -S redbeat.RedBeatScheduler  --loglevel=INFO
     env_file:
      - .env
     restart: always
