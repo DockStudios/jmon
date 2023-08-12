@@ -111,6 +111,9 @@ Goto http://localhost:9001 to view minio for s3 bucket, logging in with AWS cred
 
 For a full reference of steps, please see [docs/step_reference.md](docs/step_reference.md)
 
+## Debugging issues
+
+See [docs/debugging_issues.md](docs/debugging_issues.md) for known issue cases.
 
 ## Creating Notifications
 

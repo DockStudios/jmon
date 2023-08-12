@@ -84,7 +84,8 @@ class CheckStep(BaseStep):
                         supported_actions[action_name](
                             run=self._run,
                             config=self._config[action_name],
-                            parent=self
+                            parent=self,
+                            run_logger=self._logger
                         )
                     )
         return self._child_steps
