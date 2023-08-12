@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.0.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.2...v4.0.3) (2023-08-12)
+
+
+### Bug Fixes
+
+* Add protection around passing invalid action as string value to action ([8c2c51e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/8c2c51ee4bfc3f2c2274b68fbfe6a562510d86e4))
+* Create unified instance of log handling for run and steps. ([4f142ee](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4f142eeb22232b4fa4577cc32a01c45054e051fe)), closes [#71](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/71)
+* Disable logging of root step ([4e4fa3a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4e4fa3aad893be30ede1749789942622717e4d16)), closes [#71](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/71)
+
 ## [4.0.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.1...v4.0.2) (2023-08-12)
 
 
