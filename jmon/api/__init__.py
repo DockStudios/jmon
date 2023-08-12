@@ -6,3 +6,4 @@ import jmon.api.run_details
 import jmon.api.run_artifact
 import jmon.api.environment
 import jmon.api.version
+import jmon.api.celery_info
