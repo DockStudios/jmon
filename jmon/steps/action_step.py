@@ -89,9 +89,10 @@ class ActionStep(BaseStep):
                                 )
                             )
                 elif type(action_config) is str:
-                    self._child_steps.append(
-                        supported_actions[action_config](run=self._run, config=None, parent=self)
-                    )
+                    if action_config in supported_actions:
+                        self._child_steps.append(
+                            supported_actions[action_config](run=self._run, config=None, parent=self)
+                        )
         return self._child_steps
 
     def execute_selenium(self, state: SeleniumStepState):
