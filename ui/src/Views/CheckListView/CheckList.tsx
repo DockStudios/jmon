@@ -4,13 +4,14 @@ import Grid from '@mui/material/Grid';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
 import checkService from '../../check.service.tsx';
+import ConfigService from '../../config.service.tsx';
 import { withRouter } from '../../withRouter';
 
 
 const columns: GridColDef[] = [
   { field: 'environment', headerName: 'Environment', width: 200 },
   { field: 'name', headerName: 'Name', width: 400 },
-  { field: 'average_success', headerName: 'Average Success', valueGetter: (data) => {return (data.row.average_success >= 0.99 ? '100' : (data.row.average_success * 100).toPrecision(2)) + '%';} },
+  { field: 'average_success', headerName: 'Average Success', valueGetter: (data) => {return (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%';} },
   { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
   { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
 ];
@@ -20,15 +21,30 @@ class CheckList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      checks: []
+      checks: [],
+      config: {}
     };
     this.retrieveChecks = this.retrieveChecks.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
+    this.getConfig = this.getConfig.bind(this);
+  }
+
+  async getConfig() {
+    return new Promise((resolve, reject) => {
+      new ConfigService().getConfig().then((config) => {
+        this.setState((state) => {
+          resolve(true);
+          return Object.assign({}, {...state, config: config.data});
+        })
+      });
+    });
   }
 
   componentDidMount() {
     document.title = `JMon`;
-    this.retrieveChecks();
+    this.getConfig().then(() => {
+      this.retrieveChecks();
+    });
   }
 
   retrieveChecks() {
@@ -64,7 +80,16 @@ class CheckList extends React.Component {
           <Grid item xs={12} md={12} lg={10} xl={8} sx={{
                 '& .check-row--disabled': {
                   bgcolor: '#eeeeee'
-                }
+                },
+                '& .check-row--ok': {
+                  bgcolor: '#ccffcc'
+                },
+                '& .check-row--warning': {
+                  bgcolor: '#fff1e1'
+                },
+                '& .check-row--critical': {
+                  bgcolor: '#ffcccc'
+                },
               }}
             >
             <div style={{ height: 500, width: '100%' }}>
@@ -73,7 +98,18 @@ class CheckList extends React.Component {
                 columns={columns}
                 getRowId={(row: any) =>  row.name + row.environment}
                 onRowClick={this.onRowClick}
-                getRowClassName={(row) => {return row.row.enable ? '' : 'check-row--disabled'}}
+                getRowClassName={(row) => {
+                  if (!row.row.enable) {
+                    return 'check-row--disabled';
+                  }
+                  else if (row.row.average_success * 100 <= this.state.config.check.thresholds.critical) {
+                    return 'check-row--critical';
+                  }
+                  else if (row.row.average_success * 100 <= this.state.config.check.thresholds.warning) {
+                    return 'check-row--warning';
+                  }
+                  return 'check-row--ok';
+                }}
               />
             </div>
           </Grid>
