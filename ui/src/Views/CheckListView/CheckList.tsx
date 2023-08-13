@@ -58,7 +58,6 @@ class CheckList extends React.Component {
   }
 
   render() {
-    console.log("rendering")
     return (
       <Container  maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Grid container spacing={3}>
