@@ -21,7 +21,7 @@ class FlaskApp:
         """Return static index page"""
         return send_file(os.path.join('..', 'ui', 'index.html'))
 
-    @app.route('/checks/<path:any>')
+    @app.route('/<path:any>')
     def serve_catchall(any):
         """Return static index page"""
         return send_file(os.path.join('..', 'ui', 'index.html'))
