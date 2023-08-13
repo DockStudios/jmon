@@ -1,5 +1,14 @@
 # Changelog
 
+# [4.1.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.3...v4.1.0) (2023-08-13)
+
+
+### Features
+
+* Add API endpoint with details about agent queue counts ([6630c0e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6630c0ed13c61d7ed63ef2d089d99c17c0d56e32)), closes [#75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/75)
+* Add status page with agent count by queue ([29e688c](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/29e688c2bd434add4c3d0cb5ae53d78b55397f1e)), closes [#75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/75)
+* Show error in UI when there are no agents serving the default queue ([f0a388a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f0a388af980ffc11b6f800068da95281f56a6ff2)), closes [#75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/75)
+
 ## [4.0.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.2...v4.0.3) (2023-08-12)
 
 
