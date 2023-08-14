@@ -12,6 +12,14 @@ import { withRouter } from '../../withRouter';
 class CheckList extends React.Component {
 
   columns: GridColDef[] = [];
+  config = {
+    check: {
+      thresholds: {
+        critical: null,
+        warning: null
+      }
+    }
+  };
 
   constructor(props) {
     super(props);
@@ -22,48 +30,25 @@ class CheckList extends React.Component {
     this.onRowClick = this.onRowClick.bind(this);
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     document.title = `JMon`;
 
-    new ConfigService().getConfig().then((config) => {
-      this.columns = [
-        { field: 'environment', headerName: 'Environment', width: 200 },
-        { field: 'name', headerName: 'Name', width: 400 },
-        {
-          field: 'average_success',
-          headerName: 'Average Success',
-          valueGetter: (data) => {return (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%';},
-          renderCell: (params: GridRenderCellParams) => {
-            let color = '#ccffcc'
-            if (params.row.average_success * 100 <= config.data.check.thresholds.critical) {
-              color = '#ffcccc';
-            } else if (params.row.average_success * 100 <= config.data.config.check.thresholds.warning) {
-              color = '#fff1e1';
-            }
-
-            return (
-              <Box
-                sx={{
-                  backgroundColor: color,
-                  width: "100%",
-                  height: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                }}
-              >
-                <div sx={{margin: "auto", position: "relative", textAlign: "center"}}>
-                  {params.value}
-                </div>
-              </Box>
-            );
-          },
-          with: 300
-        },
-        { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
-        { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
-      ];
-      this.retrieveChecks();
+    await new ConfigService().getConfig().then((config) => {
+      this.config = config.data;
     });
+    this.columns = [
+      { field: 'environment', headerName: 'Environment', width: 200 },
+      { field: 'name', headerName: 'Name', width: 400 },
+      {
+        field: 'average_success',
+        headerName: 'Average Success',
+        valueGetter: (data) => {return (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%';},
+        with: 300
+      },
+      { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
+      { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
+    ];
+    this.retrieveChecks();
   }
 
   retrieveChecks() {
@@ -100,6 +85,15 @@ class CheckList extends React.Component {
                 '& .check-row--disabled': {
                   bgcolor: '#eeeeee'
                 },
+                '& .check-uptime--ok': {
+                  bgcolor: '#ccffcc'
+                },
+                '& .check-uptime--warning': {
+                  bgcolor: '#fff1e1'
+                },
+                '& .check-uptime--critical': {
+                  bgcolor: '#ffcccc'
+                },
               }}
             >
             <div style={{ height: 500, width: '100%' }}>
@@ -113,6 +107,17 @@ class CheckList extends React.Component {
                     return 'check-row--disabled';
                   }
                   return '';
+                }}
+                getCellClassName={(params: GridRenderCellParams) => {
+                  if (params.field == 'average_success') {
+                    if (params.row.average_success * 100 <= this.config.check.thresholds.critical) {
+                      return 'check-uptime--critical';
+                    } else if (params.row.average_success * 100 <= this.config.check.thresholds.warning) {
+                      return 'check-uptime--warning';
+                    } else {
+                      return 'check-uptime--ok';
+                    }
+                  }
                 }}
               />
             </div>
