@@ -1,5 +1,13 @@
 # Changelog
 
+# [4.2.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.1.0...v4.2.0) (2023-08-14)
+
+
+### Features
+
+* Add coloring of 'latest status' column in run list ([d280c18](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d280c18a917fe8000775c190eb1b98cc049c7cfb)), closes [#72](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/72)
+* Add colors to check list row based on average success percentage ([4f6efe9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4f6efe9cd94e27b3cd5641179628a6007bfc3556)), closes [#72](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/72)
+
 # [4.1.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.3...v4.1.0) (2023-08-13)
 
 
