@@ -14,6 +14,14 @@ class CheckService {
   getLogById(name, environment, runTimestamp) {
     return client.get(`/checks/${name}/environments/${environment}/runs/${runTimestamp}/artifacts/artifact.log`);
   }
+
+  triggerRun(name, environment) {
+    return client.post(`/checks/${name}/environments/${environment}/trigger`);
+  }
+
+  getManualTriggerStatus(name, environment, triggerId) {
+    return client.get(`/checks/${name}/environments/${environment}/trigger/${triggerId}`);
+  }
 }
 
 export default CheckService;

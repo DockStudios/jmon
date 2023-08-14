@@ -29,6 +29,11 @@ class Run:
         self._start_time = None
 
     @property
+    def run_model(self):
+        """Return run model"""
+        return self._db_run
+
+    @property
     def logger(self):
         """Return logger"""
         if self._logger is None:
@@ -40,11 +45,11 @@ class Run:
         """Return root step instance"""
         return self._root_step
 
-    def start(self):
+    def start(self, trigger_type):
         """Start run, setting up db run object and logging"""
         if self._db_run is not None:
             raise Exception("Cannot start run with Run DB modal already configured")
-        self._db_run = jmon.models.run.Run.create(check=self._check)
+        self._db_run = jmon.models.run.Run.create(check=self._check, trigger_type=trigger_type)
 
     @property
     def check(self):
@@ -89,15 +94,16 @@ class Run:
             _, artifact_name = os.path.split(artifact_path)
             artifact_storage.upload_file(f"{self.get_artifact_key()}/{artifact_name}", source_path=artifact_path)
 
-        # Create metrics
-        result_database = ResultDatabase()
-        average_success_metric = ResultMetricAverageSuccessRate()
-        average_success_metric.write(result_database=result_database, run=self)
-        latest_status_metric = ResultMetricLatestStatus()
-        latest_status_metric.write(result_database=result_database, run=self)
+        if self._db_run.trigger_type is jmon.models.run.RunTriggerType.SCHEDULED:
+            # Create metrics for scheduled runs
+            result_database = ResultDatabase()
+            average_success_metric = ResultMetricAverageSuccessRate()
+            average_success_metric.write(result_database=result_database, run=self)
+            latest_status_metric = ResultMetricLatestStatus()
+            latest_status_metric.write(result_database=result_database, run=self)
 
-        # Send notifications using plugins
-        self.send_notifications(run_status)
+            # Send notifications using plugins
+            self.send_notifications(run_status)
 
     def send_notifications(self, run_status):
         """Send notifications to plugins"""
