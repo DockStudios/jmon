@@ -1,5 +1,19 @@
 # Changelog
 
+# [4.3.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.2.0...v4.3.0) (2023-08-14)
+
+
+### Bug Fixes
+
+* Add run column for trigger type, setting to scheduled for scheduler runs and manual for triggered runs through API. ([5eff698](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/5eff69852e9f82fc08dbdf212bbd6d0506ef7e91)), closes [#68](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/68)
+
+
+### Features
+
+* Add ability to trigger run in UI ([3dc5408](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/3dc5408637953e26439cab05894e3a66ecf49844)), closes [#68](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/68)
+* Add API endpoint for querying manually triggered runs ([7edd834](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/7edd8349f6ddf7d92ece331ef4dc74a8ad9b5e64)), closes [#68](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/68)
+* Add API endpoint to manually trigger run ([21f53c3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/21f53c30dee7b2f6ec581293e88a345b60592876)), closes [#68](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/68)
+
 # [4.2.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.1.0...v4.2.0) (2023-08-14)
 
 
