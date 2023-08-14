@@ -62,4 +62,9 @@ def perform_check(self, check_name, environment_name, trigger_type=RunTriggerTyp
     finally:
         jmon.database.Database.clear_session()
 
-    return (status == StepStatus.SUCCESS)
+    return {
+        "result": status == StepStatus.SUCCESS,
+        "id": run.run_model.timestamp_id if run.run_model else None,
+        "check": check_name,
+        "environment": environment_name
+    }
