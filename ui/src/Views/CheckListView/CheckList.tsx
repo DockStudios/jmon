@@ -1,48 +1,67 @@
 
 import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import * as React from 'react';
 import checkService from '../../check.service.tsx';
 import ConfigService from '../../config.service.tsx';
 import { withRouter } from '../../withRouter';
 
 
-const columns: GridColDef[] = [
-  { field: 'environment', headerName: 'Environment', width: 200 },
-  { field: 'name', headerName: 'Name', width: 400 },
-  { field: 'average_success', headerName: 'Average Success', valueGetter: (data) => {return (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%';} },
-  { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
-  { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
-];
-
 class CheckList extends React.Component {
+
+  columns: GridColDef[] = [];
 
   constructor(props) {
     super(props);
     this.state = {
-      checks: [],
-      config: {}
+      checks: []
     };
     this.retrieveChecks = this.retrieveChecks.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
-    this.getConfig = this.getConfig.bind(this);
-  }
-
-  async getConfig() {
-    return new Promise((resolve, reject) => {
-      new ConfigService().getConfig().then((config) => {
-        this.setState((state) => {
-          resolve(true);
-          return Object.assign({}, {...state, config: config.data});
-        })
-      });
-    });
   }
 
   componentDidMount() {
     document.title = `JMon`;
-    this.getConfig().then(() => {
+
+    new ConfigService().getConfig().then((config) => {
+      this.columns = [
+        { field: 'environment', headerName: 'Environment', width: 200 },
+        { field: 'name', headerName: 'Name', width: 400 },
+        {
+          field: 'average_success',
+          headerName: 'Average Success',
+          valueGetter: (data) => {return (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%';},
+          renderCell: (params: GridRenderCellParams) => {
+            let color = '#ccffcc'
+            if (params.row.average_success * 100 <= config.data.check.thresholds.critical) {
+              color = '#ffcccc';
+            } else if (params.row.average_success * 100 <= config.data.config.check.thresholds.warning) {
+              color = '#fff1e1';
+            }
+
+            return (
+              <Box
+                sx={{
+                  backgroundColor: color,
+                  width: "100%",
+                  height: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                <div sx={{margin: "auto", position: "relative", textAlign: "center"}}>
+                  {params.value}
+                </div>
+              </Box>
+            );
+          },
+          with: 300
+        },
+        { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
+        { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
+      ];
       this.retrieveChecks();
     });
   }
@@ -81,34 +100,19 @@ class CheckList extends React.Component {
                 '& .check-row--disabled': {
                   bgcolor: '#eeeeee'
                 },
-                '& .check-row--ok': {
-                  bgcolor: '#ccffcc'
-                },
-                '& .check-row--warning': {
-                  bgcolor: '#fff1e1'
-                },
-                '& .check-row--critical': {
-                  bgcolor: '#ffcccc'
-                },
               }}
             >
             <div style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={this.state.checks}
-                columns={columns}
+                columns={this.columns}
                 getRowId={(row: any) =>  row.name + row.environment}
                 onRowClick={this.onRowClick}
                 getRowClassName={(row) => {
                   if (!row.row.enable) {
                     return 'check-row--disabled';
                   }
-                  else if (row.row.average_success * 100 <= this.state.config.check.thresholds.critical) {
-                    return 'check-row--critical';
-                  }
-                  else if (row.row.average_success * 100 <= this.state.config.check.thresholds.warning) {
-                    return 'check-row--warning';
-                  }
-                  return 'check-row--ok';
+                  return '';
                 }}
               />
             </div>
