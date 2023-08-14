@@ -85,13 +85,13 @@ class CheckList extends React.Component {
                 '& .check-row--disabled': {
                   bgcolor: '#eeeeee'
                 },
-                '& .check-uptime--ok': {
+                '& .check--ok': {
                   bgcolor: '#ccffcc'
                 },
-                '& .check-uptime--warning': {
+                '& .check--warning': {
                   bgcolor: '#fff1e1'
                 },
-                '& .check-uptime--critical': {
+                '& .check--critical': {
                   bgcolor: '#ffcccc'
                 },
               }}
@@ -111,11 +111,17 @@ class CheckList extends React.Component {
                 getCellClassName={(params: GridRenderCellParams) => {
                   if (params.field == 'average_success') {
                     if (params.row.average_success * 100 <= this.config.check.thresholds.critical) {
-                      return 'check-uptime--critical';
+                      return 'check--critical';
                     } else if (params.row.average_success * 100 <= this.config.check.thresholds.warning) {
-                      return 'check-uptime--warning';
+                      return 'check--warning';
                     } else {
-                      return 'check-uptime--ok';
+                      return 'check--ok';
+                    }
+                  } else if (params.field == 'latest_status') {
+                    if (params.row.latest_status == true) {
+                      return 'check--ok';
+                    } else {
+                      return 'check--critical';
                     }
                   }
                 }}
