@@ -1,5 +1,31 @@
 # Changelog
 
+# [4.2.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.1.0...v4.2.0) (2023-08-14)
+
+
+### Features
+
+* Add coloring of 'latest status' column in run list ([d280c18](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d280c18a917fe8000775c190eb1b98cc049c7cfb)), closes [#72](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/72)
+* Add colors to check list row based on average success percentage ([4f6efe9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4f6efe9cd94e27b3cd5641179628a6007bfc3556)), closes [#72](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/72)
+
+# [4.1.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.3...v4.1.0) (2023-08-13)
+
+
+### Features
+
+* Add API endpoint with details about agent queue counts ([6630c0e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6630c0ed13c61d7ed63ef2d089d99c17c0d56e32)), closes [#75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/75)
+* Add status page with agent count by queue ([29e688c](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/29e688c2bd434add4c3d0cb5ae53d78b55397f1e)), closes [#75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/75)
+* Show error in UI when there are no agents serving the default queue ([f0a388a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f0a388af980ffc11b6f800068da95281f56a6ff2)), closes [#75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/75)
+
+## [4.0.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.2...v4.0.3) (2023-08-12)
+
+
+### Bug Fixes
+
+* Add protection around passing invalid action as string value to action ([8c2c51e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/8c2c51ee4bfc3f2c2274b68fbfe6a562510d86e4))
+* Create unified instance of log handling for run and steps. ([4f142ee](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4f142eeb22232b4fa4577cc32a01c45054e051fe)), closes [#71](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/71)
+* Disable logging of root step ([4e4fa3a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4e4fa3aad893be30ede1749789942622717e4d16)), closes [#71](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/71)
+
 ## [4.0.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.0.1...v4.0.2) (2023-08-12)
 
 
