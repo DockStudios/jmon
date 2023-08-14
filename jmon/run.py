@@ -34,6 +34,11 @@ class Run:
         self._start_time = None
 
     @property
+    def run_model(self):
+        """Return run model"""
+        return self._db_run
+
+    @property
     def logger(self):
         """Return logger"""
         if self._logger is None:
@@ -45,11 +50,11 @@ class Run:
         """Return root step instance"""
         return self._root_step
 
-    def start(self):
+    def start(self, trigger_type):
         """Start run, setting up db run object and logging"""
         if self._db_run is not None:
             raise Exception("Cannot start run with Run DB modal already configured")
-        self._db_run = jmon.models.run.Run.create(check=self._check)
+        self._db_run = jmon.models.run.Run.create(check=self._check, trigger_type=trigger_type)
 
         # Setup logger
         self._logger = logging.getLogger(self._db_run.id)

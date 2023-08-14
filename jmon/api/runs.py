@@ -1,6 +1,8 @@
 
 from flask import request
 
+from jmon.models.run import RunTriggerType
+
 from . import FlaskApp
 from .utils import get_check_and_environment_by_name
 from jmon.models import Run
@@ -17,7 +19,7 @@ def get_check_runs(check_name, environment_name):
 
     return {
         run.timestamp_id: run.status.value
-        for run in Run.get_by_check(check=check)
+        for run in Run.get_by_check(check=check, trigger_type=RunTriggerType.SCHEDULED)
     }, 200
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/runs', methods=["POST"])
@@ -29,7 +31,8 @@ def trigger_run(check_name, environment_name):
         return error, 404
 
     task = jmon.tasks.perform_check.perform_check.apply_async(
-        (check.name, environment.name),
+        args=(check.name, environment.name),
+        kwargs={"trigger_type": RunTriggerType.MANUAL.value},
         options=check.task_options
     )
     return {
