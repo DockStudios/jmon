@@ -22,6 +22,15 @@ def upgrade() -> None:
     clienttype_enum = postgresql.ENUM('SCHEDULED', 'MANUAL', name='runtriggertype', create_type=False)
     clienttype_enum.create(op.get_bind(), checkfirst=True)
     op.add_column('run', sa.Column('trigger_type', sa.Enum('SCHEDULED', 'MANUAL', name='runtriggertype'), nullable=True))
+    c = op.get_bind()
+    # Update existing rows to 'scheduled
+    c.execute(
+        sa.sql.text("""
+            UPDATE run SET trigger_type='SCHEDULED'
+        """)
+    )
+    # Disable nullable column
+    op.alter_column('run', sa.Column('trigger_type', sa.Enum('SCHEDULED', 'MANUAL', name='runtriggertype'), nullable=False))
     # ### end Alembic commands ###
 
 

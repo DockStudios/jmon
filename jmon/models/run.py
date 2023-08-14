@@ -73,7 +73,7 @@ class Run(jmon.database.Base):
     # Datetime timestamp of check
     timestamp = sqlalchemy.Column(sqlalchemy.DateTime, primary_key=True)
 
-    trigger_type = sqlalchemy.Column(sqlalchemy.Enum(RunTriggerType, default=RunTriggerType.SCHEDULED))
+    trigger_type = sqlalchemy.Column(sqlalchemy.Enum(RunTriggerType, default=RunTriggerType.SCHEDULED), nullable=False)
 
     status = sqlalchemy.Column(sqlalchemy.Enum(StepStatus), default=StepStatus.NOT_RUN)
 
