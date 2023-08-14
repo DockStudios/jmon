@@ -250,17 +250,9 @@ class Check(jmon.database.Base):
 
     def upsert_schedule(self):
         """Register or update schedule"""
-        headers = self.task_headers
-        if not headers:
-            logger.warn(f"Check does not have any compatible client types: {self.name}")
+        options = self.task_options
+        if not options:
             return
-
-        options = {
-            'headers': headers,
-            'exchange': 'check',
-            "exchange_type": "headers",
-            "expires": jmon.config.Config.get().MAX_CHECK_QUEUE_TIME
-        }
 
         interval_seconds = self.get_interval()
         interval = celery.schedules.schedule(run_every=interval_seconds)
@@ -357,6 +349,7 @@ class Check(jmon.database.Base):
         supported_clients = self.get_supported_clients()
 
         if not supported_clients:
+            logger.warn(f"Check does not have any compatible client types: {self.name}")
             return None
 
         headers = {}
@@ -368,3 +361,17 @@ class Check(jmon.database.Base):
         if ClientType.BROWSER_FIREFOX in supported_clients:
             headers["firefox"] = "true"
         return headers
+
+    @property
+    def task_options(self):
+        """Return options for task"""
+        headers = self.task_headers
+        if not headers:
+            return
+
+        return {
+            'headers': headers,
+            'exchange': 'check',
+            "exchange_type": "headers",
+            "expires": jmon.config.Config.get().MAX_CHECK_QUEUE_TIME
+        }

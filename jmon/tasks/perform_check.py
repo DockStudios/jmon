@@ -11,6 +11,7 @@ import jmon.database
 from jmon.step_status import StepStatus
 
 
+@app.task(bind=True)
 def perform_check(self, check_name, environment_name):
 
     # Check if task has already executed due to being
