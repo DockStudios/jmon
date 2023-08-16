@@ -1,21 +1,27 @@
 # jmon
 
-Simple JSON config-based website monitoring solution
+Simple YAML config-based website/canary monitoring solution.
 
 This project is currently in early development.
 
 It can currently:
  * Register checks
- * Perform checks across agents
+ * Perform distributed checks across agents
  * Checks can:
    * Goto URL
+   * Find elements by various properties
    * Check title/url/element text
    * Click on elements, send text and press enter
    * Find elements by ID/class/tag/placeholder/text
+   * Verify response code and JSON content for API endpoints
+   * Take screenshots
+ * Custom plugins hooks for tasks for performing custom integrations
+
+For a full list of check features, see [docs/step_reference.md](docs/step_reference.md)
 
 For a list of upcoming features and issues being worked on, please see https://gitlab.dockstudios.co.uk/mjc/jmon/-/issues
 
-## Additional sub-projects to help setup
+## Additional sub-projects
 
  * Terraform provider to manage JMon checks and environments - https://gitlab.dockstudios.co.uk/pub/jmon/jmon-terraform-provider
  * Chrome browser plugin to capture user-journeys and automatically generate JMon step configuration - https://gitlab.dockstudios.co.uk/pub/jmon/jmon-chrome-plugin
@@ -25,6 +31,9 @@ For a list of upcoming features and issues being worked on, please see https://g
 ```bash
 # Startup
 docker-compose up -d
+
+# Modify any passwords in the .env file to secure the installation
+vi .env
 
 # Add check for W3Schools
 curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
@@ -132,6 +141,36 @@ It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availa
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
 
+## Upgrading
+
+Before performing an upgrade, ensure to check the release for database changes.
+If there are any database changes, it is safest to stop the jmon application (agents, scheduler and server).
+
+To upgrade using docker-compose run:
+```
+# Stop docker-compose stack
+docker-compose stop
+
+# Manually back up any local modifications (.env file and any plugins), and optionally git stash them
+git stash
+
+# Pull latest changes
+git fetch --all
+
+# To check out a particular release tag
+git checkout v<new version>
+
+# Restore modifications - this may require manual conflict resolution
+git stash pop
+
+# Bring up application, rebuilding the containers
+## Initially perform DB migration
+docker-compose up -d --build database dbmigrate
+
+## Bring up remaining application
+docker-compose up -d --build
+```
+
 ### s3 artifact storage
 
 The artifacts can be stored in s3.
@@ -160,3 +199,12 @@ npm install
 NODE_ENV=development npm start
 ```
 
+## Architecture
+
+ * API/UI - written in python and javascript/angular, which handles API requests for interacting with configuration and results
+ * Postgres - Storing check information and results
+ * S3 - Stores run artifacts (log and screenshots), using minio by default
+ * Redis - Stores check/result metrics and configuration for celery
+ * RabbitMQ - Handles queuing of tasks for distribution to agents
+ * Agents - Uses celery to run checks and built-in maintenance tasks
+ * Flower - Provides a dashboard for monitoring the celery tasks

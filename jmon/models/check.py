@@ -84,6 +84,9 @@ class Check(jmon.database.Base):
             instance = cls(name=name, environment=environment)
 
         instance.steps = steps
+        if len(instance._steps) >= jmon.database.Database.MEDIUM_BLOB_SIZE:
+            raise CheckCreateError("steps definition is too large")
+
         instance.screenshot_on_error = content.get("screenshot_on_error")
 
         # If a client type has been provided, convert to enum,
@@ -111,6 +114,8 @@ class Check(jmon.database.Base):
         if type(content_attributes) is not dict:
             raise CheckCreateError("attributes must be a map of key-value pairs")
         instance.attributes = content_attributes
+        if len(instance._attributes) >= jmon.database.Database.MEDIUM_BLOB_SIZE:
+            raise CheckCreateError("attributes definition is too large")
 
         session.add(instance)
         session.commit()
@@ -132,9 +137,19 @@ class Check(jmon.database.Base):
     interval = sqlalchemy.Column(sqlalchemy.Integer)
     timeout = sqlalchemy.Column(sqlalchemy.Integer)
     client = sqlalchemy.Column(sqlalchemy.Enum(ClientType), default=None)
-    _steps = sqlalchemy.Column(jmon.database.Database.LargeString, name="steps")
+    _steps = sqlalchemy.Column(
+        sqlalchemy.LargeBinary(
+            length=jmon.database.Database.MEDIUM_BLOB_SIZE
+        ),
+        name="steps_b"
+    )
     _enabled = sqlalchemy.Column(sqlalchemy.Boolean, default=True, name="enabled")
-    _attributes = sqlalchemy.Column(jmon.database.Database.LargeString, name="attributes")
+    _attributes = sqlalchemy.Column(
+        sqlalchemy.LargeBinary(
+            length=jmon.database.Database.MEDIUM_BLOB_SIZE
+        ),
+        name="attributes_b"
+    )
 
     environment_id = sqlalchemy.Column(
         sqlalchemy.ForeignKey("environment.id", name="fk_check_environment_id_environment_id"),
@@ -149,24 +164,24 @@ class Check(jmon.database.Base):
     @property
     def steps(self):
         """Return steps dictionary"""
-        return json.loads(self._steps)
+        return json.loads(self._steps.decode('utf-8'))
 
     @steps.setter
     def steps(self, value):
         """Set steps in database"""
-        self._steps = json.dumps(value)
+        self._steps = json.dumps(value).encode('utf-8')
 
     @property
     def attributes(self):
         """Return attributes dictionary"""
         if self._attributes:
-            return json.loads(self._attributes)
+            return json.loads(self._attributes.decode('utf-8'))
         return {}
 
     @attributes.setter
     def attributes(self, value):
         """Set attributes column value"""
-        self._attributes = json.dumps(value) if value else "{}"
+        self._attributes = (json.dumps(value) if value else "{}").encode('utf-8')
 
     @property
     def should_screenshot_on_error(self):
