@@ -199,3 +199,12 @@ npm install
 NODE_ENV=development npm start
 ```
 
+## Architecture
+
+ * API/UI - written in python and javascript/angular, which handles API requests for interacting with configuration and results
+ * Postgres - Storing check information and results
+ * S3 - Stores run artifacts (log and screenshots), using minio by default
+ * Redis - Stores check/result metrics and configuration for celery
+ * RabbitMQ - Handles queuing of tasks for distribution to agents
+ * Agents - Uses celery to run checks and built-in maintenance tasks
+ * Flower - Provides a dashboard for monitoring the celery tasks
