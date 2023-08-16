@@ -1,21 +1,27 @@
 # jmon
 
-Simple JSON config-based website monitoring solution
+Simple YAML config-based website/canary monitoring solution.
 
 This project is currently in early development.
 
 It can currently:
  * Register checks
- * Perform checks across agents
+ * Perform distributed checks across agents
  * Checks can:
    * Goto URL
+   * Find elements by various properties
    * Check title/url/element text
    * Click on elements, send text and press enter
    * Find elements by ID/class/tag/placeholder/text
+   * Verify response code and JSON content for API endpoints
+   * Take screenshots
+ * Custom plugins hooks for tasks for performing custom integrations
+
+For a full list of check features, see [docs/step_reference.md](docs/step_reference.md)
 
 For a list of upcoming features and issues being worked on, please see https://gitlab.dockstudios.co.uk/mjc/jmon/-/issues
 
-## Additional sub-projects to help setup
+## Additional sub-projects
 
  * Terraform provider to manage JMon checks and environments - https://gitlab.dockstudios.co.uk/pub/jmon/jmon-terraform-provider
  * Chrome browser plugin to capture user-journeys and automatically generate JMon step configuration - https://gitlab.dockstudios.co.uk/pub/jmon/jmon-chrome-plugin
@@ -25,6 +31,9 @@ For a list of upcoming features and issues being worked on, please see https://g
 ```bash
 # Startup
 docker-compose up -d
+
+# Modify any passwords in the .env file to secure the installation
+vi .env
 
 # Add check for W3Schools
 curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
@@ -155,6 +164,10 @@ git checkout v<new version>
 git stash pop
 
 # Bring up application, rebuilding the containers
+## Initially perform DB migration
+docker-compose up -d --build database dbmigrate
+
+## Bring up remaining application
 docker-compose up -d --build
 ```
 
