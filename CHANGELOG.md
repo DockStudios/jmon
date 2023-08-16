@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.3.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.0...v4.3.1) (2023-08-16)
+
+
+### Bug Fixes
+
+* Add check for size of attributes/steps fields when creating/updating check to ensure they are not too large ([36eeb06](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/36eeb0602201207642342052e43e3b3a5782026b)), closes [#79](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/79)
+* **db:** Convert attributes columns to binary blobs, increaseing maximum size of steps and attributes ([e138d63](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e138d63a022569cbd5c0a8d50bdfce85747dad9e)), closes [#79](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/79)
+
 # [4.3.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.2.0...v4.3.0) (2023-08-14)
 
 
