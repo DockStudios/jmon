@@ -84,6 +84,9 @@ class Check(jmon.database.Base):
             instance = cls(name=name, environment=environment)
 
         instance.steps = steps
+        if len(instance._steps) >= jmon.database.Database.MEDIUM_BLOB_SIZE:
+            raise CheckCreateError("steps definition is too large")
+
         instance.screenshot_on_error = content.get("screenshot_on_error")
 
         # If a client type has been provided, convert to enum,
@@ -111,6 +114,8 @@ class Check(jmon.database.Base):
         if type(content_attributes) is not dict:
             raise CheckCreateError("attributes must be a map of key-value pairs")
         instance.attributes = content_attributes
+        if len(instance._attributes) >= jmon.database.Database.MEDIUM_BLOB_SIZE:
+            raise CheckCreateError("attributes definition is too large")
 
         session.add(instance)
         session.commit()
