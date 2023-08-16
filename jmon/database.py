@@ -43,6 +43,7 @@ class Database:
 
     GeneralString = sqlalchemy.String(length=GENERAL_COLUMN_SIZE)
     LargeString = sqlalchemy.String(length=LARGE_COLUMN_SIZE)
+    MEDIUM_BLOB_SIZE = ((2 ** 24) - 1)
 
     @classmethod
     def get_engine(cls):
