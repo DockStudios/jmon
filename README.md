@@ -132,6 +132,32 @@ It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availa
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
 
+## Upgrading
+
+Before performing an upgrade, ensure to check the release for database changes.
+If there are any database changes, it is safest to stop the jmon application (agents, scheduler and server).
+
+To upgrade using docker-compose run:
+```
+# Stop docker-compose stack
+docker-compose stop
+
+# Manually back up any local modifications (.env file and any plugins), and optionally git stash them
+git stash
+
+# Pull latest changes
+git fetch --all
+
+# To check out a particular release tag
+git checkout v<new version>
+
+# Restore modifications - this may require manual conflict resolution
+git stash pop
+
+# Bring up application, rebuilding the containers
+docker-compose up -d --build
+```
+
 ### s3 artifact storage
 
 The artifacts can be stored in s3.
