@@ -42,7 +42,8 @@ class ResultTimeframeFactory:
             ResultTimeframe(name="6h", hours=6, friendly_name="6 Hours"),
             ResultTimeframe(name="12h", hours=12, friendly_name="12 Hours"),
             ResultTimeframe(name="1d", hours=24, friendly_name="1 Day"),
-            ResultTimeframe(name="1w", hours=(24*7), friendly_name="1 Week")
+            ResultTimeframe(name="1w", hours=(24*7), friendly_name="1 Week"),
+            ResultTimeframe(name="4w", hours=(24*7*4), friendly_name="4 Weeks")
         ]
     }
 
