@@ -76,6 +76,9 @@ class Run(jmon.database.Base):
     trigger_type = sqlalchemy.Column(sqlalchemy.Enum(RunTriggerType, default=RunTriggerType.SCHEDULED), nullable=False)
 
     status = sqlalchemy.Column(sqlalchemy.Enum(StepStatus), default=StepStatus.NOT_RUN)
+    result_value = sqlalchemy.Column(sqlalchemy.Integer, default=None, nullable=True)
+
+    __table_args__ = (sqlalchemy.Index('check_trigger_type_timestamp', check_id, trigger_type, timestamp.asc()), )
 
     @property
     def id(self):
@@ -86,5 +89,10 @@ class Run(jmon.database.Base):
         """Set success value"""
         session = jmon.database.Database.get_session()
         self.status = status
+        if status is StepStatus.SUCCESS:
+            self.result_value = 1
+        elif status in [StepStatus.FAILED, StepStatus.TIMEOUT]:
+            self.result_value = 0
+
         session.add(self)
         session.commit()
