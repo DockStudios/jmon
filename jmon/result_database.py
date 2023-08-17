@@ -45,32 +45,6 @@ class ResultMetricAverageSuccessRate(ResultMetric):
         return successes / (successes + failures)
 
 
-class ResultMetricStatusTimeBucket(ResultMetric):
-
-    def __init__(self, timeframe: ResultTimeframe):
-        """Store timeframe of bucket"""
-        self._timeframe = timeframe
-
-    def _get_key(self, check):
-        """Get name of metric"""
-        return f"jmon_result_metric_status_timeframe_{check.name}_{check.environment.name}_{self._timeframe.redis_key}"
-
-    def write(self, result_database, run):
-        """Increment count for success/failure for run"""
-        result_database.connection.hset(self._get_key(run.check), run.run_model.timestamp_id, 1 if run.success else 0)
-
-    def read(self, result_database, check):
-        """Get success rate fraction"""
-        # Get average successes/failures
-        successes = int(result_database.connection.hget(self._get_name(), self._get_key(check, True)) or 0)
-        failures = int(result_database.connection.hget(self._get_name(), self._get_key(check, False)) or 0)
-
-        # Handle no checks
-        if (successes + failures) == 0:
-            return None
-        return successes / (successes + failures)
-
-
 class ResultMetricLatestStatus(ResultMetric):
     """Metric for latest result status"""
 

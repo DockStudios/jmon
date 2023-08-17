@@ -1,6 +1,7 @@
 
 
 import sqlalchemy
+from sqlalchemy.sql import func
 
 from redbeat import RedBeatSchedulerEntry
 import yaml
@@ -390,3 +391,16 @@ class Check(jmon.database.Base):
             "exchange_type": "headers",
             "expires": jmon.config.Config.get().MAX_CHECK_QUEUE_TIME
         }
+
+    def get_success_rate(self, from_timestamp):
+        """Return average success rate since timestamp"""
+        session = jmon.database.Database.get_session()
+        res = session.query(
+            func.avg(jmon.models.Run.result_value).label('average')
+        ).filter(
+            jmon.models.Run.check_id==self.id,
+            jmon.models.Run.timestamp>=from_timestamp
+        )
+        if res:
+            return float(res[0]['average'])
+        return None

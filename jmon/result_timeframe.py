@@ -1,14 +1,16 @@
 
 
+from datetime import datetime, timedelta
+
+
 class ResultTimeframe:
     """Handle properties of result timeframes"""
 
-    def __init__(self, name, redis_key, friendly_name, ttl):
+    def __init__(self, name, hours, friendly_name):
         """Store member variables"""
         self._name = name
-        self._redis_key = redis_key
+        self._hours = hours
         self._friendly_name = friendly_name
-        self._ttl = ttl
 
     @property
     def name(self):
@@ -16,32 +18,31 @@ class ResultTimeframe:
         return self._name
 
     @property
-    def redis_key(self):
-        """Return redis_key"""
-        return self._redis_key
+    def hours(self):
+        """Return hours"""
+        return self._hours
 
     @property
     def friendly_name(self):
         """Return friendly_name"""
         return self._friendly_name
 
-    @property
-    def ttl(self):
-        """Return ttl"""
-        return self._ttl
+    def get_from_timestamp(self):
+        """Return 'from' timestamp"""
+        return datetime.now() - timedelta(hours=self.hours)
 
 
 class ResultTimeframeFactory:
     """Factory class for returning timeframe instances"""
 
     _DEFINITIONS = {
-        timeframe.name
+        timeframe.name: timeframe
         for timeframe in [
-            ResultTimeframe(name="1h", redis_key="1h", friendly_name="1 Hour", ttl=(60*60)),
-            ResultTimeframe(name="6h", redis_key="6h", friendly_name="6 Hours", ttl=(6*60*60)),
-            ResultTimeframe(name="12h", redis_key="12h", friendly_name="12 Hours", ttl=(12*60*60)),
-            ResultTimeframe(name="1d", redis_key="1d", friendly_name="1 Day", ttl=(24*60*60)),
-            ResultTimeframe(name="1w", redis_key="1w", friendly_name="1 Week", ttl=(7*24*60*60))
+            ResultTimeframe(name="1h", hours=1, friendly_name="1 Hour"),
+            ResultTimeframe(name="6h", hours=6, friendly_name="6 Hours"),
+            ResultTimeframe(name="12h", hours=12, friendly_name="12 Hours"),
+            ResultTimeframe(name="1d", hours=24, friendly_name="1 Day"),
+            ResultTimeframe(name="1w", hours=(24*7), friendly_name="1 Week")
         ]
     }
 
