@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.3.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.1...v4.3.2) (2023-08-17)
+
+
+### Bug Fixes
+
+* Fix ocassional exceptions when loading an artifact endpoint ([e0c2878](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e0c2878b7fad6ad5e4fd524e292cdbef829583d7)), closes [#80](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/80)
+
 ## [4.3.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.0...v4.3.1) (2023-08-16)
 
 
