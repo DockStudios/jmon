@@ -1,5 +1,13 @@
 # Changelog
 
+# [4.4.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.2...v4.4.0) (2023-08-17)
+
+
+### Features
+
+* Add filtering of results API endpoint average success to provide timeframes. ([006b2f3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/006b2f39b74f18db9daad73b461c47c39f5295b5)), closes [#73](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/73)
+* Add UI selection in check list to select result timeframe ([08897a3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/08897a37b86cf7afe4913de1c4cfac38ef50098d)), closes [#73](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/73)
+
 ## [4.3.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.1...v4.3.2) (2023-08-17)
 
 
