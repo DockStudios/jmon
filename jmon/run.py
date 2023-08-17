@@ -67,7 +67,7 @@ class Run:
 
     def get_stored_artifacts(self):
         """Get list of artifacts from storage"""
-        artifact_storage = ArtifactStorage.get_instance()
+        artifact_storage = ArtifactStorage()
         artifact_prefix = f"{self.get_artifact_key()}/"
         return [
             key.replace(artifact_prefix, '')
@@ -76,7 +76,7 @@ class Run:
 
     def get_artifact_content(self, artifact):
         """Get artifact content"""
-        artifact_storage = ArtifactStorage.get_instance()
+        artifact_storage = ArtifactStorage()
         artifact_path = f"{self.get_artifact_key()}/{artifact}"
         return artifact_storage.get_file(artifact_path)
 
@@ -87,7 +87,7 @@ class Run:
         self.logger.cleanup()
 
         # Upload to storage
-        artifact_storage = ArtifactStorage.get_instance()
+        artifact_storage = ArtifactStorage()
         artifact_storage.upload_file(f"{self.get_artifact_key()}/artifact.log", content=self.logger.read_log_stream())
         artifact_storage.upload_file(f"{self.get_artifact_key()}/status", content=self._db_run.status.value)
         for artifact_path in self._artifact_paths:
