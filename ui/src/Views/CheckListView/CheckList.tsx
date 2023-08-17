@@ -2,10 +2,15 @@
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
 import * as React from 'react';
 import checkService from '../../check.service.tsx';
 import ConfigService from '../../config.service.tsx';
+import TimeframeService from '../../timeframe.service.tsx';
 import { withRouter } from '../../withRouter';
 
 
@@ -24,25 +29,34 @@ class CheckList extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      checks: []
+      checks: [],
+      selectedTimeframe: 0,
+      timeframes: []
     };
     this.retrieveChecks = this.retrieveChecks.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
+    this.handleTimeframeChange = this.handleTimeframeChange.bind(this);
   }
 
   async componentDidMount() {
     document.title = `JMon`;
 
+    // Obtain config
     await new ConfigService().getConfig().then((config) => {
       this.config = config.data;
     });
+    // Obtain timeframes for limiting data
+    new TimeframeService().getTimeframes().then((data) => {
+      this.setState((state) => Object.assign({}, {...state, timeframes: data.data}));
+    })
+
     this.columns = [
       { field: 'environment', headerName: 'Environment', width: 200 },
       { field: 'name', headerName: 'Name', width: 400 },
       {
         field: 'average_success',
         headerName: 'Average Success',
-        valueGetter: (data) => {return (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%';},
+        valueGetter: (data) => {return (data.row.average_success === null ? 'No runs' : (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%');},
         with: 300
       },
       { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
@@ -56,7 +70,7 @@ class CheckList extends React.Component {
     checkServiceIns.getAll().then((checksRes) => {
       let promises = checksRes.data.map((check) => {
         return new Promise((resolve, reject) => {
-          checkServiceIns.getResultsByCheckNameAndEnvironment(check.name, check.environment).then((statusRes) => {
+          checkServiceIns.getResultsByCheckNameAndEnvironment(check.name, check.environment, this.state.selectedTimeframe).then((statusRes) => {
             resolve({
               name: check.name,
               enable: check.enable,
@@ -68,7 +82,7 @@ class CheckList extends React.Component {
         });
       });
       Promise.all(promises).then((checkData) => {
-        this.setState({checks: checkData});
+        this.setState((state) => Object.assign({}, {...state, checks: checkData}));
       });
     });
   }
@@ -77,10 +91,35 @@ class CheckList extends React.Component {
     this.props.navigate(`/checks/${val.row.name}/environments/${val.row.environment}`);
   }
 
+  handleTimeframeChange(ev: any) {
+    if (ev?.target?.value !== undefined) {
+      this.setState((state) => Object.assign({}, {...state, selectedTimeframe: ev.target.value}))
+    }
+    this.retrieveChecks();
+  }
+
   render() {
     return (
       <Container  maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Grid container spacing={3}>
+          <Grid item xs={12} md={3} lg={2} xl={2}>
+            <FormControl fullWidth>
+              <InputLabel id="timeframe-label">Timeframe</InputLabel>
+              <Select
+                labelId="timeframe-label"
+                value={this.state.selectedTimeframe}
+                label="Timeframe"
+                onChange={this.handleTimeframeChange}
+              >
+                <MenuItem value={0}>All Time</MenuItem>
+                {this.state.timeframes.map((timeframe) =>
+                  <MenuItem key={timeframe.name} value={timeframe.name}>
+                    {timeframe.friendly_name}
+                  </MenuItem>
+                )}
+              </Select>
+            </FormControl>
+          </Grid>
           <Grid item xs={12} md={12} lg={10} xl={8} sx={{
                 '& .check-row--disabled': {
                   bgcolor: '#eeeeee'
@@ -95,7 +134,7 @@ class CheckList extends React.Component {
                   bgcolor: '#ffcccc'
                 },
               }}
-            >
+          >
             <div style={{ height: 500, width: '100%' }}>
               <DataGrid
                 rows={this.state.checks}

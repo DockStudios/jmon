@@ -402,5 +402,5 @@ class Check(jmon.database.Base):
             jmon.models.Run.timestamp>=from_timestamp
         )
         if res:
-            return float(res[0]['average'])
+            return float(res[0]['average']) if res[0]['average'] else None
         return None
