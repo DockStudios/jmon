@@ -78,7 +78,7 @@ class Run(jmon.database.Base):
     status = sqlalchemy.Column(sqlalchemy.Enum(StepStatus), default=StepStatus.NOT_RUN)
     result_value = sqlalchemy.Column(sqlalchemy.Integer, default=None, nullable=True)
 
-    __table_args__ = (sqlalchemy.Index('check_timestamp', check_id, timestamp.asc()), )
+    __table_args__ = (sqlalchemy.Index('check_trigger_type_timestamp', check_id, trigger_type, timestamp.asc()), )
 
     @property
     def id(self):

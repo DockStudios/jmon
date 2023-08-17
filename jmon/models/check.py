@@ -399,6 +399,7 @@ class Check(jmon.database.Base):
             func.avg(jmon.models.Run.result_value).label('average')
         ).filter(
             jmon.models.Run.check_id==self.id,
+            jmon.models.Run.trigger_type==jmon.models.run.RunTriggerType.SCHEDULED,
             jmon.models.Run.timestamp>=from_timestamp
         )
         if res:
