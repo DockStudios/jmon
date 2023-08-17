@@ -3,6 +3,7 @@ import datetime
 import redis
 
 import jmon.config
+from jmon.result_timeframe import ResultTimeframe
 
 
 class ResultMetric:
