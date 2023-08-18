@@ -6,8 +6,9 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridCellParams, GridFilterModel, GridToolbar } from '@mui/x-data-grid';
 import * as React from 'react';
+import  { useState } from 'react';
 import checkService from '../../check.service.tsx';
 import ConfigService from '../../config.service.tsx';
 import TimeframeService from '../../timeframe.service.tsx';
@@ -25,17 +26,28 @@ class CheckList extends React.Component {
       }
     }
   };
+  queryOptions = undefined;
+  setQueryOptions = undefined;
 
   constructor(props) {
     super(props);
     this.state = {
       checks: [],
       selectedTimeframe: 0,
-      timeframes: []
+      timeframes: [],
+      filterModel: {
+        items: [],
+        quickFilterExcludeHiddenColumns: true,
+        quickFilterValues: ['1'],
+      }
     };
     this.retrieveChecks = this.retrieveChecks.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
     this.handleTimeframeChange = this.handleTimeframeChange.bind(this);
+  }
+
+  onFilterChange(filterModel: GridFilterModel) {
+    console.log(filterModel);
   }
 
   async componentDidMount() {
@@ -67,7 +79,9 @@ class CheckList extends React.Component {
 
   retrieveChecks() {
     const checkServiceIns = new checkService();
-    checkServiceIns.getAll().then((checksRes) => {
+    checkServiceIns.getAll(
+      // pageSize, page, searchFilter
+    ).then((checksRes) => {
       let promises = checksRes.data.map((check) => {
         return new Promise((resolve, reject) => {
           checkServiceIns.getResultsByCheckNameAndEnvironment(check.name, check.environment, this.state.selectedTimeframe).then((statusRes) => {
@@ -141,13 +155,21 @@ class CheckList extends React.Component {
                 columns={this.columns}
                 getRowId={(row: any) =>  row.name + row.environment}
                 onRowClick={this.onRowClick}
+                filterMode="server"
+                disableColumnFilter
+                disableColumnSelector
+                disableDensitySelector
+                slots={{ toolbar: GridToolbar }}
+                slotProps={{ toolbar: { showQuickFilter: true } }}
+                filterModel={this.state.filterModel}
+                onFilterModelChange={this.onFilterChange}
                 getRowClassName={(row) => {
                   if (!row.row.enable) {
                     return 'check-row--disabled';
                   }
                   return '';
                 }}
-                getCellClassName={(params: GridRenderCellParams) => {
+                getCellClassName={(params: GridCellParams) => {
                   if (params.field == 'average_success') {
                     if (params.row.average_success * 100 <= this.config.check.thresholds.critical) {
                       return 'check--critical';
