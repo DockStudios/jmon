@@ -69,7 +69,7 @@ class CheckList extends React.Component {
         field: 'average_success',
         headerName: 'Average Success',
         valueGetter: (data) => {return (data.row.average_success === null ? 'No runs' : (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%');},
-        with: 300
+        width: 100
       },
       { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
       { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
