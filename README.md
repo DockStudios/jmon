@@ -104,6 +104,11 @@ steps:
         text: There were no results matching the query.
   - actions:
     - screenshot: SearchResults
+
+  # Example call of plugin
+  - call_plugin:
+      example-plugin:
+        example_argument: 'example_value'
 '
 ```
 
@@ -124,7 +129,7 @@ For a full reference of steps, please see [docs/step_reference.md](docs/step_ref
 
 See [docs/debugging_issues.md](docs/debugging_issues.md) for known issue cases.
 
-## Creating Notifications
+## Creating notifications plugins
 
 Create a new python module in `jmon/plugins/notifications` with a class inheriting from `NotificationPlugin`, implementing one or more of the following methods:
  * `on_complete`
@@ -133,7 +138,17 @@ Create a new python module in `jmon/plugins/notifications` with a class inheriti
  * `on_first_failure`
  * `on_every_failure`
 
-For an example, see the `jmon/plugins/notifications/example_notification.py` plugin and the `jmon/plugins/notifications/slack_example.py` plugins
+For an example, see the [jmon/plugins/notifications/example_notification.py](jmon/plugins/notifications/example_notification.py) plugin and the [jmon/plugins/notifications/slack_example.py](jmon/plugins/notifications/slack_example.py) plugins
+
+## Creating Callable plugin
+
+Create new python module in `jmon/plugins/callable`, with a class inherting from `CallablePlugin`, implementing the following:
+ * `PLUGIN_NAME` - override property with the name of the plugin that will be called by the check step.
+ * `handle_call` - implement method, with kwargs that are expected to be passed by the check step.
+
+Objects for accessing run information, check methods and logging methods are available within the plugin class instance.
+
+For an example, see the [jmon/plugins/callable/example_callable_plugin.py](jmon/plugins/callable/example_callable_plugin.py) example plugin.
 
 ## Production Deployment
 

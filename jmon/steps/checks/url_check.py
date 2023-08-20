@@ -62,12 +62,12 @@ class UrlCheck(BaseCheck):
             return
         if state.response.url != self._config:
             self._logger.error(f'URL does not match excepted url. Expected "{self._config}" and got: {state.response.url}')
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
 
     def execute_selenium(self, state: SeleniumStepState):
         """Check page URL"""
         res = self._check_url(state.selenium_instance, self._config, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
         elif res is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)

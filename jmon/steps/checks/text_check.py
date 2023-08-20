@@ -68,6 +68,6 @@ class TextCheck(BaseCheck):
         """Check element text"""
         res = self._check_text(state.element, self._config, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
         if res is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)

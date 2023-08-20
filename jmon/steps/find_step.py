@@ -191,8 +191,8 @@ Actual config: {config}
         by_type, _, value, = self._get_find_type()
         element = self._find_element(state.element, by_type, value, only_if=lambda: not self.has_timeout_been_reached())
         if element is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
 
         if not element:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
         state.element = element

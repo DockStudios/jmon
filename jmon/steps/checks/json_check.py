@@ -131,6 +131,6 @@ class JsonCheck(BaseCheck):
 
         result, message = self._result_matches(state)
         if not result:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
             self._logger.error(f"JSON match failed: {message}\nFull Response: {state.response.json()}")
 

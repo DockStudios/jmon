@@ -50,4 +50,4 @@ class ResponseCheck(BaseCheck):
 
         if state.response.status_code != self._config:
             self._logger.error(f"Expected status code: {self._config}, but got: {state.response.status_code}")
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
