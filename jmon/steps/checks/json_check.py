@@ -42,6 +42,13 @@ class JsonCheck(BaseCheck):
           selector: '$.id'
           equals: 1
     ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - check:
+        json:
+          equals: '{an_output_variable}'
+    ```
     """
 
     CONFIG_KEY = "json"
@@ -118,6 +125,10 @@ class JsonCheck(BaseCheck):
             if type(actual_value) is list and len(actual_value) == 1:
                 actual_value = actual_value[0]
 
+        # If compare value is a string, inject variables
+        # @TODO How can we handle injecting variables to lists/dicts
+        match_value = self.inject_variables_into_string(match_value)
+
         if match_type is JsonCheckMatchType.EQUALS and match_value != actual_value:
             return False, f"Value '{actual_value}' does not match expected '{match_value}'{parser_message}"
         if match_type is JsonCheckMatchType.CONTAINS and match_value not in actual_value:
@@ -131,6 +142,6 @@ class JsonCheck(BaseCheck):
 
         result, message = self._result_matches(state)
         if not result:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
             self._logger.error(f"JSON match failed: {message}\nFull Response: {state.response.json()}")
 

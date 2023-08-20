@@ -107,7 +107,7 @@ class BaseStep:
     def _check_valid_requests_response(self, element):
         """Check that the execution argument is a valid repsonse"""
         if element is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
             self._logger.error("This step requires a request to have been made")
             return True
         return False
@@ -144,7 +144,7 @@ class BaseStep:
         """Execute step using requests"""
         raise NotImplementedError
 
-    def _set_status(self, status):
+    def set_status(self, status):
         """Set status"""
         if status is StepStatus.FAILED:
             self._logger.error("Step failed")
@@ -168,11 +168,20 @@ class BaseStep:
         """Return whether timeout has been reached"""
         return self._run.get_remaining_time().total_seconds() <= 0
 
+    def inject_variables_into_string(self, source_string):
+        """Inject run variables into source string"""
+        if type(source_string) is str:
+            try:
+                source_string = source_string.format(**self._run.variables)
+            except KeyError:
+                self._logger.warn(f"Could not inject variables on string: {source_string} due to missing variable")
+        return source_string
+
     def execute(self, execution_method, state: StepState):
         """Execute the current step and then execute each of the child steps"""
         # Check for timeout in check
         if self.has_timeout_been_reached():
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
             return self.status
 
         self._status = StepStatus.RUNNING
@@ -190,7 +199,7 @@ class BaseStep:
         # If child steps do not form part of this step,
         # mark status as success, if not already failed.
         if not self.CHILD_STEPS_FORM_STEP:
-            self._set_status(StepStatus.SUCCESS)
+            self.set_status(StepStatus.SUCCESS)
 
         child_status = None
 
@@ -209,7 +218,7 @@ class BaseStep:
 
         if self.CHILD_STEPS_FORM_STEP:
             # Set current step to failed if child step has failed.
-            self._set_status(child_status)
+            self.set_status(child_status)
 
         # Return own status if child status is success or there it none,
         # otherwise, return child status as the outcome status
