@@ -1,5 +1,15 @@
 # Changelog
 
+# [4.5.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.4.0...v4.5.0) (2023-08-20)
+
+
+### Features
+
+* Add support for custom callable plugins within steps. ([24e80ac](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/24e80ac92175766414dddfe0c9d983b3149a5eb0)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84) [#85](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/85)
+* Add support for passing method, headers and body to goto step for non-browser tests ([17c00ec](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/17c00ec661ff6b698ddfa8b73e678d1a0d256e39)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84)
+* Add support for setting runtime variables in a run in callable plugins ([2016b75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/2016b7513f4a1b7f9b721e5791d1d722a9c24558)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84)
+* Support injection of run variables into step configs ([b02ed2d](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/b02ed2db4a737611c1588fc60cc9d5d62a6f3994)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84)
+
 # [4.4.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.2...v4.4.0) (2023-08-17)
 
 
