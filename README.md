@@ -104,6 +104,14 @@ steps:
         text: There were no results matching the query.
   - actions:
     - screenshot: SearchResults
+
+  # Example call of plugin
+  - call_plugin:
+      example-plugin:
+        example_argument: example_value
+
+  # Use variable provided by example variable in call
+  - goto: https://example.com/{variable_set_by_example_plugin}
 '
 ```
 
@@ -124,7 +132,7 @@ For a full reference of steps, please see [docs/step_reference.md](docs/step_ref
 
 See [docs/debugging_issues.md](docs/debugging_issues.md) for known issue cases.
 
-## Creating Notifications
+## Creating notifications plugins
 
 Create a new python module in `jmon/plugins/notifications` with a class inheriting from `NotificationPlugin`, implementing one or more of the following methods:
  * `on_complete`
@@ -133,7 +141,19 @@ Create a new python module in `jmon/plugins/notifications` with a class inheriti
  * `on_first_failure`
  * `on_every_failure`
 
-For an example, see the `jmon/plugins/notifications/example_notification.py` plugin and the `jmon/plugins/notifications/slack_example.py` plugins
+For an example, see the [jmon/plugins/notifications/example_notification.py](jmon/plugins/notifications/example_notification.py) plugin and the [jmon/plugins/notifications/slack_example.py](jmon/plugins/notifications/slack_example.py) plugins
+
+## Creating Callable plugin
+
+Create new python module in `jmon/plugins/callable`, with a class inherting from `CallablePlugin`, implementing the following:
+ * `PLUGIN_NAME` - override property with the name of the plugin that will be called by the check step.
+ * `handle_call` - implement method, with kwargs that are expected to be passed by the check step.
+
+Plugins can set "run variables" during execution. These run variables can be injected into most check step.
+
+Objects for accessing run information, check methods and logging methods are available within the plugin class instance.
+
+For an example, see the [jmon/plugins/callable/example_callable_plugin.py](jmon/plugins/callable/example_callable_plugin.py) example plugin.
 
 ## Production Deployment
 
@@ -186,6 +206,13 @@ The IAM role providing permission can be attached to the EC2 instance running th
 
 Update the .env (or environment variables for the containers, if the containers have been deployed in a different manor) with the S3 bucket name.
 
+
+## Terminology
+
+* Environment - an arbritrary object for grouping checks. Can be used to group checks by application environment (e.g. dev, prod) or tenants (customer-a, customter-b) or anything else
+* Check - A check is defined and created via the API (or via Terraform provider). A single check is tied to a single environment.
+* Run - Runs are created at intervals, which are an execution of a check. When a run is executed, it creates an instance of the Check's steps and executes them and results in a pass/fail status.
+* Step - A section of executable part of the check, e.g. Find, Goto etc. These are defined in the check steps definition. Instances of 'Steps' are accessible to plugins, which contain information about the active instance of the step.
 
 ## Local development
 

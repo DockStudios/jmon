@@ -65,7 +65,7 @@ class ClickAction(BaseAction):
         """Click mouse"""
         res = self._click_element(state.element, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
 
         if not res:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
