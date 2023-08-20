@@ -136,12 +136,23 @@ class GotoStep(BaseStep):
 
         # Attempt to inject variables into body
         if self._body:
-            try:
-                json_encoded_body = json.dumps(self._body)
-                json_encoded_body = self.inject_variables_into_string(json_encoded_body)
-                self._body = json.loads(json_encoded_body)
-            except ValueError:
-                self._logger.warn("Failed to inject variables into body")
+            def inject_variables_in_structure(structure):
+                """Inject variables"""
+                # If item is a string, replace value directly and return
+                if type(structure) is str:
+                    structure = self.inject_variables_into_string(structure)
+                elif type(structure) is dict:
+                    # Iterate through keys of a dict and replace each value
+                    for key_, value_ in structure:
+                        structure[key_] = inject_variables_in_structure(value_)
+                elif type(structure) is list:
+                    # Iterate through elements of lists and replace them with injected versions
+                    for itx, val in enumerate(structure):
+                        structure[itx] = inject_variables_in_structure(val)
+
+                return structure
+
+            self._body = inject_variables_in_structure(self._body)
 
         # If body is a dictionary or list, send as json
         if type(self._body) in [list, dict]:
