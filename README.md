@@ -108,7 +108,10 @@ steps:
   # Example call of plugin
   - call_plugin:
       example-plugin:
-        example_argument: 'example_value'
+        example_argument: example_value
+
+  # Use variable provided by example variable in call
+  - goto: https://example.com/{variable_set_by_example_plugin}
 '
 ```
 
@@ -145,6 +148,8 @@ For an example, see the [jmon/plugins/notifications/example_notification.py](jmo
 Create new python module in `jmon/plugins/callable`, with a class inherting from `CallablePlugin`, implementing the following:
  * `PLUGIN_NAME` - override property with the name of the plugin that will be called by the check step.
  * `handle_call` - implement method, with kwargs that are expected to be passed by the check step.
+
+Plugins can set "run variables" during execution. These run variables can be injected into most check step.
 
 Objects for accessing run information, check methods and logging methods are available within the plugin class instance.
 

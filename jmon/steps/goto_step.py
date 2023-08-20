@@ -27,6 +27,11 @@ class GotoStep(BaseStep):
 
      - goto: https://example.com/login
     ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - goto: https://example.com/?id={an_output_variable}
+    ```
     """
 
     CONFIG_KEY = "goto"
@@ -58,16 +63,21 @@ class GotoStep(BaseStep):
     @property
     def description(self):
         """Friendly description of step"""
-        return f"Going to URL: {self._config}"
+        return f"Going to URL: {self.url}"
+
+    @property
+    def url(self):
+        """Return URL"""
+        return self.inject_variables_into_string(self._config)
 
     def execute_requests(self, state: RequestsStepState):
         """Execute step for requests"""
-        state.response = requests.get(self._config)
+        state.response = requests.get(self.url)
 
     def execute_selenium(self, state: SeleniumStepState):
         """Goto URL"""
         try:
-            state.selenium_instance.get(self._config)
+            state.selenium_instance.get(self.url)
         except selenium.common.exceptions.WebDriverException as exc:
             self.set_status(StepStatus.FAILED)
             self._logger.error(str(exc).split("\n")[0])

@@ -31,8 +31,8 @@ class ExampleCallablePlugin(CallablePlugin):
         # Access and modify run variables, which can be used within other steps and plugins
         # self.
         # E.g. Check if a variable exists. If it does not exist, create one. Otherwise, log the value.
-        if "variable_to_set" not in self.run.variables:
-            self.logger.info(f"Set variable variable_to_set already set to new value: created_value")
-            self.run.set_variable("variable_to_set", "created_value")
+        if "variable_set_by_example_plugin" not in self.run.variables:
+            self.logger.info(f"Set variable variable_set_by_example_plugin already set to new value: created_value")
+            self.run.set_variable("variable_set_by_example_plugin", "created_value")
         else:
-            self.logger.info(f"Variable variable_to_set already set to value: {self.run.variables['variable_to_set']}")
+            self.logger.info(f"Variable variable_set_by_example_plugin already set to value: {self.run.variables['variable_set_by_example_plugin']}")

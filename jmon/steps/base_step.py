@@ -168,6 +168,14 @@ class BaseStep:
         """Return whether timeout has been reached"""
         return self._run.get_remaining_time().total_seconds() <= 0
 
+    def inject_variables_into_string(self, source_string):
+        """Inject run variables into source string"""
+        try:
+            source_string = source_string.format(**self._run.variables)
+        except KeyError:
+            self._logger.warn(f"Could not inject variables on string: {source_string} due to missing variable")
+        return source_string
+
     def execute(self, execution_method, state: StepState):
         """Execute the current step and then execute each of the child steps"""
         # Check for timeout in check

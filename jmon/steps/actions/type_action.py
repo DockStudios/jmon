@@ -26,6 +26,12 @@ class TypeAction(BaseAction):
         - click
         - type: my-username
     ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - actions:
+      - type: '{an_output_variable}'
+    ```
     """
 
     CONFIG_KEY = "type"
@@ -46,7 +52,12 @@ class TypeAction(BaseAction):
     @property
     def description(self):
         """Friendly description of step"""
-        return f"Typing text into browser element: {self._config}"
+        return f"Typing text into browser element: {self.type_value}"
+
+    @property
+    def type_value(self):
+        """Return text to type"""
+        return self.inject_variables_into_string(self._config)
 
     def _validate_step(self):
         """Check step is valid"""
@@ -63,7 +74,7 @@ class TypeAction(BaseAction):
 
     def execute_selenium(self, state: SeleniumStepState):
         """Type text"""
-        res = self._type(state.element, self._config, only_if=lambda: not self.has_timeout_been_reached())
+        res = self._type(state.element, self.type_value, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
             self.set_status(StepStatus.TIMEOUT)
         elif res is None:
