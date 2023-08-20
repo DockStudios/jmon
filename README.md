@@ -202,6 +202,13 @@ The IAM role providing permission can be attached to the EC2 instance running th
 Update the .env (or environment variables for the containers, if the containers have been deployed in a different manor) with the S3 bucket name.
 
 
+## Terminology
+
+* Environment - an arbritrary object for grouping checks. Can be used to group checks by application environment (e.g. dev, prod) or tenants (customer-a, customter-b) or anything else
+* Check - A check is defined and created via the API (or via Terraform provider). A single check is tied to a single environment.
+* Run - Runs are created at intervals, which are an execution of a check. When a run is executed, it creates an instance of the Check's steps and executes them and results in a pass/fail status.
+* Step - A section of executable part of the check, e.g. Find, Goto etc. These are defined in the check steps definition. Instances of 'Steps' are accessible to plugins, which contain information about the active instance of the step.
+
 ## Local development
 
 For most local development, using docker-compose appears to work well. The containers should load quickly on a change to the `jmon` code.

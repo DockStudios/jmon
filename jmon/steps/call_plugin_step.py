@@ -10,6 +10,7 @@ from jmon.step_status import StepStatus
 from jmon.steps.base_step import BaseStep
 from jmon.logger import logger
 from jmon.stubs.callable_plugin_stub_check import CallablePluginStubCheck
+from jmon.stubs.callable_plugin_stub_run import CallablePluginStubRun
 from jmon.stubs.callable_plugin_stub_step import CallablePluginStubStep
 from jmon.stubs.plugin_sub_logger import PluginStubLogger
 
@@ -84,18 +85,22 @@ class CallPluginStep(BaseStep):
             if not plugin:
                 raise Exception(f"Could not find callable plugin: {plugin_name}")
 
-            # Call plugin
+            # Create stub objects for passing to plugin
             stub_check = CallablePluginStubCheck(self._run.check)
             stub_step = CallablePluginStubStep(self)
             stub_logger = PluginStubLogger(self._logger)
+            stub_run = CallablePluginStubRun(self._run)
 
+            # Create instance of plugin
             plugin_instance = plugin(
                 check=stub_check,
                 step=stub_step,
-                logger=stub_logger
+                logger=stub_logger,
+                run=stub_run
             )
 
             try:
+                # Call plugin
                 plugin_instance.handle_call(
                     # Pass kwargs from plugin config, default to empty
                     # dict if None is passed
@@ -103,7 +108,6 @@ class CallPluginStep(BaseStep):
                 )
             except Exception as exc:
                 self._logger.error(f"Plugin ({plugin_name}) call failed: {exc}")
-
 
     def execute_requests(self, state: RequestsStepState):
         """Execute plugins"""

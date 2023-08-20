@@ -49,11 +49,17 @@ class CallablePlugin:
         """Return instance of logger for logging from plugin."""
         return self._logger
 
-    def __init__(self, check, step, logger):
+    @property
+    def run(self):
+        """Return instance of run for accessing properties and methods that related to the entire run"""
+        return self._run
+
+    def __init__(self, check, step, logger, run):
         """Store member variables for check and step"""
         self._check = check
         self._step = step
         self._logger = logger
+        self._run = run
 
     @classmethod
     def get_plugin_name(cls):

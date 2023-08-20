@@ -1,7 +1,7 @@
 
 
 class CallablePluginStubCheck:
-    """Stub check class that is passed to callable plugins"""
+    """Stub Check class that is passed to callable plugins"""
 
     @property
     def name(self):

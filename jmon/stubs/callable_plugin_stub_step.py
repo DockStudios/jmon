@@ -1,8 +1,9 @@
 
 from jmon.step_status import StepStatus
 
+
 class CallablePluginStubStep:
-    """Stub step class that is passed to callable plugins"""
+    """Stub Step class that is passed to callable plugins"""
 
     def __init__(self, step):
         """Store step"""
