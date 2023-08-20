@@ -101,6 +101,16 @@ class GotoStep(BaseStep):
                 if type(value) is not str or not value:
                     raise StepValidationError(f"Goto value for '{header}' must be a string")
 
+            # Check remaining keys
+            config_keys = [k for k in self._config.keys()]
+            for valid_key in ["url", "method", "headers", "body"]:
+                if valid_key in config_keys:
+                    config_keys.remove(valid_key)
+            if config_keys:
+                raise StepValidationError(f"Found unsupported elements in Goto config: {', '.join(config_keys)}")
+        else:
+            raise StepValidationError(f"Goto value must be a URL or object with Goto attributes. Found type: {type(self._config)}")
+
     @property
     def supported_child_steps(self):
         """Return list of child support step classes"""
