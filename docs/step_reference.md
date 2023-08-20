@@ -33,8 +33,19 @@ Variables provided by callable plugins can be used in the type value, e.g.
 - goto: https://example.com/?id={an_output_variable}
 ```
 
+For non-browser based tests, additional arguments can be provided to the Goto step:
+```
+- goto:
+    url: https://example.com/api/search
+    headers:
+      X-Api-Key: MyApiKey
+    body: {'query': 'test'}
+    method: POST
+```
+Variables can also be used inside the header values, URL and body
 
-Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`, `REQUESTS`
+
+Client Support: `REQUESTS`
 
 ## FindStep
 
