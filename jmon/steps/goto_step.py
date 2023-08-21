@@ -51,18 +51,17 @@ class GotoStep(BaseStep):
     @property
     def supported_clients(self):
         """Return list of supported clients"""
-        if type(self._config) is str:
-            # For goto steps that simply "goto" to a URL,
-            # support all client types
+        if type(self._config) is dict:
+            # For checks that provide additional configs (method, body, headers),
+            # only support requests
             return [
-                ClientType.BROWSER_FIREFOX,
-                ClientType.BROWSER_CHROME,
                 ClientType.REQUESTS
             ]
-
-        # For checks that provide additional configs (method, body, headers),
-        # only support requests
+        # Otherwise, for goto steps that simply "goto" to a URL,
+        # support all client types
         return [
+            ClientType.BROWSER_FIREFOX,
+            ClientType.BROWSER_CHROME,
             ClientType.REQUESTS
         ]
 
