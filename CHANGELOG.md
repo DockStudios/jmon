@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.5.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.0...v4.5.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* Create boto2 session instance of ArtifactStorage. ([6b2c177](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6b2c177f72c906a2faa4da18206aeb5a36a3a9a1)), closes [#80](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/80)
+
 # [4.5.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.4.0...v4.5.0) (2023-08-20)
 
 
