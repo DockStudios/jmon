@@ -45,7 +45,7 @@ For non-browser based tests, additional arguments can be provided to the Goto st
 Variables can also be used inside the header values, URL and body
 
 
-Client Support: `REQUESTS`
+Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`, `REQUESTS`
 
 ## FindStep
 
