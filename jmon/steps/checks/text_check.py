@@ -10,6 +10,31 @@ from jmon.utils import RetryStatus, retry
 
 
 class TextCheck(BaseCheck):
+    """
+    Directive for verifying text content.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        text: "It's good"
+    ```
+
+    This directive can be used within a find element. E.g.:
+    ```
+    - goto: https://example.com
+    - find:
+      - id: login
+      - check:
+          text: Please Login
+    ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - check:
+        text: '{an_output_variable}'
+    ```
+    """
 
     CONFIG_KEY = "text"
 
@@ -29,7 +54,12 @@ class TextCheck(BaseCheck):
     @property
     def description(self):
         """Friendly description of step"""
-        return f"Check element text matches: {self._config}"
+        return f"Check element text matches: {self.check_text}"
+
+    @property
+    def check_text(self):
+        """Return text to check"""
+        return self.inject_variables_into_string(self._config)
 
     def _validate_step(self):
         """Check step is valid"""
@@ -41,14 +71,14 @@ class TextCheck(BaseCheck):
         """Check text"""
         actual_text = element.text
         if actual_text != expected_title:
-            self._logger.error(f'Element text does not match excepted text. Expected "{self._config}" and got: "{actual_text}"')
+            self._logger.error(f'Element text does not match excepted text. Expected "{expected_title}" and got: "{actual_text}"')
             return None
         return True
 
     def execute_selenium(self, state: SeleniumStepState):
         """Check element text"""
-        res = self._check_text(state.element, self._config, only_if=lambda: not self.has_timeout_been_reached())
+        res = self._check_text(state.element, self.check_text, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
         if res is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)

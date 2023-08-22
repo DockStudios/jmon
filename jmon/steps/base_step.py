@@ -1,27 +1,36 @@
 
-
-from io import StringIO
-import logging
 from jmon.logger import logger
+from jmon.step_logger import StepLogger
 from jmon.step_state import StepState
 from jmon.step_status import StepStatus
 
 
 class BaseStep:
 
+    # Key in steps YAML that the class is matched against
     CONFIG_KEY = None
+    # Whether this step (on it's own) produces a
+    # successful status, or whether child determine
+    # the status
+    # @TODO Come up with a better name (meta-step?/collection step?)
     CHILD_STEPS_FORM_STEP = False
 
-    def __init__(self, run, config, parent, enable_log=True):
+    """Allow some step types to debug/info logging"""
+    SHOULD_INFO_DEBUG_LOG = True
+
+    def __init__(self, run, config, parent, run_logger=None):
         """Store member variables"""
         self._config = config
         self._run = run
         self._parent = parent
         self._child_steps = None
         self._status = StepStatus.NOT_RUN
-        self._should_log = enable_log
 
-        self._setup_logging()
+        self._logger = (
+            StepLogger(step=self, should_info_debug_log=self.SHOULD_INFO_DEBUG_LOG)
+            if run_logger else
+            logger
+        )
 
         logger.debug(f"Creating step: {self.__class__.__name__}: {config}")
 
@@ -54,24 +63,6 @@ class BaseStep:
         """Return current status"""
         return self._status
 
-    def _setup_logging(self):
-        """Setup logger"""
-        self._logger = logging.getLogger(self.full_id)
-        self._log_stream = StringIO()
-
-        # Create local log handler
-        self._log_handler = logging.StreamHandler(self._log_stream)
-        self._log_handler.setLevel(logging.INFO)
-
-        # Add format for user-friendly logs
-        formatter = logging.Formatter('%(asctime)s - %(message)s')
-        self._log_handler.setFormatter(formatter)
-        self._logger.addHandler(self._log_handler)
-
-        # Add log handlder from root of run, if configured to log
-        if self._should_log and self._run:
-            self._logger.addHandler(self._run.log_handler)
-
     def get_child_steps(self):
         """Get child steps"""
         # Return cached child steps
@@ -93,7 +84,8 @@ class BaseStep:
                                 supported_step_class(
                                     run=self._run,
                                     config=step_config[supported_step_name],
-                                    parent=self
+                                    parent=self,
+                                    run_logger=self._logger
                                 )
                             )
 
@@ -105,7 +97,8 @@ class BaseStep:
                             supported_child_steps[step_name](
                                 run=self._run,
                                 config=self._config[step_name],
-                                parent=self
+                                parent=self,
+                                run_logger=self._logger
                             )
                         )
 
@@ -114,7 +107,7 @@ class BaseStep:
     def _check_valid_requests_response(self, element):
         """Check that the execution argument is a valid repsonse"""
         if element is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
             self._logger.error("This step requires a request to have been made")
             return True
         return False
@@ -151,7 +144,7 @@ class BaseStep:
         """Execute step using requests"""
         raise NotImplementedError
 
-    def _set_status(self, status):
+    def set_status(self, status):
         """Set status"""
         if status is StepStatus.FAILED:
             self._logger.error("Step failed")
@@ -175,11 +168,20 @@ class BaseStep:
         """Return whether timeout has been reached"""
         return self._run.get_remaining_time().total_seconds() <= 0
 
+    def inject_variables_into_string(self, source_string):
+        """Inject run variables into source string"""
+        if type(source_string) is str:
+            try:
+                source_string = source_string.format(**self._run.variables)
+            except KeyError:
+                self._logger.warn(f"Could not inject variables on string: {source_string} due to missing variable")
+        return source_string
+
     def execute(self, execution_method, state: StepState):
         """Execute the current step and then execute each of the child steps"""
         # Check for timeout in check
         if self.has_timeout_been_reached():
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
             return self.status
 
         self._status = StepStatus.RUNNING
@@ -197,7 +199,7 @@ class BaseStep:
         # If child steps do not form part of this step,
         # mark status as success, if not already failed.
         if not self.CHILD_STEPS_FORM_STEP:
-            self._set_status(StepStatus.SUCCESS)
+            self.set_status(StepStatus.SUCCESS)
 
         child_status = None
 
@@ -216,7 +218,7 @@ class BaseStep:
 
         if self.CHILD_STEPS_FORM_STEP:
             # Set current step to failed if child step has failed.
-            self._set_status(child_status)
+            self.set_status(child_status)
 
         # Return own status if child status is success or there it none,
         # otherwise, return child status as the outcome status

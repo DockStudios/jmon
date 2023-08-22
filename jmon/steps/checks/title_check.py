@@ -10,6 +10,22 @@ from jmon.utils import RetryStatus, retry
 
 
 class TitleCheck(BaseCheck):
+    """
+    Directive for verifying HTML page title.
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        title: "Example - Homepage"
+    ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - check:
+        title: '{an_output_variable}'
+    ```
+    """
 
     CONFIG_KEY = "title"
 
@@ -29,7 +45,12 @@ class TitleCheck(BaseCheck):
     @property
     def description(self):
         """Friendly description of step"""
-        return f"Check current title of browser matches: {self._config}"
+        return f"Check current title of browser matches: {self.check_title}"
+
+    @property
+    def check_title(self):
+        """Return title value to check"""
+        return self.inject_variables_into_string(self._config)
 
     def _validate_step(self):
         """Check step is valid"""
@@ -41,14 +62,14 @@ class TitleCheck(BaseCheck):
         """Check title"""
         actual_title = selenium_instance.title
         if actual_title != expected_title:
-            self._logger.error(f'Title does not match excepted title. Expected "{self._config}" and got: "{actual_title}"')
+            self._logger.error(f'Title does not match excepted title. Expected "{expected_title}" and got: "{actual_title}"')
             return None
         return True
 
     def execute_selenium(self, state: SeleniumStepState):
         """Check page title"""
-        res = self._check_title(state.selenium_instance, self._config, only_if=lambda: not self.has_timeout_been_reached())
+        res = self._check_title(state.selenium_instance, self.check_title, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
         elif res is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)

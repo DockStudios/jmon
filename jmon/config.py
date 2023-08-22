@@ -27,6 +27,11 @@ class Config:
 
     API_KEY = os.environ.get("API_KEY")
 
+    # Threshold for warning->critical check status in UI
+    CHECK_CRITICAL_THRESHOLD = float(os.environ.get("CHECK_CRITICAL_THRESHOLD", "99.0"))
+    # Threshold for okay->warning check status in UI
+    CHECK_WARNING_THRESHOLD = float(os.environ.get("CHECK_WARNING_THRESHOLD", "99.9"))
+
     @property
     def DATABASE_URL(self):
         """Return database url"""

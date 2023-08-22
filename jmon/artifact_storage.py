@@ -17,8 +17,9 @@ class ArtifactStorage:
         if endpoint := jmon.config.Config.get().AWS_ENDPOINT:
             s3_kwargs['endpoint_url'] = endpoint
             s3_kwargs['config'] = boto3.session.Config(signature_version='s3v4')
-        self._s3_client = boto3.client('s3', **s3_kwargs)
-        self._s3_resource = boto3.resource('s3', **s3_kwargs)
+        self._session = boto3.session.Session()
+        self._s3_client = self._session.client('s3', **s3_kwargs)
+        self._s3_resource = self._session.resource('s3', **s3_kwargs)
 
     def _get_bucket(self):
         """Get bucket object"""

@@ -7,6 +7,28 @@ import jmon.steps.actions
 from jmon.logger import logger
 
 class ActionStep(BaseStep):
+    """
+    Directive for performing an action task.
+
+    Each action directive may one or more actions.
+
+    This can be placed in the root of the check, e.g.
+    ```
+     - goto: https://example.com
+     - actions:
+       - click
+    ```
+
+    It can also be placed within a find directive, e.g.:
+    ```
+     - goto: https://example.com
+     - find:
+       - tag: input
+       - actions:
+         - type: Pabalonium
+         - press: enter
+    ```
+    """
 
     CONFIG_KEY = "actions"
     CHILD_STEPS_FORM_STEP = True
@@ -62,13 +84,15 @@ class ActionStep(BaseStep):
                                 supported_actions[action_name](
                                     run=self._run,
                                     config=action_config[action_name],
-                                    parent=self
+                                    parent=self,
+                                    run_logger=self._logger
                                 )
                             )
                 elif type(action_config) is str:
-                    self._child_steps.append(
-                        supported_actions[action_config](run=self._run, config=None, parent=self)
-                    )
+                    if action_config in supported_actions:
+                        self._child_steps.append(
+                            supported_actions[action_config](run=self._run, config=None, parent=self)
+                        )
         return self._child_steps
 
     def execute_selenium(self, state: SeleniumStepState):

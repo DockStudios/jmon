@@ -56,6 +56,7 @@ def get_check(check_name, environment_name=None):
         "enable": check.enabled,
         "step_count": check.get_step_count(),
         "supported_clients": [client.value for client in check.get_supported_clients()],
+        "attributes": check.attributes
     }, 200
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>', methods=["DELETE"])

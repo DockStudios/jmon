@@ -8,6 +8,16 @@ from jmon.steps.checks.base_check import BaseCheck
 
 
 class ResponseCheck(BaseCheck):
+    """
+    Directive for verifying HTTP response code
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - check:
+        response: 200
+    ```
+    """
 
     CONFIG_KEY = "response"
 
@@ -40,4 +50,4 @@ class ResponseCheck(BaseCheck):
 
         if state.response.status_code != self._config:
             self._logger.error(f"Expected status code: {self._config}, but got: {state.response.status_code}")
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
