@@ -1,4 +1,6 @@
 
+from contextlib import contextmanager
+from multiprocessing import context
 from time import sleep
 
 from pyvirtualdisplay import Display
@@ -12,38 +14,37 @@ from jmon.step_status import StepStatus
 from jmon.steps.actions.screenshot_action import ScreenshotAction
 
 
-class Runner:
-    """Execute run"""
+@contextmanager
+def get_display():
+    """Obtain virtual display within context manager"""
+    with Display(visible=0, size=(1920, 1080)) as display:
+        yield
 
-    DISPLAY = None
 
-    @staticmethod
-    def get_display():
-        if Runner.DISPLAY is None:
-            Runner.DISPLAY = Display(visible=0, size=(1920, 1080))
-            Runner.DISPLAY.start()
-        return Runner.DISPLAY
+@contextmanager
+def get_selenium_instance(client_type):
+    """Obtain selenium instance within context manager, closing afterwards"""
+    kwargs = {}
+    browser_class = None
 
-    @staticmethod
-    def get_selenium_instance(client_type):
-        kwargs = {}
-        browser_class = None
+    if client_type is ClientType.BROWSER_FIREFOX:
+        browser_class = selenium.webdriver.Firefox
+    elif client_type is ClientType.BROWSER_CHROME:
+        browser_class = selenium.webdriver.Chrome
+        options = Options()
+        options.binary_location = "/opt/chrome-linux/chrome"
+        options.add_argument('--no-sandbox')
+        kwargs["chrome_options"] = options
+    else:
+        raise Exception(f"Unrecognised selenium ClientType: {client_type}")
 
-        if client_type is ClientType.BROWSER_FIREFOX:
-            browser_class = selenium.webdriver.Firefox
-        elif client_type is ClientType.BROWSER_CHROME:
-            browser_class = selenium.webdriver.Chrome
-            options = Options()
-            options.binary_location = "/opt/chrome-linux/chrome"
-            options.add_argument('--no-sandbox')
-            kwargs["chrome_options"] = options
-        else:
-            raise Exception(f"Unrecognised selenium ClientType: {client_type}")
+    # Create virtual display
+    with get_display():
 
-        # Get display
-        Runner.get_display()
-
+        # Create selenium instance
         selenium_instance = browser_class(**kwargs)
+
+        # Maximise and setup implicit wait
         selenium_instance.maximize_window()
         selenium_instance.implicitly_wait(1)
 
@@ -51,12 +52,16 @@ class Runner:
         selenium_instance.get('about:blank')
         selenium_instance.delete_all_cookies()
 
-        return selenium_instance
-
-    def stop_selemium(self, selenium_instance):
-        """Quit selenium and remove all child processes"""
+        yield selenium_instance
+    
+        # Close selenium instance
         selenium_instance.close()
         selenium_instance.quit()
+
+
+class Runner:
+    """Execute run"""
+
 
     def perform_check(self, run):
         """Setup selenium and perform checks"""
@@ -81,14 +86,13 @@ class Runner:
             )
         elif client_type in [ClientType.BROWSER_FIREFOX, ClientType.BROWSER_CHROME]:
 
-            selenium_instance = self.get_selenium_instance(client_type)
+            with get_selenium_instance(client_type) as selenium_instance:
 
-            root_state = SeleniumStepState(selenium_instance=selenium_instance, element=selenium_instance)
+                root_state = SeleniumStepState(selenium_instance=selenium_instance, element=selenium_instance)
 
-            # Start timeout timer once selenium has been initialised
-            run.start_timer()
+                # Start timeout timer once selenium has been initialised
+                run.start_timer()
 
-            try:
                 status = run.root_step.execute(
                     execution_method='execute_selenium',
                     state=root_state
@@ -106,9 +110,6 @@ class Runner:
                         execution_method='execute_selenium',
                         state=root_state
                     )
-
-            finally:
-                self.stop_selemium(selenium_instance)
 
         else:
             raise Exception(f"Unknown client: {client_type}")
