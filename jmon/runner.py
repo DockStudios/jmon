@@ -15,13 +15,6 @@ from jmon.steps.actions.screenshot_action import ScreenshotAction
 
 
 @contextmanager
-def get_display():
-    """Obtain virtual display within context manager"""
-    with Display(visible=0, size=(1920, 1080)) as display:
-        yield
-
-
-@contextmanager
 def get_selenium_instance(client_type):
     """Obtain selenium instance within context manager, closing afterwards"""
     kwargs = {}
@@ -38,30 +31,51 @@ def get_selenium_instance(client_type):
     else:
         raise Exception(f"Unrecognised selenium ClientType: {client_type}")
 
-    # Create virtual display
-    with get_display():
 
-        # Create selenium instance
-        selenium_instance = browser_class(**kwargs)
+    # Create selenium instance
+    selenium_instance = browser_class(**kwargs)
 
-        # Maximise and setup implicit wait
-        selenium_instance.maximize_window()
-        selenium_instance.implicitly_wait(1)
+    # Maximise and setup implicit wait
+    selenium_instance.maximize_window()
+    selenium_instance.implicitly_wait(1)
 
-        # Remove cookies before starting
-        selenium_instance.get('about:blank')
-        selenium_instance.delete_all_cookies()
+    # Remove cookies before starting
+    selenium_instance.get('about:blank')
+    selenium_instance.delete_all_cookies()
 
-        yield selenium_instance
-    
-        # Close selenium instance
-        selenium_instance.close()
-        selenium_instance.quit()
+    yield selenium_instance
+
+    # Close selenium instance
+    selenium_instance.close()
+    selenium_instance.quit()
 
 
 class Runner:
     """Execute run"""
 
+    _DISPLAY = None
+
+    @classmethod
+    def get_display(cls):
+        """Create display and cache"""
+        if cls._DISPLAY is None:
+            cls._DISPLAY = Display(visible=0, size=(1920, 1080))
+            cls._DISPLAY.start()
+            print('STARTING DISPLAY')
+        return cls._DISPLAY
+
+    @classmethod
+    def on_worker_startup(cls):
+        """Handle worker startup"""
+        cls.get_display()
+
+    @classmethod
+    def on_worker_shutdown(cls):
+        """Hanle worker shutdown"""
+        if cls._DISPLAY is not None:
+            print('STOPPING DISPLAY')
+            cls.get_display().stop()
+            cls._DISPLAY = None
 
     def perform_check(self, run):
         """Setup selenium and perform checks"""
@@ -85,6 +99,9 @@ class Runner:
                 state=RequestsStepState(None)
             )
         elif client_type in [ClientType.BROWSER_FIREFOX, ClientType.BROWSER_CHROME]:
+
+            # Ensure display is created
+            self.get_display()
 
             with get_selenium_instance(client_type) as selenium_instance:
 
