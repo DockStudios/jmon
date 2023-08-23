@@ -1,4 +1,6 @@
 
+from contextlib import contextmanager
+from multiprocessing import context
 from time import sleep
 
 from pyvirtualdisplay import Display
@@ -12,51 +14,68 @@ from jmon.step_status import StepStatus
 from jmon.steps.actions.screenshot_action import ScreenshotAction
 
 
+@contextmanager
+def get_selenium_instance(client_type):
+    """Obtain selenium instance within context manager, closing afterwards"""
+    kwargs = {}
+    browser_class = None
+
+    if client_type is ClientType.BROWSER_FIREFOX:
+        browser_class = selenium.webdriver.Firefox
+    elif client_type is ClientType.BROWSER_CHROME:
+        browser_class = selenium.webdriver.Chrome
+        options = Options()
+        options.binary_location = "/opt/chrome-linux/chrome"
+        options.add_argument('--no-sandbox')
+        kwargs["chrome_options"] = options
+    else:
+        raise Exception(f"Unrecognised selenium ClientType: {client_type}")
+
+
+    # Create selenium instance
+    selenium_instance = browser_class(**kwargs)
+
+    # Maximise and setup implicit wait
+    selenium_instance.maximize_window()
+    selenium_instance.implicitly_wait(1)
+
+    # Remove cookies before starting
+    selenium_instance.get('about:blank')
+    selenium_instance.delete_all_cookies()
+
+    yield selenium_instance
+
+    # Close selenium instance
+    selenium_instance.close()
+    selenium_instance.quit()
+
+
 class Runner:
     """Execute run"""
 
-    DISPLAY = None
+    _DISPLAY = None
 
-    @staticmethod
-    def get_display():
-        if Runner.DISPLAY is None:
-            Runner.DISPLAY = Display(visible=0, size=(1920, 1080))
-            Runner.DISPLAY.start()
-        return Runner.DISPLAY
+    @classmethod
+    def get_display(cls):
+        """Create display and cache"""
+        if cls._DISPLAY is None:
+            cls._DISPLAY = Display(visible=0, size=(1920, 1080))
+            cls._DISPLAY.start()
+            print('STARTING DISPLAY')
+        return cls._DISPLAY
 
-    @staticmethod
-    def get_selenium_instance(client_type):
-        kwargs = {}
-        browser_class = None
+    @classmethod
+    def on_worker_startup(cls):
+        """Handle worker startup"""
+        cls.get_display()
 
-        if client_type is ClientType.BROWSER_FIREFOX:
-            browser_class = selenium.webdriver.Firefox
-        elif client_type is ClientType.BROWSER_CHROME:
-            browser_class = selenium.webdriver.Chrome
-            options = Options()
-            options.binary_location = "/opt/chrome-linux/chrome"
-            options.add_argument('--no-sandbox')
-            kwargs["chrome_options"] = options
-        else:
-            raise Exception(f"Unrecognised selenium ClientType: {client_type}")
-
-        # Get display
-        Runner.get_display()
-
-        selenium_instance = browser_class(**kwargs)
-        selenium_instance.maximize_window()
-        selenium_instance.implicitly_wait(1)
-
-        # Remove cookies before starting
-        selenium_instance.get('about:blank')
-        selenium_instance.delete_all_cookies()
-
-        return selenium_instance
-
-    def stop_selemium(self, selenium_instance):
-        """Quit selenium and remove all child processes"""
-        selenium_instance.close()
-        selenium_instance.quit()
+    @classmethod
+    def on_worker_shutdown(cls):
+        """Hanle worker shutdown"""
+        if cls._DISPLAY is not None:
+            print('STOPPING DISPLAY')
+            cls.get_display().stop()
+            cls._DISPLAY = None
 
     def perform_check(self, run):
         """Setup selenium and perform checks"""
@@ -81,14 +100,16 @@ class Runner:
             )
         elif client_type in [ClientType.BROWSER_FIREFOX, ClientType.BROWSER_CHROME]:
 
-            selenium_instance = self.get_selenium_instance(client_type)
+            # Ensure display is created
+            self.get_display()
 
-            root_state = SeleniumStepState(selenium_instance=selenium_instance, element=selenium_instance)
+            with get_selenium_instance(client_type) as selenium_instance:
 
-            # Start timeout timer once selenium has been initialised
-            run.start_timer()
+                root_state = SeleniumStepState(selenium_instance=selenium_instance, element=selenium_instance)
 
-            try:
+                # Start timeout timer once selenium has been initialised
+                run.start_timer()
+
                 status = run.root_step.execute(
                     execution_method='execute_selenium',
                     state=root_state
@@ -106,9 +127,6 @@ class Runner:
                         execution_method='execute_selenium',
                         state=root_state
                     )
-
-            finally:
-                self.stop_selemium(selenium_instance)
 
         else:
             raise Exception(f"Unknown client: {client_type}")
