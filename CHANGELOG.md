@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.5.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.1...v4.5.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* Cache display per worker process, ensuring the display is closed on worker shutdown ([f429484](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f429484d999e73a10758fb873ef16dca89426cb5)), closes [#88](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/88)
+* Ensure XVFB display is closed after each test ([09e57b8](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/09e57b893b768405557c2329f328f711029e2b80)), closes [#88](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/88)
+
 ## [4.5.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.0...v4.5.1) (2023-08-21)
 
 
