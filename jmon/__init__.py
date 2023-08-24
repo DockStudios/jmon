@@ -1,7 +1,7 @@
 
 import os
 
-from celery import Celery
+from celery import Celery, bootsteps
 from kombu import Queue, Exchange, binding
 from redbeat.schedulers import RedBeatConfig
 
@@ -23,28 +23,66 @@ app.conf.result_expires = jmon.config.Config.get().QUEUE_TASK_RESULT_RETENTION_M
 task_exchange = Exchange('task', type='direct')
 check_exchange = Exchange('check', type='headers')
 
+# Task deadletter exchange and queue
+dead_letter_queue_name = "task-dlq"
+dead_letter_exchange_name = "task-dlq-ex"
+dead_letter_routing_key = "task-dlq"
+
+dead_letter_exchange = Exchange(dead_letter_exchange_name, type='direct')
+
+dead_letter_queue = Queue(
+    dead_letter_queue_name, dead_letter_exchange, routing_key=dead_letter_routing_key
+)
+
+class AdditionalExchangeQueueCreation(bootsteps.StartStopStep):
+    """
+    Handle the creation of additional queues/exchanges
+    """
+    requires = {'celery.worker.components:Pool'}
+
+    def start(self, worker):
+        """On start, create deadletter queue and exchange"""
+        # Declare deadletter queues
+        with worker.app.pool.acquire() as conn:
+            dead_letter_queue.bind(conn).declare()
+
+
 app.conf.task_queues = (
     Queue('default', exchange=task_exchange, routing_key='task.default'),
     Queue(
         'requests',
         bindings=[
             binding(exchange=check_exchange, arguments={'x-match': 'any', 'requests': 'true'})
-        ]
+        ],
+        queue_arguments={
+            'x-dead-letter-exchange': dead_letter_exchange_name,
+            'x-dead-letter-routing-key': dead_letter_routing_key
+        }
     ),
     Queue(
         'firefox',
         bindings=[
             binding(exchange=check_exchange, arguments={'x-match': 'any', 'firefox': 'true'})
-        ]
+        ],
+        queue_arguments={
+            'x-dead-letter-exchange': dead_letter_exchange_name,
+            'x-dead-letter-routing-key': dead_letter_routing_key
+        }
     ),
     Queue(
         'chrome',
         exchange=check_exchange,
         bindings=[
             binding(exchange=check_exchange, arguments={'x-match': 'any', 'chrome': 'true'})
-        ]
+        ],
+        queue_arguments={
+            'x-dead-letter-exchange': dead_letter_exchange_name,
+            'x-dead-letter-routing-key': dead_letter_routing_key
+        }
     )
 )
+
+app.steps['worker'].add(AdditionalExchangeQueueCreation)
 app.conf.task_default_exchange = task_exchange.name
 app.conf.task_default_exchange_type = task_exchange.type
 app.conf.task_default_routing_key = 'task.default'
