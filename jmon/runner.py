@@ -61,7 +61,6 @@ class Runner:
         if cls._DISPLAY is None:
             cls._DISPLAY = Display(visible=0, size=(1920, 1080))
             cls._DISPLAY.start()
-            print('STARTING DISPLAY')
         return cls._DISPLAY
 
     @classmethod
@@ -73,7 +72,6 @@ class Runner:
     def on_worker_shutdown(cls):
         """Hanle worker shutdown"""
         if cls._DISPLAY is not None:
-            print('STOPPING DISPLAY')
             cls.get_display().stop()
             cls._DISPLAY = None
 
