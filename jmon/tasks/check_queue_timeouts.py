@@ -1,4 +1,5 @@
 
+from socket import timeout
 import kombu
 from celery.result import AsyncResult
 
@@ -34,6 +35,7 @@ def check_queue_timeouts():
     def process_deadletter_message(body, message):
         """Add dead letter message to expired tasks"""
         nonlocal expired_tasks
+        logger.info(f"Found DLQ Check: {body[0]}")
         expired_tasks += 1
         message.ack()
 
@@ -42,8 +44,12 @@ def check_queue_timeouts():
 
         # Consum messages from the dead letter queue
         with conn.Consumer(dead_letter_queue, callbacks=[process_deadletter_message]) as consumer:
-            # Perform one iteration of draining the queue
-            conn.drain_events()
+            # Perform one iteration of draining the queue with short
+            # timeout to avoid waiting for a message to arrive to queue
+            try:
+                conn.drain_events(timeout=0.1)
+            except timeout:
+                logger.debug("No messages to drain from DLQ")
 
     if expired_tasks:
         # If an expired result was found, notify via
