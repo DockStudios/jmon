@@ -34,18 +34,22 @@ class Runner:
                     selenium_instance.get('about:blank')
                     selenium_instance.delete_all_cookies()
 
+                    logger.debug("Using cached browser")
                     # Return the cached browser
                     return selenium_instance
                 except:
+                    logger.debug("Error whilst cleaning cached browser")
                     # Delete cached browser
                     cls.teardown_browser()
 
             else:
                 # Otherwise, if the cached browser type does not match
                 # the required browser, tear it down
+                logger.debug("Browser type does not match cached browser - tearing down")
                 cls.teardown_browser()
 
         # If a cache browser has not been returned, create a new one
+        logger.debug("Creating new browser")
         kwargs = {}
         browser_class = None
 
@@ -78,7 +82,7 @@ class Runner:
     def teardown_browser(cls):
         """Tear down selenium instance"""
         if cls._SELENIUM_INSTANCE:
-            logger.info("Tearing down browser")
+            logger.debug("Tearing down browser")
             cls._SELENIUM_INSTANCE.close()
             cls._SELENIUM_INSTANCE.quit()
             cls._SELENIUM_INSTANCE = None
