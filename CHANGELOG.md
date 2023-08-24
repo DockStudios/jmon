@@ -1,5 +1,18 @@
 # Changelog
 
+# [4.6.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.2...v4.6.0) (2023-08-24)
+
+
+### Bug Fixes
+
+* Fix example notification plugin, removing incorrect argument 'attributes' to on_check_queue_timeout ([4158358](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4158358c92119f59bfe92139abd699f8beb4d2c7)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+* Fix slack example notification plugin, passing empty 'attributes' to post_message function from on_check_queue_timeout ([3831520](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/3831520c98fbb3545df3f2b4d6925cb1741aa8b6)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+
+
+### Features
+
+* Create deadletter queue for expired tasks in rabbitmq broker. ([9388b2f](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/9388b2fdbe320bf5b95be9ec8793a4de1640a61d)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+
 ## [4.5.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.1...v4.5.2) (2023-08-23)
 
 
