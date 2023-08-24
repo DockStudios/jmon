@@ -56,6 +56,11 @@ class Config:
     REDIS_PORT = int(os.environ.get('REDIS_PORT', 0))
     REDIS_INSTANCE = os.environ.get('REDIS_INSTANCE')
 
+    # Whether to cache browser between runs.
+    # This is experimental and might be unstable.
+    # Use on non-production environment
+    CACHE_BROWSER = os.environ.get("CACHE_BROWSER", "False") == "True"
+
     AWS_ENDPOINT = os.environ.get('AWS_ENDPOINT')
     AWS_BUCKET_NAME = os.environ.get('AWS_BUCKET_NAME')
 

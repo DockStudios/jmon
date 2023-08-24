@@ -1,7 +1,4 @@
 
-from contextlib import contextmanager
-from multiprocessing import context
-from time import sleep
 
 from pyvirtualdisplay import Display
 import selenium
@@ -12,48 +9,79 @@ from jmon.client_type import ClientType
 from jmon.step_state import RequestsStepState, SeleniumStepState
 from jmon.step_status import StepStatus
 from jmon.steps.actions.screenshot_action import ScreenshotAction
-
-
-@contextmanager
-def get_selenium_instance(client_type):
-    """Obtain selenium instance within context manager, closing afterwards"""
-    kwargs = {}
-    browser_class = None
-
-    if client_type is ClientType.BROWSER_FIREFOX:
-        browser_class = selenium.webdriver.Firefox
-    elif client_type is ClientType.BROWSER_CHROME:
-        browser_class = selenium.webdriver.Chrome
-        options = Options()
-        options.binary_location = "/opt/chrome-linux/chrome"
-        options.add_argument('--no-sandbox')
-        kwargs["chrome_options"] = options
-    else:
-        raise Exception(f"Unrecognised selenium ClientType: {client_type}")
-
-
-    # Create selenium instance
-    selenium_instance = browser_class(**kwargs)
-
-    # Maximise and setup implicit wait
-    selenium_instance.maximize_window()
-    selenium_instance.implicitly_wait(1)
-
-    # Remove cookies before starting
-    selenium_instance.get('about:blank')
-    selenium_instance.delete_all_cookies()
-
-    yield selenium_instance
-
-    # Close selenium instance
-    selenium_instance.close()
-    selenium_instance.quit()
+from jmon.config import Config
+from jmon.logger import logger
 
 
 class Runner:
     """Execute run"""
 
     _DISPLAY = None
+    _SELENIUM_INSTANCE = None
+    _SELENIUM_INSTANCE_TYPE = None
+
+    @classmethod
+    def get_browser(cls, client_type):
+        """Obtain and cache browser"""
+
+        # If a browser is already present
+        if cls._SELENIUM_INSTANCE is not None:
+            # If it matches the type, ensure it is working and return
+            if client_type is cls._SELENIUM_INSTANCE_TYPE:
+                selenium_instance = cls._SELENIUM_INSTANCE
+                try:
+                    # Attempt to load blank page and delete cookies
+                    selenium_instance.get('about:blank')
+                    selenium_instance.delete_all_cookies()
+
+                    # Return the cached browser
+                    return selenium_instance
+                except:
+                    # Delete cached browser
+                    cls.teardown_browser()
+
+            else:
+                # Otherwise, if the cached browser type does not match
+                # the required browser, tear it down
+                cls.teardown_browser()
+
+        # If a cache browser has not been returned, create a new one
+        kwargs = {}
+        browser_class = None
+
+        if client_type is ClientType.BROWSER_FIREFOX:
+            browser_class = selenium.webdriver.Firefox
+        elif client_type is ClientType.BROWSER_CHROME:
+            browser_class = selenium.webdriver.Chrome
+            options = Options()
+            options.binary_location = "/opt/chrome-linux/chrome"
+            options.add_argument('--no-sandbox')
+            kwargs["chrome_options"] = options
+        else:
+            raise Exception(f"Unrecognised selenium ClientType: {client_type}")
+
+
+        # Create selenium instance
+        selenium_instance = browser_class(**kwargs)
+
+        # Maximise and setup implicit wait
+        selenium_instance.maximize_window()
+        selenium_instance.implicitly_wait(1)
+
+        # Cache browser type
+        cls._SELENIUM_INSTANCE = selenium_instance
+        cls._SELENIUM_INSTANCE_TYPE = client_type
+
+        return selenium_instance
+
+    @classmethod
+    def teardown_browser(cls):
+        """Tear down selenium instance"""
+        if cls._SELENIUM_INSTANCE:
+            logger.info("Tearing down browser")
+            cls._SELENIUM_INSTANCE.close()
+            cls._SELENIUM_INSTANCE.quit()
+            cls._SELENIUM_INSTANCE = None
 
     @classmethod
     def get_display(cls):
@@ -71,6 +99,9 @@ class Runner:
     @classmethod
     def on_worker_shutdown(cls):
         """Hanle worker shutdown"""
+        # Teardown any cached browsers
+        cls.teardown_browser()
+
         if cls._DISPLAY is not None:
             cls.get_display().stop()
             cls._DISPLAY = None
@@ -101,7 +132,8 @@ class Runner:
             # Ensure display is created
             self.get_display()
 
-            with get_selenium_instance(client_type) as selenium_instance:
+            try:
+                selenium_instance = self.get_browser(client_type)
 
                 root_state = SeleniumStepState(selenium_instance=selenium_instance, element=selenium_instance)
 
@@ -125,6 +157,14 @@ class Runner:
                         execution_method='execute_selenium',
                         state=root_state
                     )
+
+                # If any steps failed, clear browser
+                if status is StepStatus.FAILED or not Config.get().CACHE_BROWSER:
+                    self.teardown_browser()
+
+            except:
+                self.teardown_browser()
+                raise
 
         else:
             raise Exception(f"Unknown client: {client_type}")
