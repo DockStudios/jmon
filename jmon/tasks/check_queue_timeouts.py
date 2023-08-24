@@ -1,7 +1,8 @@
 
+import kombu
 from celery.result import AsyncResult
 
-from jmon import app
+from jmon import app, broker_url, dead_letter_queue
 import jmon.config
 from jmon.logger import logger
 import jmon.database
@@ -29,7 +30,21 @@ def check_queue_timeouts():
 
                 # Forget result, so it is not processed on next run
                 result.forget()
-    
+
+    def process_deadletter_message(body, message):
+        """Add dead letter message to expired tasks"""
+        nonlocal expired_tasks
+        expired_tasks += 1
+        message.ack()
+
+    # Connect to deadletter queue and obtain any messages
+    with kombu.Connection(broker_url) as conn:
+
+        # Consum messages from the dead letter queue
+        with conn.Consumer(dead_letter_queue, callbacks=[process_deadletter_message]) as consumer:
+            # Perform one iteration of draining the queue
+            conn.drain_events()
+
     if expired_tasks:
         # If an expired result was found, notify via
         # notification plugins
