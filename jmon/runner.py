@@ -175,6 +175,16 @@ class Runner:
                 if status is StepStatus.FAILED or not Config.get().CACHE_BROWSER:
                     self.teardown_browser()
 
+            except selenium.common.exceptions.InvalidSessionIdException:
+                # Handle Selenium invalid session ID
+                # This implies that the browser has prematurely closed
+                # Silently retry the test
+                if self._SELENIUM_INSTANCE:
+                    self._SELENIUM_INSTANCE.quit()
+                    self._SELENIUM_INSTANCE = None
+                    self._SELENIUM_INSTANCE_TYPE = None
+                raise
+
             except:
                 self.teardown_browser()
                 raise
