@@ -86,6 +86,7 @@ class Runner:
             cls._SELENIUM_INSTANCE.close()
             cls._SELENIUM_INSTANCE.quit()
             cls._SELENIUM_INSTANCE = None
+            cls._SELENIUM_INSTANCE_TYPE = None
 
     @classmethod
     def get_display(cls):
@@ -124,14 +125,22 @@ class Runner:
         # be overriden by execution method
         status = StepStatus.FAILED
 
-        if client_type is ClientType.REQUESTS:
+        if ClientType.REQUESTS in supported_clients:
             # Execute using requests
             run.start_timer()
             status = run.root_step.execute(
                 execution_method='execute_requests',
                 state=RequestsStepState(None)
             )
-        elif client_type in [ClientType.BROWSER_FIREFOX, ClientType.BROWSER_CHROME]:
+        elif ClientType.BROWSER_FIREFOX in supported_clients or ClientType.BROWSER_CHROME in supported_clients:
+
+            # Check cached browser
+            if (self._SELENIUM_INSTANCE_TYPE is not None
+                    and self._SELENIUM_INSTANCE_TYPE in supported_clients and
+                    client_type is not self._SELENIUM_INSTANCE_TYPE):
+
+                run.logger.info(f"Cached browser is {self._SELENIUM_INSTANCE_TYPE}, switching run to this")
+                client_type = self._SELENIUM_INSTANCE_TYPE
 
             # Ensure display is created
             self.get_display()
