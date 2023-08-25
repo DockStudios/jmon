@@ -138,9 +138,10 @@ class Runner:
             # Check cached browser
             if (self._SELENIUM_INSTANCE_TYPE is not None
                     and self._SELENIUM_INSTANCE_TYPE in supported_clients and
-                    client_type is not self._SELENIUM_INSTANCE_TYPE):
+                    client_type is not self._SELENIUM_INSTANCE_TYPE and
+                    Config.get().PREFER_CACHED_BROWSER):
 
-                run.logger.info(f"Cached browser is {self._SELENIUM_INSTANCE_TYPE}, switching run to this")
+                run.logger.info(f"Switching run to cached browser: {self._SELENIUM_INSTANCE_TYPE.value}")
                 client_type = self._SELENIUM_INSTANCE_TYPE
 
             # Ensure display is created
