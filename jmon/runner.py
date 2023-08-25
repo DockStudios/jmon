@@ -4,6 +4,7 @@ from pyvirtualdisplay import Display
 import selenium
 from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions
+import urllib3.exceptions
 
 from jmon.client_type import ClientType
 from jmon.step_state import RequestsStepState, SeleniumStepState
@@ -179,10 +180,17 @@ class Runner:
                 # Handle Selenium invalid session ID
                 # This implies that the browser has prematurely closed
                 # Silently retry the test
-                if self._SELENIUM_INSTANCE:
-                    self._SELENIUM_INSTANCE.quit()
-                    self._SELENIUM_INSTANCE = None
-                    self._SELENIUM_INSTANCE_TYPE = None
+                if self.__class__._SELENIUM_INSTANCE:
+                    self.__class__._SELENIUM_INSTANCE.quit()
+                    self.__class__._SELENIUM_INSTANCE = None
+                    self.__class__._SELENIUM_INSTANCE_TYPE = None
+                raise
+
+            except urllib3.exceptions.MaxRetryError:
+                # Handle exceptions when unable to connect to selenium chromedriver
+                if self.__class__._SELENIUM_INSTANCE:
+                    self.__class__._SELENIUM_INSTANCE = None
+                    self.__class__._SELENIUM_INSTANCE_TYPE = None
                 raise
 
             except:
