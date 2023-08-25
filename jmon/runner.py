@@ -60,7 +60,8 @@ class BrowserBase:
         # Attempt to close browser
         try:
             self.selenium_instance.close()
-        except selenium.common.exceptions.InvalidSessionIdException as exc:
+        except (selenium.common.exceptions.InvalidSessionIdException,
+                selenium.common.exceptions.WebDriverException) as exc:
             logger.error(str(exc))
 
         try:
@@ -265,7 +266,8 @@ class Runner:
                     browser_factory.teardown_browser()
 
             except (selenium.common.exceptions.InvalidSessionIdException,
-                    urllib3.exceptions.MaxRetryError):
+                    urllib3.exceptions.MaxRetryError,
+                    selenium.common.exceptions.WebDriverException):
                 # Handle Selenium invalid session ID
                 # This implies that the browser has prematurely closed.
                 # Or handle exceptions when unable to connect to selenium chromedriver
