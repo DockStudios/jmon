@@ -17,6 +17,31 @@ class ResultMetric:
         raise NotImplementedError
 
 
+class AgentTaskClaim(ResultMetric):
+    """Handle agent claiming task by ID to avoid duplicates"""
+
+    def write(self, result_database, task_id):
+        """Perform increment of task ID redis key to determine how many agents have picked up the task"""
+        # Perform the increment
+        key_ = f"task_agent_assignment:{task_id}"
+        res = result_database.connection.incr(key_)
+
+        # Set expiry on the key, set to 2x the max queue timeout
+        # It could be the max queue timeout, but isn't much data and safer to
+        # have a buffer
+        result_database.connection.expire(
+            f"task_agent_assignment:{task_id}",
+            (jmon.config.Config.get().MAX_CHECK_QUEUE_TIME * 2)
+        )
+
+        # If result is 1, meaning this is the first
+        # registration of the task, return True
+        if res == 1:
+            return True
+        # Otherwise, return False as this task has already been picked up
+        return False
+
+
 class ResultMetricAverageSuccessRate(ResultMetric):
     """Metric for average success rate"""
 
