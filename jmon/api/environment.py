@@ -4,10 +4,12 @@ from flask import request
 from jmon.errors import EnvironmentCreateError, JmonError
 
 from . import FlaskApp
+from .utils import require_api_key
 import jmon.models
 
 
 @FlaskApp.app.route('/api/v1/environments', methods=["POST"])
+@require_api_key
 def create_environment():
     """Create environment"""
     environment_name = request.json.get("name")
@@ -22,6 +24,7 @@ def create_environment():
     return {"status": "ok", "msg": "Environment created"}, 200
 
 @FlaskApp.app.route('/api/v1/environments/<environment_name>', methods=["DELETE"])
+@require_api_key
 def delete_environment(environment_name):
     """Delete environment"""
     environment = jmon.models.environment.Environment.get_by_name(name=environment_name)

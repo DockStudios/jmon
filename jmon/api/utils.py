@@ -1,5 +1,9 @@
 
+import functools
+from flask import request
+
 import jmon.models
+import jmon.config
 
 
 def get_check_and_environment_by_name(check_name, environment_name):
@@ -15,3 +19,19 @@ def get_check_and_environment_by_name(check_name, environment_name):
         return None, None, {"status": "error", "msg": "Check does not exist"}
 
     return check, environment, None
+
+def require_api_key(func):
+    """Wrapper to check API key access"""
+    @functools.wraps(func)
+    def decorator(*args, **kwargs):
+        api_key = request.headers.get("X-JMon-Api-Key")
+        required_api_key = jmon.config.Config.get().API_KEY
+
+        # If an API key is defined in config and is either not provided or
+        # does not match the required API key, return error
+        if required_api_key and (not api_key or api_key != required_api_key):
+            return {"message": "API key is not provided or invalid"}, 403
+
+        return func(*args, **kwargs)
+    return decorator
+
