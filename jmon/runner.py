@@ -5,6 +5,7 @@ import selenium
 from selenium.webdriver.chrome.options import Options
 import selenium.common.exceptions
 import urllib3.exceptions
+import psutil
 
 from jmon.client_type import ClientType
 from jmon.step_state import RequestsStepState, SeleniumStepState
@@ -51,6 +52,9 @@ class BrowserBase:
         self.selenium_instance.maximize_window()
         self.selenium_instance.implicitly_wait(1)
 
+        # Obtain PID of browser
+        self._pid = self.selenium_instance.service.process.pid
+
     def get_selenium_kwargs(self):
         """Return list of kwargs to provide to selenium"""
         raise NotImplementedError
@@ -70,6 +74,14 @@ class BrowserBase:
         except urllib3.exceptions.MaxRetryError as exc:
             # Handle exceptions when unable to connect to selenium chromedriver
             logger.error(str(exc))
+
+        try:
+            # Kill any selenium PIDs, if they exist
+            psutil.Process(self._pid).terminate()
+        # Catch error if PID doesn't exist due to browser
+        # having close down correctly
+        except psutil.Error:
+            pass
 
     def clean(self):
         """Clean browser between runs"""
