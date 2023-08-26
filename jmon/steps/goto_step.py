@@ -170,7 +170,12 @@ class GotoStep(BaseStep):
             request_kwargs["data"] = self._body
 
         # Get requests call method, based on provided method
-        state.response = getattr(requests, self._method)(**request_kwargs)
+        try:
+            state.response = getattr(requests, self._method)(**request_kwargs)
+        except Exception as exc:
+            self.set_status(StepStatus.FAILED)
+            self._logger.error(str(exc).split("\n")[0])
+
 
     def execute_selenium(self, state: SeleniumStepState):
         """Goto URL"""
