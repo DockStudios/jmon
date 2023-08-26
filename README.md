@@ -40,7 +40,9 @@ vi .env
 docker-compose up -d
 
 # Add check for W3Schools
-curl -XPOST localhost:5000/api/v1/checks -H 'X-JMon-Api-Key: 3fc1ce69-d9a2-43f9-ba0d-9f4e21c20eac' -H 'Content-Type: application/yml' -d '
+# If an API key has been configured, use the header argument to curl:
+# -H 'X-JMon-Api-Key: YOUR_API_KEY'
+curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
 
 name: Check_W3Schools
 
@@ -67,7 +69,7 @@ steps:
 '
 
 # Add check for Wikipedia
-curl -XPOST localhost:5000/api/v1/checks -H 'X-JMon-Api-Key: 3fc1ce69-d9a2-43f9-ba0d-9f4e21c20eac' -H 'Content-Type: application/yml' -d '
+curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
 name: Check_Wikipedia
 
 # Disable screenshots on error
