@@ -275,8 +275,8 @@ class Runner:
                     )
 
                 # If any steps failed, clear browser
-                if status is StepStatus.FAILED or not Config.get().CACHE_BROWSER:
-                    logger.info("Tearing down browser - check failed or caching not enabled")
+                if not Config.get().CACHE_BROWSER:
+                    logger.info("Tearing down browser - caching not enabled")
                     browser_factory.teardown_browser()
 
             except (selenium.common.exceptions.InvalidSessionIdException,
