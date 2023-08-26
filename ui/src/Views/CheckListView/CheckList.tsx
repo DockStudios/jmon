@@ -27,14 +27,12 @@ class CheckList extends React.Component {
       }
     }
   };
-  queryOptions = undefined;
-  setQueryOptions = undefined;
-  changeDebounceTimeout = undefined;
 
   constructor(props) {
     super(props);
     this.state = {
       checks: [],
+      shownChecks: [],
       selectedTimeframe: 0,
       timeframes: [],
       filterQuery: ''
@@ -43,30 +41,16 @@ class CheckList extends React.Component {
     this.onRowClick = this.onRowClick.bind(this);
     this.handleTimeframeChange = this.handleTimeframeChange.bind(this);
     this.onFilterChange = this.onFilterChange.bind(this);
-    this.scheduleRetrieveChecks = this.scheduleRetrieveChecks.bind(this);
-    this.retrieveChecksTimeoutHandle = this.retrieveChecksTimeoutHandle.bind(this);
   }
 
   onFilterChange(ev) {
     if (ev?.target) {
-      this.setState((state) => Object.assign({}, {...state, filterText: ev?.target?.value}))
+      this.setState((state) => Object.assign({}, {
+        ...state,
+        filterText: ev?.target?.value,
+        shownChecks: state.checks.filter((a: CheckRowData) => a.name.toLowerCase().indexOf(ev.target.value.toLowerCase()) !== -1)
+      }))
     }
-    this.scheduleRetrieveChecks();
-  }
-
-  scheduleRetrieveChecks() {
-    // On search change, cancel any pre-existing debounce timeout
-    if (this.changeDebounceTimeout) {
-      clearTimeout(this.changeDebounceTimeout);
-    }
-
-    // Create new timeout
-    this.changeDebounceTimeout = setTimeout(this.retrieveChecksTimeoutHandle, 500);
-  }
-  retrieveChecksTimeoutHandle() {
-    // Clear current debounce timeout and trigger retrieve checks
-    this.changeDebounceTimeout = null;
-    this.retrieveChecks();
   }
 
   async componentDidMount() {
@@ -117,7 +101,7 @@ class CheckList extends React.Component {
         });
       });
       Promise.all(promises).then((checkData) => {
-        this.setState((state) => Object.assign({}, {...state, checks: checkData}));
+        this.setState((state) => Object.assign({}, {...state, checks: checkData, shownChecks: checkData}));
       });
     });
   }
@@ -180,7 +164,7 @@ class CheckList extends React.Component {
           >
             <div style={{ height: 500, width: '100%' }}>
               <DataGrid
-                rows={this.state.checks}
+                rows={this.state.shownChecks}
                 columns={this.columns}
                 getRowId={(row: any) =>  row.name + row.environment}
                 onRowClick={this.onRowClick}
