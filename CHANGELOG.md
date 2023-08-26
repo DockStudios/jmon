@@ -1,5 +1,19 @@
 # Changelog
 
+# [4.7.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.6.0...v4.7.0) (2023-08-26)
+
+
+### Bug Fixes
+
+* Catch any exceptions thrown when performing goto request ([26237e9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/26237e9998ede8e2956dd6bf0ae6c063eb5448cb)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+* Ensure browser is closed if selenium fails to contact browser ([a58a876](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/a58a876e4fc17edf6783ff5b13d5f7634b246774)), closes [#93](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/93)
+
+
+### Features
+
+* Add experimental browser caching functionality with new config to enable it ([e3bd48e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e3bd48e8a17b4796e54399de5b0643c8b1e99913)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+* Automatically switch run client type to cached browser, if present ([d1bb2f6](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d1bb2f61605358963987e2ff2837e438e93b25ba)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+
 # [4.6.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.2...v4.6.0) (2023-08-24)
 
 
