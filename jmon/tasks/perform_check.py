@@ -1,6 +1,6 @@
 
-from distutils.core import run_setup
 from celery.result import AsyncResult
+from celery.exceptions import Ignore
 
 from jmon import app
 import jmon.models
@@ -28,7 +28,7 @@ def perform_check(self, check_name, environment_name, trigger_type=RunTriggerTyp
     aassign_task_claim = AgentTaskClaim()
     if not aassign_task_claim.write(result_database, self.request.id):
         logger.info("Task already assigned to another agent")
-        return
+        raise Ignore()
 
     logger.info(f"Starting check: Check Name: {check_name}, Environment: {environment_name}")
 
