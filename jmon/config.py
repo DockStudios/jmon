@@ -27,6 +27,11 @@ class Config:
 
     API_KEY = os.environ.get("API_KEY")
 
+    # Threshold for warning->critical check status in UI
+    CHECK_CRITICAL_THRESHOLD = float(os.environ.get("CHECK_CRITICAL_THRESHOLD", "99.0"))
+    # Threshold for okay->warning check status in UI
+    CHECK_WARNING_THRESHOLD = float(os.environ.get("CHECK_WARNING_THRESHOLD", "99.9"))
+
     @property
     def DATABASE_URL(self):
         """Return database url"""
@@ -52,6 +57,20 @@ class Config:
     REDIS_PASSWORD = os.environ.get('REDIS_PASSWORD')
     REDIS_PORT = int(os.environ.get('REDIS_PORT', 0))
     REDIS_INSTANCE = os.environ.get('REDIS_INSTANCE')
+
+    # Whether to cache browser between runs.
+    # This is experimental and might be unstable.
+    # Use on non-production environment
+    CACHE_BROWSER = os.environ.get("CACHE_BROWSER", "False") == "True"
+    # Whether the order of browser preference can be changed
+    # to use a cached browser.
+    # If a check supports Firefox and Chrome, firefox is used by default.
+    # However, if an agent has a Chrome browser cached, enabling this option
+    # will cause the run to switch to use Chrome, which will improve
+    # run startup performance.
+    # This may result in inconsistent browsers across runs, where a check is run
+    # with one type of browser and a different on the next.
+    PREFER_CACHED_BROWSER = os.environ.get("PREFER_CACHED_BROWSER", "True") == "True"
 
     AWS_ENDPOINT = os.environ.get('AWS_ENDPOINT')
     AWS_BUCKET_NAME = os.environ.get('AWS_BUCKET_NAME')

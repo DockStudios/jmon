@@ -10,6 +10,21 @@ from jmon.logger import logger
 
 
 class PressAction(BaseAction):
+    """
+    Directive for pressing buttons, simulating a keyboard button press.
+
+    Supported keys:
+     * `enter`
+
+    E.g.
+    ```
+    - goto: https://example.com
+    - find:
+      - id: login
+      - actions:
+        - press: enter
+    ```
+    """
 
     CONFIG_KEY = "press"
 
@@ -43,5 +58,5 @@ class PressAction(BaseAction):
             state.element.send_keys(Keys.ENTER)
 
         else:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
             self._logger.error(f'Unknown press action: {self._config}')

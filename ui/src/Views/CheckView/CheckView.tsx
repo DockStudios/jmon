@@ -45,11 +45,15 @@ class CheckView extends React.Component {
     super(props);
     this.state = {
       runs: [],
-      detailsRows: []
+      detailsRows: [],
+      manualTriggerState: null,
+      manualTriggerId: null
     };
     this.retrieveRuns = this.retrieveRuns.bind(this);
     this.getRunDetails = this.getRunDetails.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
+    this.triggerRun = this.triggerRun.bind(this);
+    this.checkManualRunStatus = this.checkManualRunStatus.bind(this);
   }
 
   componentDidMount() {
@@ -69,6 +73,34 @@ class CheckView extends React.Component {
     });
   }
 
+  triggerRun() {
+    new runService().triggerRun(this.props.match.checkName, this.props.match.environmentName).then((triggerRes) => {
+      this.setState((state) => {
+        return Object.assign({}, {...state, manualTriggerState: 'SCHEDULING', manualRunId: triggerRes.data.id});
+      });
+
+      setTimeout(this.checkManualRunStatus, 1000, [triggerRes.data.id]);
+    });
+  }
+
+  checkManualRunStatus(triggerId) {
+    // Check manual trigger from ID
+    new runService().getManualTriggerStatus(
+      this.props.match.checkName,
+      this.props.match.environmentName,
+      triggerId
+    ).then((triggerStatusRes) => {
+      // If ID is present, redirect user to run
+      if (triggerStatusRes.data.id) {
+        this.props.navigate(`/checks/${this.props.match.checkName}/environments/${this.props.match.environmentName}/runs/${triggerStatusRes.data.id}`);
+      } else {
+        this.setState((state) => {return Object.assign({}, {...state, manualTriggerState: triggerStatusRes.data.state})});
+        // Otherwise, update status and re-schedule check
+        setTimeout(this.checkManualRunStatus, 1000, [triggerId]);
+      }
+    })
+  }
+
   getRunDetails() {
     new checkService().getByNameAndEnvironment(
       this.props.match.checkName,
@@ -85,7 +117,7 @@ class CheckView extends React.Component {
             {name: 'Timeout', value: checkRes.data.calculated_timeout + 's ' + (!checkRes.data.timeout ? '(default)' : '')},
             {name: 'Client Pinning', value: checkRes.data.client ? checkRes.data.client : 'None'},
             {name: 'Supported Clients', value: checkRes.data.supported_clients.join(', ')},
-            {name: 'Number of Steps', value: checkRes.data.step_count},
+            {name: 'Number of Steps', value: checkRes.data.step_count}
           ]
         }
       })
@@ -115,9 +147,33 @@ class CheckView extends React.Component {
                       <TableCell component="th" scope="row">
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.value}</TableCell>
+                      <TableCell align="right">
+                        {row.value}
+                      </TableCell>
                     </TableRow>
                   ))}
+                  <TableRow
+                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                  >
+                    <TableCell component="th" scope="row">
+                      Actions
+                    </TableCell>
+                    <TableCell align="right">
+                      <button mat-raised-button onClick={this.triggerRun} color="primary">Trigger Run</button>
+                    </TableCell>
+                  </TableRow>
+                  {this.state.manualTriggerState !== null ? (
+                    <TableRow
+                      sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                    >
+                      <TableCell component="th" scope="row">
+                        Manual Trigger Status
+                      </TableCell>
+                      <TableCell align="right">
+                        {this.state.manualTriggerState}
+                      </TableCell>
+                    </TableRow>
+                  ) : (<div></div>)}
                 </TableBody>
               </Table>
             </TableContainer>

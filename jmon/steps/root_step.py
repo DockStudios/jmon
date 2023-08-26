@@ -8,9 +8,12 @@ from jmon.steps.goto_step import GotoStep
 from jmon.steps.find_step import FindStep
 from jmon.steps.check_step import CheckStep
 from jmon.steps.action_step import ActionStep
+from jmon.steps.call_plugin_step import CallPluginStep
 
 
 class RootStep(BaseStep):
+
+    SHOULD_INFO_DEBUG_LOG = False
 
     @property
     def supported_clients(self):
@@ -28,7 +31,8 @@ class RootStep(BaseStep):
             GotoStep,
             FindStep,
             CheckStep,
-            ActionStep
+            ActionStep,
+            CallPluginStep,
         ]
 
     @property

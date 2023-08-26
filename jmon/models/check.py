@@ -1,6 +1,7 @@
 
 
 import sqlalchemy
+from sqlalchemy.sql import func
 
 from redbeat import RedBeatSchedulerEntry
 import yaml
@@ -84,6 +85,9 @@ class Check(jmon.database.Base):
             instance = cls(name=name, environment=environment)
 
         instance.steps = steps
+        if len(instance._steps) >= jmon.database.Database.MEDIUM_BLOB_SIZE:
+            raise CheckCreateError("steps definition is too large")
+
         instance.screenshot_on_error = content.get("screenshot_on_error")
 
         # If a client type has been provided, convert to enum,
@@ -106,6 +110,14 @@ class Check(jmon.database.Base):
         except StepValidationError as exc:
             raise CheckCreateError(str(exc))
 
+        # Add custom attributes
+        content_attributes = content.get("attributes", {})
+        if type(content_attributes) is not dict:
+            raise CheckCreateError("attributes must be a map of key-value pairs")
+        instance.attributes = content_attributes
+        if len(instance._attributes) >= jmon.database.Database.MEDIUM_BLOB_SIZE:
+            raise CheckCreateError("attributes definition is too large")
+
         session.add(instance)
         session.commit()
 
@@ -126,8 +138,19 @@ class Check(jmon.database.Base):
     interval = sqlalchemy.Column(sqlalchemy.Integer)
     timeout = sqlalchemy.Column(sqlalchemy.Integer)
     client = sqlalchemy.Column(sqlalchemy.Enum(ClientType), default=None)
-    _steps = sqlalchemy.Column(jmon.database.Database.LargeString, name="steps")
+    _steps = sqlalchemy.Column(
+        sqlalchemy.LargeBinary(
+            length=jmon.database.Database.MEDIUM_BLOB_SIZE
+        ),
+        name="steps_b"
+    )
     _enabled = sqlalchemy.Column(sqlalchemy.Boolean, default=True, name="enabled")
+    _attributes = sqlalchemy.Column(
+        sqlalchemy.LargeBinary(
+            length=jmon.database.Database.MEDIUM_BLOB_SIZE
+        ),
+        name="attributes_b"
+    )
 
     environment_id = sqlalchemy.Column(
         sqlalchemy.ForeignKey("environment.id", name="fk_check_environment_id_environment_id"),
@@ -142,12 +165,24 @@ class Check(jmon.database.Base):
     @property
     def steps(self):
         """Return steps dictionary"""
-        return json.loads(self._steps)
+        return json.loads(self._steps.decode('utf-8'))
 
     @steps.setter
     def steps(self, value):
         """Set steps in database"""
-        self._steps = json.dumps(value)
+        self._steps = json.dumps(value).encode('utf-8')
+
+    @property
+    def attributes(self):
+        """Return attributes dictionary"""
+        if self._attributes:
+            return json.loads(self._attributes.decode('utf-8'))
+        return {}
+
+    @attributes.setter
+    def attributes(self, value):
+        """Set attributes column value"""
+        self._attributes = (json.dumps(value) if value else "{}").encode('utf-8')
 
     @property
     def should_screenshot_on_error(self):
@@ -231,17 +266,9 @@ class Check(jmon.database.Base):
 
     def upsert_schedule(self):
         """Register or update schedule"""
-        headers = self.task_headers
-        if not headers:
-            logger.warn(f"Check does not have any compatible client types: {self.name}")
+        options = self.task_options
+        if not options:
             return
-
-        options = {
-            'headers': headers,
-            'exchange': 'check',
-            "exchange_type": "headers",
-            "expires": jmon.config.Config.get().MAX_CHECK_QUEUE_TIME
-        }
 
         interval_seconds = self.get_interval()
         interval = celery.schedules.schedule(run_every=interval_seconds)
@@ -338,6 +365,7 @@ class Check(jmon.database.Base):
         supported_clients = self.get_supported_clients()
 
         if not supported_clients:
+            logger.warn(f"Check does not have any compatible client types: {self.name}")
             return None
 
         headers = {}
@@ -349,3 +377,31 @@ class Check(jmon.database.Base):
         if ClientType.BROWSER_FIREFOX in supported_clients:
             headers["firefox"] = "true"
         return headers
+
+    @property
+    def task_options(self):
+        """Return options for task"""
+        headers = self.task_headers
+        if not headers:
+            return
+
+        return {
+            'headers': headers,
+            'exchange': 'check',
+            "exchange_type": "headers",
+            "expires": jmon.config.Config.get().MAX_CHECK_QUEUE_TIME
+        }
+
+    def get_success_rate(self, from_timestamp):
+        """Return average success rate since timestamp"""
+        session = jmon.database.Database.get_session()
+        res = session.query(
+            func.avg(jmon.models.Run.result_value).label('average')
+        ).filter(
+            jmon.models.Run.check_id==self.id,
+            jmon.models.Run.trigger_type==jmon.models.run.RunTriggerType.SCHEDULED,
+            jmon.models.Run.timestamp>=from_timestamp
+        )
+        if res:
+            return float(res[0]['average']) if res[0]['average'] else None
+        return None

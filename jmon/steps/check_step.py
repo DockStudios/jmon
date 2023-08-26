@@ -8,6 +8,28 @@ from jmon.logger import logger
 
 
 class CheckStep(BaseStep):
+    """
+    Directive for performing a check task.
+
+    Each check directive may one or more checks.
+
+    This can be placed in the root of the check, e.g.
+    ```
+     - goto: https://example.com
+     - check:
+         title: Example Page
+         url: https://example.com/?followed=redirect
+    ```
+
+    It can also be placed within a find directive, e.g.:
+    ```
+     - goto: https://example.com
+     - find:
+       - tag: input
+       - check:
+           text: Enter input
+    ```
+    """
 
     CONFIG_KEY = "check"
     CHILD_STEPS_FORM_STEP = True
@@ -62,7 +84,8 @@ class CheckStep(BaseStep):
                         supported_actions[action_name](
                             run=self._run,
                             config=self._config[action_name],
-                            parent=self
+                            parent=self,
+                            run_logger=self._logger
                         )
                     )
         return self._child_steps

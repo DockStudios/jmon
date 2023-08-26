@@ -9,8 +9,12 @@ class CheckService {
     return client.get(`/checks/${name}/environments/${environment}`);
   }
 
-  getResultsByCheckNameAndEnvironment(name, environment) {
-    return client.get(`/checks/${name}/environments/${environment}/results`);
+  getResultsByCheckNameAndEnvironment(name, environment, timeframe) {
+    let args = '';
+    if (timeframe) {
+      args = `timeframe=${timeframe}`;
+    }
+    return client.get(`/checks/${name}/environments/${environment}/results?${args}`);
   }
 }
 

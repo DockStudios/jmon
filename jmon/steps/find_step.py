@@ -14,6 +14,48 @@ from jmon.utils import RetryStatus, retry
 
 
 class FindStep(BaseStep):
+    """
+    Directive for finding an element of a page.
+
+    Each find can use on of the following attributes, some of which can be combined:
+     * `id` - Search by ID of element on the page.
+     * `class` - Search for element by class name.
+     * `text` - Search for element by visible text. Can be combined with `tag`.
+     * `placeholder` - Search for input element by placeholder value. Can be combined with `tag`.
+     * `tag` - Search for element by tag (e.g. `a` for links). Can be combined with `placeholder` or `text`.
+
+    If an element cannot be found using the given parameters, the step will fail. No `check` action is required for validating this.
+
+    This can be placed in the root of the check, e.g.
+    ```
+     - goto: https://example.com
+     - find:
+       - tag: input
+       - url: https://example.com/?followed=redirect
+    ```
+
+    Find elements can be nested to find elements within other elements. E.g.:
+    ```
+     - goto: https://example.com
+     - find:
+       - id: content
+       - find:
+         - class: loginForm
+         - find:
+           - tag: input
+           - placeholder: Username
+    ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - find:
+      - id: content-{an_output_variable}
+      - find:
+        - class: {another_output_variable}
+        - find:
+          - placeholder: Hello {output_name}
+    ```
+    """
 
     CONFIG_KEY = "find"
     _SUPPORTED_ATTRIBUTES = [
@@ -108,17 +150,17 @@ Actual config: {config}
 
         if id := config.get('id'):
             by_type = By.ID
-            value = id
+            value = self.inject_variables_into_string(id)
             description = f"by ID: {value}"
         elif (text := config.get('text')) or (placeholder := config.get('placeholder')):
             if text:
                 xpath_key = 'text'
-                xpath_value = text
+                xpath_value = self.inject_variables_into_string(text)
                 xpath_template = f".//{{tag}}[contains(text(), '{xpath_value}')]"
 
             elif placeholder:
                 xpath_key = 'placeholder'
-                xpath_value = placeholder
+                xpath_value = self.inject_variables_into_string(placeholder)
                 xpath_template = f".//{{tag}}[@placeholder='{xpath_value}']"
 
             tag = config.get('tag')
@@ -134,12 +176,12 @@ Actual config: {config}
 
         elif class_name := config.get('class'):
             by_type = By.CLASS_NAME
-            value = class_name
+            value = self.inject_variables_into_string(class_name)
             description = f"by class: {value}"
 
         elif tag := config.get('tag'):
             by_type = By.TAG_NAME
-            value = tag
+            value = self.inject_variables_into_string(tag)
             description = f"by tag: {value}"
 
         return by_type, description, value
@@ -159,8 +201,8 @@ Actual config: {config}
         by_type, _, value, = self._get_find_type()
         element = self._find_element(state.element, by_type, value, only_if=lambda: not self.has_timeout_been_reached())
         if element is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
 
         if not element:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
         state.element = element

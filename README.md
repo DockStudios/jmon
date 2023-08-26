@@ -1,21 +1,27 @@
 # jmon
 
-Simple JSON config-based website monitoring solution
+Simple YAML config-based website/canary monitoring solution.
 
 This project is currently in early development.
 
 It can currently:
  * Register checks
- * Perform checks across agents
+ * Perform distributed checks across agents
  * Checks can:
    * Goto URL
+   * Find elements by various properties
    * Check title/url/element text
    * Click on elements, send text and press enter
    * Find elements by ID/class/tag/placeholder/text
+   * Verify response code and JSON content for API endpoints
+   * Take screenshots
+ * Custom plugins hooks for tasks for performing custom integrations
+
+For a full list of check features, see [docs/step_reference.md](docs/step_reference.md)
 
 For a list of upcoming features and issues being worked on, please see https://gitlab.dockstudios.co.uk/mjc/jmon/-/issues
 
-## Additional sub-projects to help setup
+## Additional sub-projects
 
  * Terraform provider to manage JMon checks and environments - https://gitlab.dockstudios.co.uk/pub/jmon/jmon-terraform-provider
  * Chrome browser plugin to capture user-journeys and automatically generate JMon step configuration - https://gitlab.dockstudios.co.uk/pub/jmon/jmon-chrome-plugin
@@ -25,6 +31,9 @@ For a list of upcoming features and issues being worked on, please see https://g
 ```bash
 # Startup
 docker-compose up -d
+
+# Modify any passwords in the .env file to secure the installation
+vi .env
 
 # Add check for W3Schools
 curl -XPOST localhost:5000/api/v1/checks -H 'X-JMon-Api-Key: 3fc1ce69-d9a2-43f9-ba0d-9f4e21c20eac' -H 'Content-Type: application/yml' -d '
@@ -95,6 +104,14 @@ steps:
         text: There were no results matching the query.
   - actions:
     - screenshot: SearchResults
+
+  # Example call of plugin
+  - call_plugin:
+      example-plugin:
+        example_argument: example_value
+
+  # Use variable provided by example variable in call
+  - goto: https://example.com/{variable_set_by_example_plugin}
 '
 ```
 
@@ -107,7 +124,15 @@ Goto http://localhost:5555 to view the celary tasks.
 Goto http://localhost:9001 to view minio for s3 bucket, logging in with AWS credentials from .env
 
 
-## Creating Notifications
+## Step reference
+
+For a full reference of steps, please see [docs/step_reference.md](docs/step_reference.md)
+
+## Debugging issues
+
+See [docs/debugging_issues.md](docs/debugging_issues.md) for known issue cases.
+
+## Creating notifications plugins
 
 Create a new python module in `jmon/plugins/notifications` with a class inheriting from `NotificationPlugin`, implementing one or more of the following methods:
  * `on_complete`
@@ -116,7 +141,19 @@ Create a new python module in `jmon/plugins/notifications` with a class inheriti
  * `on_first_failure`
  * `on_every_failure`
 
-For an example, see the `jmon/plugins/notifications/example_notification.py` plugin and the `jmon/plugins/notifications/slack_example.py` plugins
+For an example, see the [jmon/plugins/notifications/example_notification.py](jmon/plugins/notifications/example_notification.py) plugin and the [jmon/plugins/notifications/slack_example.py](jmon/plugins/notifications/slack_example.py) plugins
+
+## Creating Callable plugin
+
+Create new python module in `jmon/plugins/callable`, with a class inherting from `CallablePlugin`, implementing the following:
+ * `PLUGIN_NAME` - override property with the name of the plugin that will be called by the check step.
+ * `handle_call` - implement method, with kwargs that are expected to be passed by the check step.
+
+Plugins can set "run variables" during execution. These run variables can be injected into most check step.
+
+Objects for accessing run information, check methods and logging methods are available within the plugin class instance.
+
+For an example, see the [jmon/plugins/callable/example_callable_plugin.py](jmon/plugins/callable/example_callable_plugin.py) example plugin.
 
 ## Production Deployment
 
@@ -124,7 +161,39 @@ It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availa
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
 
+<<<<<<< HEAD
 Create unique API key (see `.env`). Alternatively, disable API key access by removing or setting to an empty string.
+=======
+## Upgrading
+
+Before performing an upgrade, ensure to check the release for database changes.
+If there are any database changes, it is safest to stop the jmon application (agents, scheduler and server).
+
+To upgrade using docker-compose run:
+```
+# Stop docker-compose stack
+docker-compose stop
+
+# Manually back up any local modifications (.env file and any plugins), and optionally git stash them
+git stash
+
+# Pull latest changes
+git fetch --all
+
+# To check out a particular release tag
+git checkout v<new version>
+
+# Restore modifications - this may require manual conflict resolution
+git stash pop
+
+# Bring up application, rebuilding the containers
+## Initially perform DB migration
+docker-compose up -d --build database dbmigrate
+
+## Bring up remaining application
+docker-compose up -d --build
+```
+>>>>>>> main
 
 ### s3 artifact storage
 
@@ -141,6 +210,29 @@ The IAM role providing permission can be attached to the EC2 instance running th
 
 Update the .env (or environment variables for the containers, if the containers have been deployed in a different manor) with the S3 bucket name.
 
+## Browser caching
+
+**Note this functionality is experimental and may lead to instability**
+
+Browser caching can be enabled, which will share browser instances between runs.
+
+This durastically improves performance:
+
+| Browser | Caching enabled | Check speed (run in a small development environment - values for comparison only) |
+|---------|-----------------|-----------------------------------------------------------------------------------|
+| Firefox | Disabled        | 9500ms                                                                            |
+| Firefox | Enabled         | 320ms (30x performance improvement)                                               |
+| Chrome  | Disabled        | 1730ms                                                                            |
+| Chrome  | Enabled         | 530ms (~3-4x performance improvement)                                             |
+
+This can be enabled by setting the `CACHE_BROWSER` environment variable to `True` on the agents
+
+## Terminology
+
+* Environment - an arbritrary object for grouping checks. Can be used to group checks by application environment (e.g. dev, prod) or tenants (customer-a, customter-b) or anything else
+* Check - A check is defined and created via the API (or via Terraform provider). A single check is tied to a single environment.
+* Run - Runs are created at intervals, which are an execution of a check. When a run is executed, it creates an instance of the Check's steps and executes them and results in a pass/fail status.
+* Step - A section of executable part of the check, e.g. Find, Goto etc. These are defined in the check steps definition. Instances of 'Steps' are accessible to plugins, which contain information about the active instance of the step.
 
 ## Local development
 
@@ -154,3 +246,12 @@ npm install
 NODE_ENV=development npm start
 ```
 
+## Architecture
+
+ * API/UI - written in python and javascript/angular, which handles API requests for interacting with configuration and results
+ * Postgres - Storing check information and results
+ * S3 - Stores run artifacts (log and screenshots), using minio by default
+ * Redis - Stores check/result metrics and configuration for celery
+ * RabbitMQ - Handles queuing of tasks for distribution to agents
+ * Agents - Uses celery to run checks and built-in maintenance tasks
+ * Flower - Provides a dashboard for monitoring the celery tasks
