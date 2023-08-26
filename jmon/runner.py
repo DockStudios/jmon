@@ -61,7 +61,8 @@ class BrowserBase:
         try:
             self.selenium_instance.close()
         except (selenium.common.exceptions.InvalidSessionIdException,
-                selenium.common.exceptions.WebDriverException) as exc:
+                selenium.common.exceptions.WebDriverException,
+                urllib3.exceptions.MaxRetryError) as exc:
             logger.error(str(exc))
 
         try:
