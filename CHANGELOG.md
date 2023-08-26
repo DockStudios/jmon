@@ -1,5 +1,12 @@
 # Changelog
 
+# [4.8.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.1...v4.8.0) (2023-08-26)
+
+
+### Features
+
+* Add API key to functionality and add protection to API endpoints that create/modify checks ([f3cf9fc](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f3cf9fcb2c15554047d4f02d3ae8991fa9856019)), closes [#21](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/21)
+
 ## [4.7.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.0...v4.7.1) (2023-08-26)
 
 
