@@ -29,11 +29,15 @@ For a list of upcoming features and issues being worked on, please see https://g
 ## Getting started
 
 ```bash
-# Startup
-docker-compose up -d
+# Clone the repository and cd into it
+git clone https://github.com/DockStudios/JMon
+cd JMon
 
 # Modify any passwords in the .env file to secure the installation
 vi .env
+
+# Startup
+docker-compose up -d
 
 # Add check for W3Schools
 curl -XPOST localhost:5000/api/v1/checks -H 'X-JMon-Api-Key: 3fc1ce69-d9a2-43f9-ba0d-9f4e21c20eac' -H 'Content-Type: application/yml' -d '
@@ -208,6 +212,22 @@ The IAM role providing permission can be attached to the EC2 instance running th
 
 Update the .env (or environment variables for the containers, if the containers have been deployed in a different manor) with the S3 bucket name.
 
+## Browser caching
+
+**Note this functionality is experimental and may lead to instability**
+
+Browser caching can be enabled, which will share browser instances between runs.
+
+This durastically improves performance:
+
+| Browser | Caching enabled | Check speed (run in a small development environment - values for comparison only) |
+|---------|-----------------|-----------------------------------------------------------------------------------|
+| Firefox | Disabled        | 9500ms                                                                            |
+| Firefox | Enabled         | 320ms (30x performance improvement)                                               |
+| Chrome  | Disabled        | 1730ms                                                                            |
+| Chrome  | Enabled         | 530ms (~3-4x performance improvement)                                             |
+
+This can be enabled by setting the `CACHE_BROWSER` environment variable to `True` on the agents
 
 ## Terminology
 

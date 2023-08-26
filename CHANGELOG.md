@@ -1,5 +1,47 @@
 # Changelog
 
+## [4.7.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.0...v4.7.1) (2023-08-26)
+
+
+### Bug Fixes
+
+* Stop checks being run on multiple workers from different queues. ([970bd37](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/970bd37c66da3b03dc1c3772bab2337728567b5f)), closes [#92](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/92)
+
+# [4.7.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.6.0...v4.7.0) (2023-08-26)
+
+
+### Bug Fixes
+
+* Catch any exceptions thrown when performing goto request ([26237e9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/26237e9998ede8e2956dd6bf0ae6c063eb5448cb)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+* Ensure browser is closed if selenium fails to contact browser ([a58a876](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/a58a876e4fc17edf6783ff5b13d5f7634b246774)), closes [#93](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/93)
+
+
+### Features
+
+* Add experimental browser caching functionality with new config to enable it ([e3bd48e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e3bd48e8a17b4796e54399de5b0643c8b1e99913)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+* Automatically switch run client type to cached browser, if present ([d1bb2f6](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d1bb2f61605358963987e2ff2837e438e93b25ba)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+
+# [4.6.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.2...v4.6.0) (2023-08-24)
+
+
+### Bug Fixes
+
+* Fix example notification plugin, removing incorrect argument 'attributes' to on_check_queue_timeout ([4158358](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4158358c92119f59bfe92139abd699f8beb4d2c7)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+* Fix slack example notification plugin, passing empty 'attributes' to post_message function from on_check_queue_timeout ([3831520](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/3831520c98fbb3545df3f2b4d6925cb1741aa8b6)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+
+
+### Features
+
+* Create deadletter queue for expired tasks in rabbitmq broker. ([9388b2f](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/9388b2fdbe320bf5b95be9ec8793a4de1640a61d)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+
+## [4.5.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.1...v4.5.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* Cache display per worker process, ensuring the display is closed on worker shutdown ([f429484](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f429484d999e73a10758fb873ef16dca89426cb5)), closes [#88](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/88)
+* Ensure XVFB display is closed after each test ([09e57b8](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/09e57b893b768405557c2329f328f711029e2b80)), closes [#88](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/88)
+
 ## [4.5.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.0...v4.5.1) (2023-08-21)
 
 

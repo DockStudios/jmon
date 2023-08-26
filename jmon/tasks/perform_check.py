@@ -1,10 +1,11 @@
 
-from distutils.core import run_setup
 from celery.result import AsyncResult
+from celery.exceptions import Ignore
 
 from jmon import app
 import jmon.models
 from jmon.models.run import RunTriggerType
+from jmon.result_database import AgentTaskClaim, ResultDatabase
 from jmon.run import Run
 from jmon.runner import Runner
 from jmon.logger import logger
@@ -21,6 +22,13 @@ def perform_check(self, check_name, environment_name, trigger_type=RunTriggerTyp
     res = AsyncResult(self.request.id, app=app)
     if res.status != "PENDING":
         return res.result
+
+    # Attempt to assign check to current worker
+    result_database = ResultDatabase()
+    aassign_task_claim = AgentTaskClaim()
+    if not aassign_task_claim.write(result_database, self.request.id):
+        logger.info("Task already assigned to another agent")
+        raise Ignore()
 
     logger.info(f"Starting check: Check Name: {check_name}, Environment: {environment_name}")
 
