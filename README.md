@@ -29,11 +29,15 @@ For a list of upcoming features and issues being worked on, please see https://g
 ## Getting started
 
 ```bash
-# Startup
-docker-compose up -d
+# Clone the repository and cd into it
+git clone https://github.com/DockStudios/JMon
+cd JMon
 
 # Modify any passwords in the .env file to secure the installation
 vi .env
+
+# Startup
+docker-compose up -d
 
 # Add check for W3Schools
 curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
