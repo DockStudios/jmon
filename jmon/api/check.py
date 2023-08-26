@@ -6,7 +6,7 @@ from jmon.database import Database
 from jmon.errors import CheckCreateError
 
 from . import FlaskApp
-from .utils import get_check_and_environment_by_name
+from .utils import get_check_and_environment_by_name, require_api_key
 from jmon.models import Check
 
 
@@ -27,6 +27,7 @@ def get_checks():
 
 
 @FlaskApp.app.route('/api/v1/checks', methods=["POST"])
+@require_api_key
 def register_check():
     """Register check"""
     try:
@@ -59,6 +60,7 @@ def get_check(check_name, environment_name=None):
     }, 200
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>', methods=["DELETE"])
+@require_api_key
 def delete_check(check_name, environment_name):
     """Register check"""
     check, _, error = get_check_and_environment_by_name(
@@ -70,6 +72,7 @@ def delete_check(check_name, environment_name):
     return {"status": "ok", "msg": "Check deleted"}, 200
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/enable', methods=["POST"])
+@require_api_key
 def enable_check(check_name, environment_name):
     """Get check details"""
     check, _, error = get_check_and_environment_by_name(
@@ -84,6 +87,7 @@ def enable_check(check_name, environment_name):
     }, 200
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/disable', methods=["POST"])
+@require_api_key
 def disable_check(check_name, environment_name):
     """Get check details"""
     check, _, error = get_check_and_environment_by_name(

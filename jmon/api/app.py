@@ -15,7 +15,6 @@ class FlaskApp:
         # Clear down DB session
         Database.clear_session()
 
-
     @app.route('/')
     def serve_index():
         """Return static index page"""
@@ -25,4 +24,3 @@ class FlaskApp:
     def serve_catchall(any):
         """Return static index page"""
         return send_file(os.path.join('..', 'ui', 'index.html'))
-

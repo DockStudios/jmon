@@ -25,6 +25,8 @@ class Config:
     # Default to 1 week for checks to expire in UI
     UI_RESULT_EXPIRE = int(os.environ.get("UI_RESULT_EXPIRE", "604800"))
 
+    API_KEY = os.environ.get("API_KEY")
+
     # Threshold for warning->critical check status in UI
     CHECK_CRITICAL_THRESHOLD = float(os.environ.get("CHECK_CRITICAL_THRESHOLD", "99.0"))
     # Threshold for okay->warning check status in UI
