@@ -43,7 +43,7 @@ class BrowserBase:
 
     def __init__(self):
         """Setup browser"""
-        logger.debug("Creating new browser")
+        logger.info("Creating new browser")
 
         # Create selenium instance
         self._selenium_instance = self.selenium_class(**self.get_selenium_kwargs())
@@ -149,18 +149,18 @@ class BrowserFactory:
                 try:
                     self._browser.clean()
 
-                    logger.debug("Using cached browser")
+                    logger.info("Using cached browser")
                     # Return the cached browser
                     return self._browser
                 except Exception as exc:
-                    logger.debug("Error whilst cleaning cached browser: {exc}")
+                    logger.info("Error whilst cleaning cached browser: {exc}")
                     # Delete cached browser
                     self.teardown_browser()
 
             else:
                 # Otherwise, if the cached browser type does not match
                 # the required browser, tear it down
-                logger.debug("Browser type does not match cached browser - tearing down")
+                logger.info("Browser type does not match cached browser - tearing down")
                 self.teardown_browser()
 
         # If a cache browser has not been returned, create a new one
@@ -276,6 +276,7 @@ class Runner:
 
                 # If any steps failed, clear browser
                 if status is StepStatus.FAILED or not Config.get().CACHE_BROWSER:
+                    logger.info("Tearing down browser - check failed or caching not enabled")
                     browser_factory.teardown_browser()
 
             except (selenium.common.exceptions.InvalidSessionIdException,
@@ -286,10 +287,12 @@ class Runner:
                 # Or handle exceptions when unable to connect to selenium chromedriver
                 # Silently retry the test
                 browser_factory.teardown_browser()
+                logger.info("Handling selenium-related exception - tearing down browser")
                 raise
 
             except:
                 browser_factory.teardown_browser()
+                logger.info("Exception raised - tearing down browser")
                 raise
 
         else:
