@@ -19,6 +19,12 @@ class UrlCheck(BaseCheck):
     - check:
         url: https://example.com/redirect-was-followed
     ```
+
+    Variables provided by callable plugins can be used in the type value, e.g.
+    ```
+    - check:
+        url: https://example.com/{an_output_variable}
+    ```
     """
 
     CONFIG_KEY = "url"
@@ -40,7 +46,12 @@ class UrlCheck(BaseCheck):
     @property
     def description(self):
         """Friendly description of step"""
-        return f"Check current URL of browser matches: {self._config}"
+        return f"Check current URL of browser matches: {self.check_url}"
+
+    @property
+    def check_url(self):
+        """Return URL to check"""
+        self.inject_variables_into_string(self._config)
 
     def _validate_step(self):
         """Check step is valid"""
@@ -52,7 +63,7 @@ class UrlCheck(BaseCheck):
         """Check URL"""
         actual_url = selenium_instance.current_url
         if actual_url != url:
-            self._logger.error(f'URL does not match excepted url. Expected "{self._config}" and got: {actual_url}')
+            self._logger.error(f'URL does not match excepted url. Expected "{url}" and got: {actual_url}')
             return None
         return True
 
@@ -60,14 +71,14 @@ class UrlCheck(BaseCheck):
         """Check URL"""
         if self._check_valid_requests_response(state.response):
             return
-        if state.response.url != self._config:
-            self._logger.error(f'URL does not match excepted url. Expected "{self._config}" and got: {state.response.url}')
-            self._set_status(StepStatus.FAILED)
+        if state.response.url != self.check_url:
+            self._logger.error(f'URL does not match excepted url. Expected "{self.check_url}" and got: {state.response.url}')
+            self.set_status(StepStatus.FAILED)
 
     def execute_selenium(self, state: SeleniumStepState):
         """Check page URL"""
-        res = self._check_url(state.selenium_instance, self._config, only_if=lambda: not self.has_timeout_been_reached())
+        res = self._check_url(state.selenium_instance, self.check_url, only_if=lambda: not self.has_timeout_been_reached())
         if res is RetryStatus.ONLY_IF_CONDITION_FAILURE:
-            self._set_status(StepStatus.TIMEOUT)
+            self.set_status(StepStatus.TIMEOUT)
         elif res is None:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)

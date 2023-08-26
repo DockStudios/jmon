@@ -28,6 +28,22 @@ This can be placed in the root of the check, e.g.
  - goto: https://example.com/login
 ```
 
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- goto: https://example.com/?id={an_output_variable}
+```
+
+For non-browser based tests, additional arguments can be provided to the Goto step:
+```
+- goto:
+    url: https://example.com/api/search
+    headers:
+      X-Api-Key: MyApiKey
+    body: {'query': 'test'}
+    method: POST
+```
+Variables can also be used inside the header values, URL and body
+
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`, `REQUESTS`
 
@@ -65,6 +81,16 @@ Find elements can be nested to find elements within other elements. E.g.:
      - find:
        - tag: input
        - placeholder: Username
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- find:
+  - id: content-{an_output_variable}
+  - find:
+    - class: {another_output_variable}
+    - find:
+      - placeholder: Hello {output_name}
 ```
 
 
@@ -136,6 +162,12 @@ E.g.
   - actions:
     - click
     - type: my-username
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- actions:
+  - type: '{an_output_variable}'
 ```
 
 
@@ -230,6 +262,12 @@ E.g.
     title: "Example - Homepage"
 ```
 
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    title: '{an_output_variable}'
+```
+
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
 
@@ -245,6 +283,12 @@ E.g.
 - goto: https://example.com
 - check:
     url: https://example.com/redirect-was-followed
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    url: https://example.com/{an_output_variable}
 ```
 
 
@@ -294,6 +338,13 @@ If a selector is not provided, the entire JSON response will be checked.
       equals: 1
 ```
 
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    json:
+      equals: '{an_output_variable}'
+```
+
 
 Client Support: `REQUESTS`
 
@@ -320,5 +371,32 @@ This directive can be used within a find element. E.g.:
       text: Please Login
 ```
 
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    text: '{an_output_variable}'
+```
+
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
+
+## CallPluginStep
+
+Key: `call_plugin`
+
+
+Directive for executing a callable plugin.
+
+This should generally always be used as a first directive of a step.
+
+It can be used multiple times during a check.
+
+This can be placed in the root of the check, e.g.
+```
+ - call_plugin:
+     example-plugin:
+       example_argument: 'example_value'
+```
+
+
+Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`, `REQUESTS`

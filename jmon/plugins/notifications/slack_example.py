@@ -65,5 +65,6 @@ class SlackExample(NotificationPlugin):
         """Handle queue timeout"""
         self._post_message(
             f"WARNING: {check_count} check(s) missed due to queue timeout. "
-            "Check queue size and consider increase workers."
+            "Check queue size and consider increase workers.",
+            {}
         )

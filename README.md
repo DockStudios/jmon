@@ -29,13 +29,19 @@ For a list of upcoming features and issues being worked on, please see https://g
 ## Getting started
 
 ```bash
-# Startup
-docker-compose up -d
+# Clone the repository and cd into it
+git clone https://github.com/DockStudios/JMon
+cd JMon
 
 # Modify any passwords in the .env file to secure the installation
 vi .env
 
+# Startup
+docker-compose up -d
+
 # Add check for W3Schools
+# If an API key has been configured, use the header argument to curl:
+# -H 'X-JMon-Api-Key: YOUR_API_KEY'
 curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
 
 name: Check_W3Schools
@@ -104,6 +110,14 @@ steps:
         text: There were no results matching the query.
   - actions:
     - screenshot: SearchResults
+
+  # Example call of plugin
+  - call_plugin:
+      example-plugin:
+        example_argument: example_value
+
+  # Use variable provided by example variable in call
+  - goto: https://example.com/{variable_set_by_example_plugin}
 '
 ```
 
@@ -124,7 +138,7 @@ For a full reference of steps, please see [docs/step_reference.md](docs/step_ref
 
 See [docs/debugging_issues.md](docs/debugging_issues.md) for known issue cases.
 
-## Creating Notifications
+## Creating notifications plugins
 
 Create a new python module in `jmon/plugins/notifications` with a class inheriting from `NotificationPlugin`, implementing one or more of the following methods:
  * `on_complete`
@@ -133,7 +147,19 @@ Create a new python module in `jmon/plugins/notifications` with a class inheriti
  * `on_first_failure`
  * `on_every_failure`
 
-For an example, see the `jmon/plugins/notifications/example_notification.py` plugin and the `jmon/plugins/notifications/slack_example.py` plugins
+For an example, see the [jmon/plugins/notifications/example_notification.py](jmon/plugins/notifications/example_notification.py) plugin and the [jmon/plugins/notifications/slack_example.py](jmon/plugins/notifications/slack_example.py) plugins
+
+## Creating Callable plugin
+
+Create new python module in `jmon/plugins/callable`, with a class inherting from `CallablePlugin`, implementing the following:
+ * `PLUGIN_NAME` - override property with the name of the plugin that will be called by the check step.
+ * `handle_call` - implement method, with kwargs that are expected to be passed by the check step.
+
+Plugins can set "run variables" during execution. These run variables can be injected into most check step.
+
+Objects for accessing run information, check methods and logging methods are available within the plugin class instance.
+
+For an example, see the [jmon/plugins/callable/example_callable_plugin.py](jmon/plugins/callable/example_callable_plugin.py) example plugin.
 
 ## Production Deployment
 
@@ -141,6 +167,9 @@ It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availa
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
 
+<<<<<<< HEAD
+Create unique API key (see `.env`). Alternatively, disable API key access by removing or setting to an empty string.
+=======
 ## Upgrading
 
 Before performing an upgrade, ensure to check the release for database changes.
@@ -170,6 +199,7 @@ docker-compose up -d --build database dbmigrate
 ## Bring up remaining application
 docker-compose up -d --build
 ```
+>>>>>>> main
 
 ### s3 artifact storage
 
@@ -186,6 +216,29 @@ The IAM role providing permission can be attached to the EC2 instance running th
 
 Update the .env (or environment variables for the containers, if the containers have been deployed in a different manor) with the S3 bucket name.
 
+## Browser caching
+
+**Note this functionality is experimental and may lead to instability**
+
+Browser caching can be enabled, which will share browser instances between runs.
+
+This durastically improves performance:
+
+| Browser | Caching enabled | Check speed (run in a small development environment - values for comparison only) |
+|---------|-----------------|-----------------------------------------------------------------------------------|
+| Firefox | Disabled        | 9500ms                                                                            |
+| Firefox | Enabled         | 320ms (30x performance improvement)                                               |
+| Chrome  | Disabled        | 1730ms                                                                            |
+| Chrome  | Enabled         | 530ms (~3-4x performance improvement)                                             |
+
+This can be enabled by setting the `CACHE_BROWSER` environment variable to `True` on the agents
+
+## Terminology
+
+* Environment - an arbritrary object for grouping checks. Can be used to group checks by application environment (e.g. dev, prod) or tenants (customer-a, customter-b) or anything else
+* Check - A check is defined and created via the API (or via Terraform provider). A single check is tied to a single environment.
+* Run - Runs are created at intervals, which are an execution of a check. When a run is executed, it creates an instance of the Check's steps and executes them and results in a pass/fail status.
+* Step - A section of executable part of the check, e.g. Find, Goto etc. These are defined in the check steps definition. Instances of 'Steps' are accessible to plugins, which contain information about the active instance of the step.
 
 ## Local development
 

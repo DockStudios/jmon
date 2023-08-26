@@ -27,11 +27,21 @@ class Run:
         self._logger = RunLogger(run=self, enable_log=True)
         self._root_step = RootStep(run=self, config=self.check.steps, parent=None, run_logger=self._logger)
         self._start_time = None
+        self._variables = {}
 
     @property
     def run_model(self):
         """Return run model"""
         return self._db_run
+
+    @property
+    def variables(self):
+        """Return runtime variables"""
+        return self._variables
+
+    def set_variable(self, key, value):
+        """Set runtime variable"""
+        self._variables[key] = value
 
     @property
     def logger(self):

@@ -58,5 +58,5 @@ class PressAction(BaseAction):
             state.element.send_keys(Keys.ENTER)
 
         else:
-            self._set_status(StepStatus.FAILED)
+            self.set_status(StepStatus.FAILED)
             self._logger.error(f'Unknown press action: {self._config}')

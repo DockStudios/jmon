@@ -1,5 +1,71 @@
 # Changelog
 
+# [4.8.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.1...v4.8.0) (2023-08-26)
+
+
+### Features
+
+* Add API key to functionality and add protection to API endpoints that create/modify checks ([f3cf9fc](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f3cf9fcb2c15554047d4f02d3ae8991fa9856019)), closes [#21](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/21)
+
+## [4.7.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.0...v4.7.1) (2023-08-26)
+
+
+### Bug Fixes
+
+* Stop checks being run on multiple workers from different queues. ([970bd37](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/970bd37c66da3b03dc1c3772bab2337728567b5f)), closes [#92](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/92)
+
+# [4.7.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.6.0...v4.7.0) (2023-08-26)
+
+
+### Bug Fixes
+
+* Catch any exceptions thrown when performing goto request ([26237e9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/26237e9998ede8e2956dd6bf0ae6c063eb5448cb)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+* Ensure browser is closed if selenium fails to contact browser ([a58a876](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/a58a876e4fc17edf6783ff5b13d5f7634b246774)), closes [#93](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/93)
+
+
+### Features
+
+* Add experimental browser caching functionality with new config to enable it ([e3bd48e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e3bd48e8a17b4796e54399de5b0643c8b1e99913)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+* Automatically switch run client type to cached browser, if present ([d1bb2f6](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d1bb2f61605358963987e2ff2837e438e93b25ba)), closes [#90](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/90)
+
+# [4.6.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.2...v4.6.0) (2023-08-24)
+
+
+### Bug Fixes
+
+* Fix example notification plugin, removing incorrect argument 'attributes' to on_check_queue_timeout ([4158358](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/4158358c92119f59bfe92139abd699f8beb4d2c7)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+* Fix slack example notification plugin, passing empty 'attributes' to post_message function from on_check_queue_timeout ([3831520](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/3831520c98fbb3545df3f2b4d6925cb1741aa8b6)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+
+
+### Features
+
+* Create deadletter queue for expired tasks in rabbitmq broker. ([9388b2f](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/9388b2fdbe320bf5b95be9ec8793a4de1640a61d)), closes [#89](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/89)
+
+## [4.5.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.1...v4.5.2) (2023-08-23)
+
+
+### Bug Fixes
+
+* Cache display per worker process, ensuring the display is closed on worker shutdown ([f429484](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f429484d999e73a10758fb873ef16dca89426cb5)), closes [#88](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/88)
+* Ensure XVFB display is closed after each test ([09e57b8](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/09e57b893b768405557c2329f328f711029e2b80)), closes [#88](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/88)
+
+## [4.5.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.5.0...v4.5.1) (2023-08-21)
+
+
+### Bug Fixes
+
+* Create boto2 session instance of ArtifactStorage. ([6b2c177](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6b2c177f72c906a2faa4da18206aeb5a36a3a9a1)), closes [#80](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/80)
+
+# [4.5.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.4.0...v4.5.0) (2023-08-20)
+
+
+### Features
+
+* Add support for custom callable plugins within steps. ([24e80ac](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/24e80ac92175766414dddfe0c9d983b3149a5eb0)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84) [#85](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/85)
+* Add support for passing method, headers and body to goto step for non-browser tests ([17c00ec](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/17c00ec661ff6b698ddfa8b73e678d1a0d256e39)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84)
+* Add support for setting runtime variables in a run in callable plugins ([2016b75](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/2016b7513f4a1b7f9b721e5791d1d722a9c24558)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84)
+* Support injection of run variables into step configs ([b02ed2d](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/b02ed2db4a737611c1588fc60cc9d5d62a6f3994)), closes [#84](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/84)
+
 # [4.4.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.3.2...v4.4.0) (2023-08-17)
 
 
