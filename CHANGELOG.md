@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.7.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.0...v4.7.1) (2023-08-26)
+
+
+### Bug Fixes
+
+* Stop checks being run on multiple workers from different queues. ([970bd37](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/970bd37c66da3b03dc1c3772bab2337728567b5f)), closes [#92](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/92)
+
 # [4.7.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.6.0...v4.7.0) (2023-08-26)
 
 
