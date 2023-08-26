@@ -29,13 +29,19 @@ For a list of upcoming features and issues being worked on, please see https://g
 ## Getting started
 
 ```bash
-# Startup
-docker-compose up -d
+# Clone the repository and cd into it
+git clone https://github.com/DockStudios/JMon
+cd JMon
 
 # Modify any passwords in the .env file to secure the installation
 vi .env
 
+# Startup
+docker-compose up -d
+
 # Add check for W3Schools
+# If an API key has been configured, use the header argument to curl:
+# -H 'X-JMon-Api-Key: YOUR_API_KEY'
 curl -XPOST localhost:5000/api/v1/checks -H 'Content-Type: application/yml' -d '
 
 name: Check_W3Schools
@@ -161,6 +167,9 @@ It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availa
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
 
+<<<<<<< HEAD
+Create unique API key (see `.env`). Alternatively, disable API key access by removing or setting to an empty string.
+=======
 ## Upgrading
 
 Before performing an upgrade, ensure to check the release for database changes.
@@ -190,6 +199,7 @@ docker-compose up -d --build database dbmigrate
 ## Bring up remaining application
 docker-compose up -d --build
 ```
+>>>>>>> main
 
 ### s3 artifact storage
 
