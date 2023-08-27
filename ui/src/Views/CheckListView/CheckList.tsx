@@ -6,8 +6,10 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import { DataGrid, GridColDef, GridRenderCellParams } from '@mui/x-data-grid';
+import TextField from '@mui/material/TextField';
+import { DataGrid, GridColDef, GridCellParams, GridFilterModel, GridToolbar } from '@mui/x-data-grid';
 import * as React from 'react';
+import  { useState } from 'react';
 import checkService from '../../check.service.tsx';
 import ConfigService from '../../config.service.tsx';
 import TimeframeService from '../../timeframe.service.tsx';
@@ -30,12 +32,25 @@ class CheckList extends React.Component {
     super(props);
     this.state = {
       checks: [],
+      shownChecks: [],
       selectedTimeframe: 0,
-      timeframes: []
+      timeframes: [],
+      filterQuery: ''
     };
     this.retrieveChecks = this.retrieveChecks.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
     this.handleTimeframeChange = this.handleTimeframeChange.bind(this);
+    this.onFilterChange = this.onFilterChange.bind(this);
+  }
+
+  onFilterChange(ev) {
+    if (ev?.target) {
+      this.setState((state) => Object.assign({}, {
+        ...state,
+        filterText: ev?.target?.value,
+        shownChecks: state.checks.filter((a: CheckRowData) => a.name.toLowerCase().indexOf(ev.target.value.toLowerCase()) !== -1)
+      }))
+    }
   }
 
   async componentDidMount() {
@@ -57,17 +72,21 @@ class CheckList extends React.Component {
         field: 'average_success',
         headerName: 'Average Success',
         valueGetter: (data) => {return (data.row.average_success === null ? 'No runs' : (data.row.average_success >= 0.9999 ? '100' : (data.row.average_success * 100).toPrecision(4)) + '%');},
-        with: 300
+        width: 100
       },
       { field: 'latest_status', headerName: 'Latest Status', valueGetter: (data) => {return data.row.latest_status === true ? 'Success' : data.row.latest_status === false ? 'Failed' : 'Not run'} },
       { field: 'enable', headerName: 'Enabled', valueGetter: (data) => {return data.row.enable ? 'Enabled' : 'Disabled' } },
     ];
+
+    // Obtain check rows for table
     this.retrieveChecks();
   }
 
   retrieveChecks() {
     const checkServiceIns = new checkService();
-    checkServiceIns.getAll().then((checksRes) => {
+    checkServiceIns.getAll(
+      // pageSize, page, searchFilter
+    ).then((checksRes) => {
       let promises = checksRes.data.map((check) => {
         return new Promise((resolve, reject) => {
           checkServiceIns.getResultsByCheckNameAndEnvironment(check.name, check.environment, this.state.selectedTimeframe).then((statusRes) => {
@@ -82,7 +101,7 @@ class CheckList extends React.Component {
         });
       });
       Promise.all(promises).then((checkData) => {
-        this.setState((state) => Object.assign({}, {...state, checks: checkData}));
+        this.setState((state) => Object.assign({}, {...state, checks: checkData, shownChecks: checkData}));
       });
     });
   }
@@ -102,6 +121,7 @@ class CheckList extends React.Component {
     return (
       <Container  maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
         <Grid container spacing={3}>
+
           <Grid item xs={12} md={3} lg={2} xl={2}>
             <FormControl fullWidth>
               <InputLabel id="timeframe-label">Timeframe</InputLabel>
@@ -119,7 +139,14 @@ class CheckList extends React.Component {
                 )}
               </Select>
             </FormControl>
+            <br />
+
+            <FormControl fullWidth>
+              <TextField onChange={this.onFilterChange} label="Filter" type="search" />
+            </FormControl>
           </Grid>
+
+
           <Grid item xs={12} md={12} lg={10} xl={8} sx={{
                 '& .check-row--disabled': {
                   bgcolor: '#eeeeee'
@@ -137,17 +164,20 @@ class CheckList extends React.Component {
           >
             <div style={{ height: 500, width: '100%' }}>
               <DataGrid
-                rows={this.state.checks}
+                rows={this.state.shownChecks}
                 columns={this.columns}
                 getRowId={(row: any) =>  row.name + row.environment}
                 onRowClick={this.onRowClick}
+                disableColumnFilter
+                disableColumnSelector
+                disableDensitySelector
                 getRowClassName={(row) => {
                   if (!row.row.enable) {
                     return 'check-row--disabled';
                   }
                   return '';
                 }}
-                getCellClassName={(params: GridRenderCellParams) => {
+                getCellClassName={(params: GridCellParams) => {
                   if (params.field == 'average_success') {
                     if (params.row.average_success * 100 <= this.config.check.thresholds.critical) {
                       return 'check--critical';
