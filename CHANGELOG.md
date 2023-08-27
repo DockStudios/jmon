@@ -1,5 +1,17 @@
 # Changelog
 
+# [4.9.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.8.0...v4.9.0) (2023-08-27)
+
+
+### Bug Fixes
+
+* Fix width of average success column in check list table ([a9f28df](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/a9f28df9bedb0ab75634c4b3f0d50aa10471b57d)), closes [#81](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/81)
+
+
+### Features
+
+* Add filtering of check names in check list view ([6ab00d1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6ab00d1858829f021fd7bfafbd69ad5fc09ccbc1)), closes [#81](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/81)
+
 # [4.8.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.7.1...v4.8.0) (2023-08-26)
 
 
