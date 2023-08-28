@@ -23,6 +23,11 @@ class BrowserBase:
     SELENIUM_CLASS = None
 
     @property
+    def is_headless(self):
+        """Return whether browser is running in headless mode"""
+        raise NotImplementedError
+
+    @property
     def selenium_class(self):
         """Return selenium type"""
         if self.SELENIUM_CLASS is None:
@@ -50,7 +55,15 @@ class BrowserBase:
         self._selenium_instance = self.selenium_class(**self.get_selenium_kwargs())
 
         # Maximise and setup implicit wait
-        self.selenium_instance.maximize_window()
+        if self.is_headless:
+            # If running in headless, set the window size directly
+            # as maximise does not work
+            self.selenium_instance.set_window_position(0, 0)
+            self.selenium_instance.set_window_size(1920, 1080)
+        else:
+            # Otherwise, if using a read display, use maximum to
+            # make use of the full display
+            self.selenium_instance.maximize_window()
         self.selenium_instance.implicitly_wait(1)
 
         # Obtain PID of browser
@@ -110,6 +123,11 @@ class BrowserChrome(BrowserBase):
             options.add_argument(f'--headless={headless_argument}')
         return {"chrome_options": options}
 
+    @property
+    def is_headless(self):
+        """Return whether browser is running in headless mode"""
+        return Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE
+
 
 class BrowserFirefox(BrowserBase):
 
@@ -123,6 +141,11 @@ class BrowserFirefox(BrowserBase):
         return {
             "options": options
         }
+
+    @property
+    def is_headless(self):
+        """Return whether browser is running in headless mode"""
+        return bool(Config.get().FIREFOX_HEADLESS)
 
 
 class BrowserFactory:
