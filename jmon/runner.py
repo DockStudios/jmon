@@ -2,7 +2,9 @@
 
 from pyvirtualdisplay import Display
 import selenium
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 import selenium.common.exceptions
 import urllib3.exceptions
 import psutil
@@ -11,7 +13,7 @@ from jmon.client_type import ClientType
 from jmon.step_state import RequestsStepState, SeleniumStepState
 from jmon.step_status import StepStatus
 from jmon.steps.actions.screenshot_action import ScreenshotAction
-from jmon.config import Config
+from jmon.config import ChromeHeadlessMode, Config
 from jmon.logger import logger
 
 
@@ -20,6 +22,11 @@ class BrowserBase:
 
     CLIENT_TYPE = None
     SELENIUM_CLASS = None
+
+    @property
+    def is_headless(self):
+        """Return whether browser is running in headless mode"""
+        raise NotImplementedError
 
     @property
     def selenium_class(self):
@@ -49,11 +56,26 @@ class BrowserBase:
         self._selenium_instance = self.selenium_class(**self.get_selenium_kwargs())
 
         # Maximise and setup implicit wait
-        self.selenium_instance.maximize_window()
+        if self.is_headless:
+            # If running in headless, set the window size directly
+            # as maximise does not work
+            self.selenium_instance.set_window_position(0, 0)
+            self.selenium_instance.set_window_size(1920, 1080)
+        else:
+            # Otherwise, if using a read display, use maximum to
+            # make use of the full display
+            self.selenium_instance.maximize_window()
         self.selenium_instance.implicitly_wait(1)
+
+        # Run post-setup configuration
+        self._post_setup_configuration()
 
         # Obtain PID of browser
         self._pid = self.selenium_instance.service.process.pid
+
+    def _post_setup_configuration(self):
+        """Perform post-setup configuration"""
+        raise NotImplementedError
 
     def get_selenium_kwargs(self):
         """Return list of kwargs to provide to selenium"""
@@ -95,13 +117,37 @@ class BrowserChrome(BrowserBase):
     CLIENT_TYPE = ClientType.BROWSER_CHROME
     SELENIUM_CLASS = selenium.webdriver.Chrome
 
-
     def get_selenium_kwargs(self):
         """Return kwargs to pass to selenium"""
-        options = Options()
+        options = ChromeOptions()
         options.binary_location = "/opt/chrome-linux/chrome"
         options.add_argument('--no-sandbox')
+
+        # Disable caching
+        options.add_argument("--incognito")
+        options.add_argument('--disable-application-cache')
+        options.add_argument("--disk-cache-size=0")
+        options.add_argument("--disk-cache-dir=/dev/null")
+
+        # Set headles mode, if enabled
+        if Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE:
+            headless_argument = (
+                "new"
+                if Config.get().CHROME_HEADLESS_MODE is ChromeHeadlessMode.NEW else
+                "chrome"
+            )
+            options.add_argument(f'--headless={headless_argument}')
         return {"chrome_options": options}
+
+    @property
+    def is_headless(self):
+        """Return whether browser is running in headless mode"""
+        return Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE
+
+    def _post_setup_configuration(self):
+        """Perform post-setup configuration"""
+        # Disable network caching
+        self.selenium_instance.execute_cdp_cmd("Network.setCacheDisabled", {"cacheDisabled":True})
 
 
 class BrowserFirefox(BrowserBase):
@@ -111,7 +157,29 @@ class BrowserFirefox(BrowserBase):
 
     def get_selenium_kwargs(self):
         """Return kwargs to pass to selenium"""
-        return {}
+        options = FirefoxOptions()
+        options.headless = Config.get().FIREFOX_HEADLESS
+
+        # Create profile for disabling caching
+        profile = FirefoxProfile()
+        profile.set_preference('browser.cache.disk.enable', False)
+        profile.set_preference('browser.cache.memory.enable', False)
+        profile.set_preference('browser.cache.offline.enable', False)
+        profile.set_preference('network.cookie.cookieBehavior', 2)
+        profile.set_preference("browser.privatebrowsing.autostart", True)
+
+        return {
+            "options": options
+        }
+
+    @property
+    def is_headless(self):
+        """Return whether browser is running in headless mode"""
+        return bool(Config.get().FIREFOX_HEADLESS)
+
+    def _post_setup_configuration(self):
+        """Perform post-setup configuration"""
+        pass
 
 
 class BrowserFactory:
