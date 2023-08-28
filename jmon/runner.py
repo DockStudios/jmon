@@ -4,6 +4,7 @@ from pyvirtualdisplay import Display
 import selenium
 from selenium.webdriver.chrome.options import Options as ChromeOptions
 from selenium.webdriver.firefox.options import Options as FirefoxOptions
+from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
 import selenium.common.exceptions
 import urllib3.exceptions
 import psutil
@@ -66,8 +67,15 @@ class BrowserBase:
             self.selenium_instance.maximize_window()
         self.selenium_instance.implicitly_wait(1)
 
+        # Run post-setup configuration
+        self._post_setup_configuration()
+
         # Obtain PID of browser
         self._pid = self.selenium_instance.service.process.pid
+
+    def _post_setup_configuration(self):
+        """Perform post-setup configuration"""
+        raise NotImplementedError
 
     def get_selenium_kwargs(self):
         """Return list of kwargs to provide to selenium"""
@@ -114,6 +122,14 @@ class BrowserChrome(BrowserBase):
         options = ChromeOptions()
         options.binary_location = "/opt/chrome-linux/chrome"
         options.add_argument('--no-sandbox')
+
+        # Disable caching
+        options.add_argument("--incognito")
+        options.add_argument('--disable-application-cache')
+        options.add_argument("--disk-cache-size=0")
+        options.add_argument("--disk-cache-dir=/dev/null")
+
+        # Set headles mode, if enabled
         if Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE:
             headless_argument = (
                 "new"
@@ -128,6 +144,11 @@ class BrowserChrome(BrowserBase):
         """Return whether browser is running in headless mode"""
         return Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE
 
+    def _post_setup_configuration(self):
+        """Perform post-setup configuration"""
+        # Disable network caching
+        self.selenium_instance.execute_cdp_cmd("Network.setCacheDisabled", {"cacheDisabled":True})
+
 
 class BrowserFirefox(BrowserBase):
 
@@ -138,6 +159,15 @@ class BrowserFirefox(BrowserBase):
         """Return kwargs to pass to selenium"""
         options = FirefoxOptions()
         options.headless = Config.get().FIREFOX_HEADLESS
+
+        # Create profile for disabling caching
+        profile = FirefoxProfile()
+        profile.set_preference('browser.cache.disk.enable', False)
+        profile.set_preference('browser.cache.memory.enable', False)
+        profile.set_preference('browser.cache.offline.enable', False)
+        profile.set_preference('network.cookie.cookieBehavior', 2)
+        profile.set_preference("browser.privatebrowsing.autostart", True)
+
         return {
             "options": options
         }
@@ -146,6 +176,10 @@ class BrowserFirefox(BrowserBase):
     def is_headless(self):
         """Return whether browser is running in headless mode"""
         return bool(Config.get().FIREFOX_HEADLESS)
+
+    def _post_setup_configuration(self):
+        """Perform post-setup configuration"""
+        pass
 
 
 class BrowserFactory:
