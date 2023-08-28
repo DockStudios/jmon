@@ -167,9 +167,8 @@ It is recommended to deploy Postgres, rabbitmq and redis is seperate high-availa
 
 If using docker-compose to deploy this, update the .env with the details of the clusters and remove these services from the docker-compose.yml file.
 
-<<<<<<< HEAD
 Create unique API key (see `.env`). Alternatively, disable API key access by removing or setting to an empty string.
-=======
+
 ## Upgrading
 
 Before performing an upgrade, ensure to check the release for database changes.
@@ -199,7 +198,6 @@ docker-compose up -d --build database dbmigrate
 ## Bring up remaining application
 docker-compose up -d --build
 ```
->>>>>>> main
 
 ### s3 artifact storage
 
