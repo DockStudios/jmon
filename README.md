@@ -214,20 +214,27 @@ The IAM role providing permission can be attached to the EC2 instance running th
 
 Update the .env (or environment variables for the containers, if the containers have been deployed in a different manor) with the S3 bucket name.
 
-## Browser caching
+## Browser caching and headless mode
 
-**Note this functionality is experimental and may lead to instability**
+**Note the browser caching functionality is experimental and may lead to instability**
 
 Browser caching can be enabled, which will share browser instances between runs.
+Headless is enabled by default, but can be enabled/disabled in the config (and different headless modes can be configured for chrome)
 
-This durastically improves performance:
+Performance:
 
-| Browser | Caching enabled | Check speed (run in a small development environment - values for comparison only) |
-|---------|-----------------|-----------------------------------------------------------------------------------|
-| Firefox | Disabled        | 9500ms                                                                            |
-| Firefox | Enabled         | 320ms (30x performance improvement)                                               |
-| Chrome  | Disabled        | 1730ms                                                                            |
-| Chrome  | Enabled         | 530ms (~3-4x performance improvement)                                             |
+| Browser | Headless Mode | Browser Caching | Check speed (run in a small development environment - values for comparison only) |
+|---------|---------------|-----------------|-----------------------------------------------------------------------------------|
+| Firefox | Disabled      | Disabled        | 9500ms                                                                            |
+| Firefox | Disabled      | Enabled         | 320ms (30x performance improvement)                                               |
+| Firefox | Enabled       | Disabled        | 4654ms                                                                            |
+| Firefox | Enabled       | Enabled         | 733ms                                                                             |
+| Chrome  | None          | Disabled        | 1730ms                                                                            |
+| Chrome  | None          | Enabled         | 530ms (~3-4x performance improvement)                                             |
+| Chrome  | New           | Disabled        | 2110ms                                                                            |
+| Chrome  | New           | Enabled         | 1274ms                                                                            |
+| Chrome  | Legacy        | Disabled        | 1514ms                                                                            |
+| Chrome  | Legacy        | Enabled         | 580ms                                                                             |
 
 This can be enabled by setting the `CACHE_BROWSER` environment variable to `True` on the agents
 
