@@ -86,6 +86,8 @@ class Config:
 
     # Chrome headless mode. Options: None, New or Legacy
     CHROME_HEADLESS_MODE = ChromeHeadlessMode(os.environ.get("CHROME_HEADLESS_MODE", "Legacy"))
+    # Whether to run firefox in headless mode
+    FIREFOX_HEADLESS = os.environ.get("FIREFOX_HEADLESS", "True") == "True"
 
     AWS_ENDPOINT = os.environ.get('AWS_ENDPOINT')
     AWS_BUCKET_NAME = os.environ.get('AWS_BUCKET_NAME')

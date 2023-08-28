@@ -2,7 +2,8 @@
 
 from pyvirtualdisplay import Display
 import selenium
-from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import selenium.common.exceptions
 import urllib3.exceptions
 import psutil
@@ -95,10 +96,9 @@ class BrowserChrome(BrowserBase):
     CLIENT_TYPE = ClientType.BROWSER_CHROME
     SELENIUM_CLASS = selenium.webdriver.Chrome
 
-
     def get_selenium_kwargs(self):
         """Return kwargs to pass to selenium"""
-        options = Options()
+        options = ChromeOptions()
         options.binary_location = "/opt/chrome-linux/chrome"
         options.add_argument('--no-sandbox')
         if Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE:
@@ -118,7 +118,11 @@ class BrowserFirefox(BrowserBase):
 
     def get_selenium_kwargs(self):
         """Return kwargs to pass to selenium"""
-        return {}
+        options = FirefoxOptions()
+        options.headless = Config.get().FIREFOX_HEADLESS
+        return {
+            "options": options
+        }
 
 
 class BrowserFactory:
