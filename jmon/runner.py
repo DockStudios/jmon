@@ -11,7 +11,7 @@ from jmon.client_type import ClientType
 from jmon.step_state import RequestsStepState, SeleniumStepState
 from jmon.step_status import StepStatus
 from jmon.steps.actions.screenshot_action import ScreenshotAction
-from jmon.config import Config
+from jmon.config import ChromeHeadlessMode, Config
 from jmon.logger import logger
 
 
@@ -101,6 +101,13 @@ class BrowserChrome(BrowserBase):
         options = Options()
         options.binary_location = "/opt/chrome-linux/chrome"
         options.add_argument('--no-sandbox')
+        if Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE:
+            headless_argument = (
+                "new"
+                if Config.get().CHROME_HEADLESS_MODE is ChromeHeadlessMode.NEW else
+                "chrome"
+            )
+            options.add_argument(f'--headless={headless_argument}')
         return {"chrome_options": options}
 
 

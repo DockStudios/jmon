@@ -1,5 +1,17 @@
 
+from enum import Enum
 import os
+
+
+class ChromeHeadlessMode(Enum):
+    """Type of headless mode to use for chrome"""
+    # Disable headless mode
+    NONE = "None"
+    # "New" chrome headless mode - this is a newer method, but appears to be slower
+    NEW = "New"
+    # Legacy chrome headless mode - this appears to be the fastest method
+    LEGACY = "Legacy"
+
 
 class Config:
 
@@ -71,6 +83,9 @@ class Config:
     # This may result in inconsistent browsers across runs, where a check is run
     # with one type of browser and a different on the next.
     PREFER_CACHED_BROWSER = os.environ.get("PREFER_CACHED_BROWSER", "True") == "True"
+
+    # Chrome headless mode. Options: None, New or Legacy
+    CHROME_HEADLESS_MODE = ChromeHeadlessMode(os.environ.get("CHROME_HEADLESS_MODE", "Legacy"))
 
     AWS_ENDPOINT = os.environ.get('AWS_ENDPOINT')
     AWS_BUCKET_NAME = os.environ.get('AWS_BUCKET_NAME')
