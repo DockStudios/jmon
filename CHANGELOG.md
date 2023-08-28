@@ -1,5 +1,14 @@
 # Changelog
 
+# [4.10.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.9.0...v4.10.0) (2023-08-28)
+
+
+### Features
+
+* Add support for chrome headless mode, defaulting to legacy "chrome" headless mode with config to change this ([6ca56b1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6ca56b1e203916d6210eb31a954e7a2944be436d)), closes [#95](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/95)
+* Add support for firefox headless mode, which is enabled by default ([7410a5a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/7410a5a8a7681962d0f32ff2bef49e7771855931)), closes [#95](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/95)
+* Disable web caching in browsers ([efde07f](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/efde07f9d4deebc7e1572d338e80f3f1195a102c)), closes [#96](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/96)
+
 # [4.9.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.8.0...v4.9.0) (2023-08-27)
 
 
