@@ -49,13 +49,16 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
 
     graph_root_steps = []
     graph_steps = []
+    root_x_depths = []
 
-
-    def process_root_step_children(root_step_children, root_step_itx, parent_name):
+    def process_root_step_children(root_step_children, root_step_itx, parent_name, x, y):
         nonlocal graph_steps
+        nonlocal root_x_depths
         child_step_ids = []
+        root_x_depths[root_step_itx] = max(root_x_depths[root_step_itx], x)
+        
         for child_itx, child in enumerate(root_step_children):
-            id_ = f"{parent_name}.{child_itx}"
+            id_ = f"{parent_name}.{child_itx + 1}"
             child_step_ids.append(id_)
             graph_steps.append({
                 "id": id_,
@@ -64,13 +67,28 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
                 "fill": "#F35C4F",
                 "stroke": "#F35C4F",
                 "fontColor": "#FFF",
-                # "x": 130,
-                # "y": 175
+                "x": x,
+                "y": y
             })
-            child_step_ids += process_root_step_children(child.get("children"), root_step_itx=root_step_itx, parent_name=id_)
+            child_step_ids += process_root_step_children(child.get("children"), root_step_itx=root_step_itx, parent_name=id_, x=x+65, y=y+20)
         return child_step_ids
 
     for root_step_itx, root_step in enumerate(root_steps):
+        # Copy root depth from previous root step
+        root_step_x = 0
+        if root_step_itx > 0:
+            root_step_x = root_x_depths[root_step_itx - 1]
+        previous_step_x = 0
+        if root_step_itx > 1:
+            previous_step_x = root_x_depths[root_step_itx - 2]
+
+        # Ensure the start of this is at least 300 since previous, if not the first
+        # column
+        if root_step_itx > 0:
+            root_step_x = max(root_step_x, previous_step_x + 300)
+        root_x_depths.append(root_step_x)
+
+        # Add element for root step
         graph_steps.append({
             "id": f"s{root_step_itx + 1}",
             "type": "end",
@@ -78,18 +96,25 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
             "fill": "#F35C4F",
             "stroke": "#F35C4F",
             "fontColor": "#FFF",
-            # "x": 20,
-            # "y": 110
+            "x": root_step_x,
+            "y": 80
         })
+        # Add column data
         graph_root_steps.append({
             "id": root_step_itx + 1,
             "type": "$sgroup",
-            "groupChildren": process_root_step_children(root_step.get("children"), root_step_itx + 1, parent_name=f"s{root_step_itx + 1}"),
+            "groupChildren": process_root_step_children(
+                root_step.get("children"),
+                root_step_itx,
+                parent_name=f"s{root_step_itx + 1}",
+                x=(root_step_x + 85),
+                y=50
+            ),
             "style": {
                 "fill": "rgba(60, 201, 122, 0.05)"
             },
-            # "x": 896.25,
-            # "y": 80
+            "x": root_step_x + 20,
+            "y": 30
         })
 
     return [
