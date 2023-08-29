@@ -7,6 +7,7 @@ import os
 
 from jmon.logger import logger
 from jmon.artifact_storage import ArtifactStorage
+from jmon.run_step_data import RunStepData
 from jmon.plugins import NotificationLoader
 from jmon.result_database import ResultMetricAverageSuccessRate, ResultDatabase, ResultMetricLatestStatus
 import jmon.models.run
@@ -98,6 +99,7 @@ class Run:
 
         # Upload to storage
         artifact_storage = ArtifactStorage()
+        RunStepData(artifact_storage=artifact_storage, run=self).upload_file()
         artifact_storage.upload_file(f"{self.get_artifact_key()}/artifact.log", content=self.logger.read_log_stream())
         artifact_storage.upload_file(f"{self.get_artifact_key()}/status", content=self._db_run.status.value)
         for artifact_path in self._artifact_paths:
