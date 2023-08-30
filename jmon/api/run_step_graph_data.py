@@ -104,6 +104,8 @@ class ChildStepNode(BaseGraphNode):
 
 class RootGraphData(BaseGraphNode):
 
+    WIDTH = 300
+
     @property
     def depth(self):
         """Depth of child nesting"""
@@ -116,7 +118,7 @@ class RootGraphData(BaseGraphNode):
     @property
     def column_x(self):
         """Return X cordinate for start of column"""
-        return self.step_itx * 300
+        return self.step_itx * self.WIDTH
 
     @property
     def id(self):
@@ -138,7 +140,7 @@ class RootGraphData(BaseGraphNode):
             "style": {
                 "fill": "rgba(60, 201, 122, 0.05)"
             },
-            "x": self.step_itx * 298.75,
+            "x": self.step_itx * (self.WIDTH - 1.25),
             "y": 80
         }
 
