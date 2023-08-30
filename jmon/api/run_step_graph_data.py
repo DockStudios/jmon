@@ -29,7 +29,7 @@ class BaseGraphNode:
     @property
     def x(self):
         """Return X co-ordinate"""
-        return self.root_step.column_x + ((120 / self.root_step.max_child_depth) * self.depth)
+        return self.root_step.column_x + 20 + ((180 / self.root_step.max_child_depth) * (self.depth - 1))
 
     @property
     def y(self):
@@ -184,7 +184,10 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
     column_data = []
     graph_elements = []
     previous_root_step = None
+    root_step_count = 0
     for root_step_itx, root_step_data in enumerate(root_steps):
+        root_step_count += 1
+
         root_step_obj = RootGraphData(step_data=root_step_data, step_itx=root_step_itx, previous_root_step=previous_root_step)
 
         column_data.append(root_step_obj.get_column_data())
@@ -198,7 +201,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
             "id": "main",
             "type": "$swimlane",
             "height": 730,
-            "width": 1195,
+            "width": 300 * root_step_count,
             "header": {
                 "closable": False,
                 "text": ""
