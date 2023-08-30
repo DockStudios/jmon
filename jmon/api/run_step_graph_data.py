@@ -150,7 +150,10 @@ class ChildStepNode(BaseGraphNode):
 
 class RootGraphData(BaseGraphNode):
 
-    WIDTH = 300
+    @property
+    def WIDTH(self):
+        """Return width based on number of steps"""
+        return max(self.max_child_depth * 100, 300)
 
     @property
     def depth(self):
