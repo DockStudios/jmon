@@ -269,7 +269,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
             "subHeaderCols": {
                 "headers": [
                     {
-                        "text": first_level_step.get("description"),
+                        "text": first_level_step.get("name"),
                         "fill": root_step_colors.get(first_level_step.get("status"), "")
                     }
                     for step_itx, first_level_step in enumerate(root_steps)
