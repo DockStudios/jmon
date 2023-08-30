@@ -36,10 +36,11 @@ class BaseGraphNode:
         """Return Y co-ordinate"""
         return (self.step_tree_itx * 110) + 110
 
-    def __init__(self, step_data, root_step, step_itx):
+    def __init__(self, step_data, root_step, step_itx, connecting_node):
         self.step_data = step_data
         self.root_step = root_step
         self.step_itx = step_itx
+        self.connecting_node = connecting_node
         self.children = self.get_child_steps()
 
     def get_element_data(self):
@@ -58,10 +59,13 @@ class BaseGraphNode:
     def get_child_steps(self):
         """Get child step objects"""
         # Update root max children
-        return [
-            ChildStepNode(step_data=child_data, root_step=self.root_step, parent_node=self, step_itx=child_itx)
-            for child_itx, child_data in enumerate(self.step_data.get("children"))
-        ]
+        connecting_node = self
+        child_nodes = []
+        for child_itx, child_data in enumerate(self.step_data.get("children")):
+            child_node = ChildStepNode(step_data=child_data, root_step=self.root_step, parent_node=self, step_itx=child_itx, connecting_node=connecting_node)
+            child_nodes.append(child_node)
+            connecting_node = child_node.get_last_node()
+        return child_nodes
 
     def get_child_step_ids(self):
         """Return list of child step IDs"""
@@ -76,6 +80,49 @@ class BaseGraphNode:
         for child in self.children:
             elements += child.get_all_elements()
         return elements
+
+    def get_all_lines(self):
+        """Return all line data"""
+        lines = [self.get_connecting_line()]
+        for child in self.children:
+            lines += child.get_all_lines()
+        return lines
+
+    def get_last_node(self):
+        """Return last node"""
+        if self.children:
+            return self.children[-1]
+        return self
+
+    def get_connecting_line(self):
+        """Return connection line from """
+        if not self.connecting_node:
+            return {}
+
+        # Three types of lines:
+        # - parent to child element
+        # - child to sibling element
+        # - element to new root
+        return {
+            "id": f"u{self.id}",
+            "type": "line",
+            "points": [
+            ],
+            "stroke": "#7D878F",
+            "connectType": "elbow",
+            "strokeWidth": 2,
+            "cornersRadius": "10",
+            "from": self.id,
+            "to": self.connecting_node.id,
+            # Connect to left when connecting to a root, otherwise top
+            "fromSide": "left" if isinstance(self, RootGraphData) else "top",
+            # Connect from bottom for siblings, otherwise from the right
+            "toSide": "bottom" if isinstance(self, ChildStepNode) and self.step_itx > 0 else "right",
+            "strokeType": "line",
+            "backArrow": "filled",
+            "forwardArrow": ""
+        }
+
 
 
 class ChildStepNode(BaseGraphNode):
@@ -129,7 +176,10 @@ class RootGraphData(BaseGraphNode):
         self.max_child_depth = 1
         self.previous_root_step = previous_root_step
         self.parent_node = None
-        super(RootGraphData, self).__init__(*args, **kwargs, root_step=self)
+        super(RootGraphData, self).__init__(*args, **kwargs, root_step=self, connecting_node=None)
+        # Obtain connecting node from last step of previous node
+        if self.previous_root_step is not None:
+            self.connecting_node = self.previous_root_step.get_last_node()
 
     def get_column_data(self):
         """Return column data"""
@@ -185,6 +235,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
 
     column_data = []
     graph_elements = []
+    lines = []
     previous_root_step = None
     root_step_count = 0
     for root_step_itx, root_step_data in enumerate(root_steps):
@@ -194,6 +245,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
 
         column_data.append(root_step_obj.get_column_data())
         graph_elements += root_step_obj.get_all_elements()
+        lines += root_step_obj.get_all_lines()
 
         previous_root_step = root_step_obj
 
@@ -225,5 +277,6 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
             }
         },
         *column_data,
-        *graph_elements
+        *graph_elements,
+        *lines
     ]
