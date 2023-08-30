@@ -91,7 +91,7 @@ class BaseGraphNode:
     def get_last_node(self):
         """Return last node"""
         if self.children:
-            return self.children[-1]
+            return self.children[-1].get_last_node()
         return self
 
     def get_connecting_line(self):
