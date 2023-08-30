@@ -94,9 +94,15 @@ class RunView extends React.Component {
         <Grid container spacing={3} sx={{textAlign: 'left'}}>
           <Grid
             item
-            xs={12} md={12} lg={10} xl={8}
+            xs={12} md={12} lg={12} xl={12}
           >
             <RunConfigGraph graphData={this.state.graphData}></RunConfigGraph>
+
+          </Grid>
+          <Grid
+            item
+            xs={12} md={12} lg={10} xl={8}
+          >
 
             <Typography component="h4" variant="h5">
               Log
