@@ -34,7 +34,7 @@ class BaseGraphNode:
     @property
     def y(self):
         """Return Y co-ordinate"""
-        return (self.step_tree_itx * 65) + 110
+        return (self.step_tree_itx * 110) + 110
 
     def __init__(self, step_data, root_step, step_itx):
         self.step_data = step_data
@@ -46,7 +46,7 @@ class BaseGraphNode:
         """Return element data"""
         return {
             "id": self.id,
-            "type": "end",
+            "type": "rectangle",
             "text": self.step_data.get("description"),
             "fill": "#F35C4F",
             "stroke": "#F35C4F",
