@@ -29,7 +29,7 @@ class BaseGraphNode:
     @property
     def x(self):
         """Return X co-ordinate"""
-        return self.root_step.column_x + 20 + ((180 / self.root_step.max_child_depth) * (self.depth - 1))
+        return self.root_step.column_x + 20 + (((self.root_step.WIDTH - 120) / self.root_step.max_child_depth) * (self.depth - 1))
 
     @property
     def y(self):
@@ -106,8 +106,7 @@ class BaseGraphNode:
         return {
             "id": f"u{self.id}",
             "type": "line",
-            "points": [
-            ],
+            "points": [],
             "stroke": "#7D878F",
             "connectType": "elbow",
             "strokeWidth": 2,
@@ -165,7 +164,7 @@ class RootGraphData(BaseGraphNode):
     @property
     def column_x(self):
         """Return X cordinate for start of column"""
-        return self.step_itx * self.WIDTH
+        return (self.previous_root_step.column_x + self.previous_root_step.WIDTH if self.previous_root_step else 0)
 
     @property
     def id(self):
@@ -191,7 +190,8 @@ class RootGraphData(BaseGraphNode):
                 "fill": "rgba(60, 201, 122, 0.05)"
             },
             "x": self.step_itx * (self.WIDTH - 1.25),
-            "y": 80
+            "y": 80,
+            "width": self.WIDTH
         }
 
 
@@ -237,11 +237,11 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
     graph_elements = []
     lines = []
     previous_root_step = None
-    root_step_count = 0
+    width = 0
     for root_step_itx, root_step_data in enumerate(root_steps):
-        root_step_count += 1
 
         root_step_obj = RootGraphData(step_data=root_step_data, step_itx=root_step_itx, previous_root_step=previous_root_step)
+        width += root_step_obj.WIDTH
 
         column_data.append(root_step_obj.get_column_data())
         graph_elements += root_step_obj.get_all_elements()
@@ -255,7 +255,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
             "id": "main",
             "type": "$swimlane",
             "height": 730,
-            "width": 300 * root_step_count,
+            "width": width,
             "header": {
                 "closable": False,
                 "text": ""
