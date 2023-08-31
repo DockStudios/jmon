@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.10.1...v4.10.2) (2023-08-31)
+
+
+### Bug Fixes
+
+* Return screenshot_on_error attribute in check API. ([a5c5ee3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/a5c5ee351678ed26ad03c8cf8eeff4b1c509696e)), closes [#98](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/98)
+
 ## [4.10.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.10.0...v4.10.1) (2023-08-31)
 
 
