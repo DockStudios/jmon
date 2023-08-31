@@ -56,8 +56,6 @@ class BaseGraphNode:
         color = ""
         if (status := self.step_data.get("status")) and (color := root_step_colors.get(status, "")):
             color = color.format(opacity=opacity)
-        else:
-            print(status)
         return color
 
     def get_element_data(self):
