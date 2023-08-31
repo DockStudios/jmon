@@ -217,6 +217,59 @@ class RootGraphData(BaseGraphNode):
         }
 
 
+class GraphGenerator:
+
+    def __init__(self, step_data):
+        """Generate graph nodes"""
+        self.column_data = []
+        self.graph_elements = []
+        self.lines = []
+        self.headers = []
+
+        previous_root_step = None
+        self.width = 0
+        for root_step_itx, root_step_data in enumerate(step_data):
+
+            root_step_obj = RootGraphData(step_data=root_step_data, step_itx=root_step_itx, previous_root_step=previous_root_step)
+            self.width += root_step_obj.WIDTH
+
+            self.column_data.append(root_step_obj.get_column_data())
+            self.graph_elements += root_step_obj.get_all_elements()
+            self.lines += root_step_obj.get_all_lines()
+            self.headers.append(root_step_obj.get_header_data())
+
+            previous_root_step = root_step_obj
+
+        self.layout = [
+            [
+                step_itx + 1
+                for step_itx, _ in enumerate(step_data)
+            ]
+        ]
+
+    def generate_graph_data(self):
+        """Return graph data"""
+        return [
+            {
+                "id": "main",
+                "type": "$swimlane",
+                "height": 730,
+                "width": self.width,
+                "header": {
+                    "closable": False,
+                    "text": ""
+                },
+                "layout": self.layout,
+                "subHeaderCols": {
+                    "headers": self.headers
+                }
+            },
+            *self.column_data,
+            *self.graph_elements,
+            *self.lines
+        ]
+
+
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/runs/<timestamp>/step-graph-data', methods=["GET"])
 def get_run_step_graph_data(check_name, environment_name, timestamp):
     """Obtain run details"""
@@ -241,54 +294,11 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
         run=run
     ).get_data()
 
-
-
     if not step_data:
         return {}, 404
 
     root_steps = step_data.get("children", [])
 
+    graph_generator = GraphGenerator(root_steps)
 
-    column_data = []
-    graph_elements = []
-    lines = []
-    headers = []
-    previous_root_step = None
-    width = 0
-    for root_step_itx, root_step_data in enumerate(root_steps):
-
-        root_step_obj = RootGraphData(step_data=root_step_data, step_itx=root_step_itx, previous_root_step=previous_root_step)
-        width += root_step_obj.WIDTH
-
-        column_data.append(root_step_obj.get_column_data())
-        graph_elements += root_step_obj.get_all_elements()
-        lines += root_step_obj.get_all_lines()
-        headers.append(root_step_obj.get_header_data())
-
-        previous_root_step = root_step_obj
-
-
-    return [
-        {
-            "id": "main",
-            "type": "$swimlane",
-            "height": 730,
-            "width": width,
-            "header": {
-                "closable": False,
-                "text": ""
-            },
-            "layout": [
-                [
-                    step_itx + 1
-                    for step_itx, _ in enumerate(root_steps)
-                ]
-            ],
-            "subHeaderCols": {
-                "headers": headers
-            }
-        },
-        *column_data,
-        *graph_elements,
-        *lines
-    ]
+    return graph_generator.generate_graph_data()
