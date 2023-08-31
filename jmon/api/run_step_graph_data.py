@@ -140,7 +140,7 @@ class BaseGraphNode:
 
 
 class ChildStepNode(BaseGraphNode):
-    
+
     @property
     def depth(self):
         """Depth of child nesting"""
@@ -165,7 +165,10 @@ class ChildStepNode(BaseGraphNode):
 
 class RootGraphData(BaseGraphNode):
 
-    WIDTH = 300
+    @property
+    def WIDTH(self):
+        """Return width from graph generator"""
+        return self.graph_generator.column_width
 
     @property
     def depth(self):
@@ -186,14 +189,19 @@ class RootGraphData(BaseGraphNode):
         """Return ID"""
         return f"s{self.step_itx + 1}"
 
-    def __init__(self, previous_root_step, *args, **kwargs):
+    def __init__(self, graph_generator, previous_root_step, *args, **kwargs):
+        """Store member variables and setup children"""
         self.max_child_depth = 1
         self.previous_root_step = previous_root_step
+        self.graph_generator = graph_generator
         self.parent_node = None
         super(RootGraphData, self).__init__(*args, **kwargs, root_step=self, connecting_node=None)
         # Obtain connecting node from last step of previous node
         if self.previous_root_step is not None:
             self.connecting_node = self.previous_root_step.get_last_node()
+
+        # Set width in graph generator based on max depth of steps
+        self.graph_generator.column_width = max(self.graph_generator.column_width, 70 * self.max_child_depth)
 
     def get_header_data(self):
         """Return header data for root step"""
@@ -221,52 +229,60 @@ class GraphGenerator:
 
     def __init__(self, step_data):
         """Generate graph nodes"""
-        self.column_data = []
-        self.graph_elements = []
-        self.lines = []
-        self.headers = []
-
         previous_root_step = None
-        self.width = 0
+        self.column_width = 300
+
+        self.root_step_objects = []
         for root_step_itx, root_step_data in enumerate(step_data):
-
-            root_step_obj = RootGraphData(step_data=root_step_data, step_itx=root_step_itx, previous_root_step=previous_root_step)
-            self.width += root_step_obj.WIDTH
-
-            self.column_data.append(root_step_obj.get_column_data())
-            self.graph_elements += root_step_obj.get_all_elements()
-            self.lines += root_step_obj.get_all_lines()
-            self.headers.append(root_step_obj.get_header_data())
-
+            root_step_obj = RootGraphData(
+                graph_generator=self,
+                step_data=root_step_data,
+                step_itx=root_step_itx,
+                previous_root_step=previous_root_step
+            )
+            self.root_step_objects.append(root_step_obj)
             previous_root_step = root_step_obj
-
-        self.layout = [
-            [
-                step_itx + 1
-                for step_itx, _ in enumerate(step_data)
-            ]
-        ]
 
     def generate_graph_data(self):
         """Return graph data"""
+        column_data = []
+        column_data = []
+        graph_elements = []
+        lines = []
+        headers = []
+
+        for root_step_obj in self.root_step_objects:
+            column_data.append(root_step_obj.get_column_data())
+            graph_elements += root_step_obj.get_all_elements()
+            lines += root_step_obj.get_all_lines()
+            headers.append(root_step_obj.get_header_data())
+
+        width = self.column_width * len(self.root_step_objects)
+        layout = [
+            [
+                step_itx + 1
+                for step_itx, _ in enumerate(self.root_step_objects)
+            ]
+        ]
+
         return [
             {
                 "id": "main",
                 "type": "$swimlane",
                 "height": 730,
-                "width": self.width,
+                "width": width,
                 "header": {
                     "closable": False,
                     "text": ""
                 },
-                "layout": self.layout,
+                "layout": layout,
                 "subHeaderCols": {
-                    "headers": self.headers
+                    "headers": headers
                 }
             },
-            *self.column_data,
-            *self.graph_elements,
-            *self.lines
+            *column_data,
+            *graph_elements,
+            *lines
         ]
 
 
