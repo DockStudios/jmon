@@ -51,7 +51,7 @@ class UrlCheck(BaseCheck):
     @property
     def check_url(self):
         """Return URL to check"""
-        self.inject_variables_into_string(self._config)
+        return self.inject_variables_into_string(self._config)
 
     def _validate_step(self):
         """Check step is valid"""
