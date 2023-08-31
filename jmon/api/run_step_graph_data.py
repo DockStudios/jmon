@@ -66,7 +66,7 @@ class BaseGraphNode:
         return {
             "id": self.id,
             "type": "rectangle",
-            "text": self.step_data.get("description"),
+            "text": self.step_data.get("description") if len(self.step_data.get("description")) < 70 else f'{self.step_data.get("description")[0:70]}...',
             "fill": self.get_status_color('0.8'),
             "stroke": self.get_status_color('1.0'),
             "fontColor": "#FFF",
