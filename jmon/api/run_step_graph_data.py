@@ -43,14 +43,31 @@ class BaseGraphNode:
         self.connecting_node = connecting_node
         self.children = self.get_child_steps()
 
+    def get_status_color(self, opacity):
+        """Return CSS color for step status"""
+        root_step_colors = {
+            StepStatus.INTERNAL_ERROR.value: "rgba(243, 92, 79, {opacity})",
+            StepStatus.FAILED.value: "rgba(243, 92, 79, {opacity})",
+            StepStatus.TIMEOUT.value: "rgba(155, 96, 248, {opacity})",
+            StepStatus.SUCCESS.value: "rgba(60, 201, 122, {opacity})",
+            StepStatus.NOT_RUN.value: "rgba(192, 192, 192, {opacity})",
+            StepStatus.RUNNING.value: "rgba(255, 160, 0, {opacity})",
+        }
+        color = ""
+        if (status := self.step_data.get("status")) and (color := root_step_colors.get(status, "")):
+            color = color.format(opacity=opacity)
+        else:
+            print(status)
+        return color
+
     def get_element_data(self):
         """Return element data"""
         return {
             "id": self.id,
             "type": "rectangle",
             "text": self.step_data.get("description"),
-            "fill": "#F35C4F",
-            "stroke": "#F35C4F",
+            "fill": self.get_status_color('0.8'),
+            "stroke": self.get_status_color('1.0'),
             "fontColor": "#FFF",
             "x": self.x,
             "y": self.y
@@ -183,6 +200,13 @@ class RootGraphData(BaseGraphNode):
         if self.previous_root_step is not None:
             self.connecting_node = self.previous_root_step.get_last_node()
 
+    def get_header_data(self):
+        """Return header data for root step"""
+        return {
+            "text": self.step_data.get("name"),
+            "fill": self.get_status_color("0.4")
+        }
+
     def get_column_data(self):
         """Return column data"""
         return {
@@ -190,7 +214,7 @@ class RootGraphData(BaseGraphNode):
             "type": "$sgroup",
             "groupChildren": self.get_child_step_ids(),
             "style": {
-                "fill": "rgba(60, 201, 122, 0.05)"
+                "fill": self.get_status_color("0.05")
             },
             "x": self.step_itx * (self.WIDTH - 1.25),
             "y": 80,
@@ -222,13 +246,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
         run=run
     ).get_data()
 
-    root_step_colors = {
-        StepStatus.INTERNAL_ERROR.value: "rgba(243, 92, 79, 0.4)",
-        StepStatus.FAILED.value: "rgba(243, 92, 79, 0.4)",
-        StepStatus.TIMEOUT.value: "rgba(155, 96, 248, 0.4)",
-        StepStatus.SUCCESS.value: "rgba(60, 201, 122, 0.4)",
-        StepStatus.NOT_RUN.value: "rgba(192, 192, 192, 0.4)",
-    }
+
 
     if not step_data:
         return {}, 404
@@ -239,6 +257,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
     column_data = []
     graph_elements = []
     lines = []
+    headers = []
     previous_root_step = None
     width = 0
     for root_step_itx, root_step_data in enumerate(root_steps):
@@ -249,6 +268,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
         column_data.append(root_step_obj.get_column_data())
         graph_elements += root_step_obj.get_all_elements()
         lines += root_step_obj.get_all_lines()
+        headers.append(root_step_obj.get_header_data())
 
         previous_root_step = root_step_obj
 
@@ -270,13 +290,7 @@ def get_run_step_graph_data(check_name, environment_name, timestamp):
                 ]
             ],
             "subHeaderCols": {
-                "headers": [
-                    {
-                        "text": first_level_step.get("name"),
-                        "fill": root_step_colors.get(first_level_step.get("status"), "")
-                    }
-                    for step_itx, first_level_step in enumerate(root_steps)
-                ]
+                "headers": headers
             }
         },
         *column_data,
