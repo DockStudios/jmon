@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.10.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.10.0...v4.10.1) (2023-08-31)
+
+
+### Bug Fixes
+
+* Fix bug where check URL step checks for None url ([ede79c5](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/ede79c53b4c36deccd035739367aa30ac9e30e93)), closes [#99](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/99)
+
 # [4.10.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.9.0...v4.10.0) (2023-08-28)
 
 
