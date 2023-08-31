@@ -121,6 +121,18 @@ class BaseGraphNode:
         # - parent to child element
         # - child to sibling element
         # - element to new root
+
+        # Default connect to right
+        to_side = "right"
+        # For sibling child steps, connect via bottom, or if difference in X position is too small
+        if isinstance(self, ChildStepNode) and (self.step_itx > 0 or (self.x - self.connecting_node.x) <= 60):
+            to_side = "bottom"
+
+        # Connect to left when connecting to a root, otherwise top
+        from_side =  "top"
+        if isinstance(self, RootGraphData):
+            from_side = "left"
+
         return {
             "id": f"u{self.id}",
             "type": "line",
@@ -128,13 +140,11 @@ class BaseGraphNode:
             "stroke": "#7D878F",
             "connectType": "elbow",
             "strokeWidth": 2,
-            "cornersRadius": "10",
+            "cornersRadius": "3",
             "from": self.id,
             "to": self.connecting_node.id,
-            # Connect to left when connecting to a root, otherwise top
-            "fromSide": "left" if isinstance(self, RootGraphData) else "top",
-            # Connect from bottom for siblings, otherwise from the right
-            "toSide": "bottom" if isinstance(self, ChildStepNode) and self.step_itx > 0 else "right",
+            "fromSide": from_side,
+            "toSide": to_side,
             "strokeType": "line",
             "backArrow": "filled",
             "forwardArrow": ""
