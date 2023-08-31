@@ -43,6 +43,9 @@ class BaseGraphNode:
         self.connecting_node = connecting_node
         self.children = self.get_child_steps()
 
+        # Update graph generator height based on this element's y position
+        self.root_step.graph_generator.height = max(self.root_step.graph_generator.height, self.y + 110)
+
     def get_status_color(self, opacity):
         """Return CSS color for step status"""
         root_step_colors = {
@@ -231,6 +234,7 @@ class GraphGenerator:
         """Generate graph nodes"""
         previous_root_step = None
         self.column_width = 300
+        self.height = 730
 
         self.root_step_objects = []
         for root_step_itx, root_step_data in enumerate(step_data):
@@ -269,7 +273,7 @@ class GraphGenerator:
             {
                 "id": "main",
                 "type": "$swimlane",
-                "height": 730,
+                "height": self.height,
                 "width": width,
                 "header": {
                     "closable": False,
