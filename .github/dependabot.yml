@@ -1,0 +1,13 @@
+version: 2
+updates:
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/ui"
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "daily"
