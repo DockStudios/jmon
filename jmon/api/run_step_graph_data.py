@@ -128,7 +128,8 @@ class BaseGraphNode:
         return {
             "id": f"e{self.connecting_node.id}-{self.id}",
             "source": self.connecting_node.id,
-            "target": self.id
+            "target": self.id,
+            "type": "step"
         }
 
 
