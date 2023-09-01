@@ -282,7 +282,7 @@ class Runner:
         """Setup selenium and perform checks"""
         supported_clients = run.check.get_supported_clients()
 
-        run.logger.info(f"Supported clients: {supported_clients}")
+        run.logger.info(f"Supported clients: {', '.join([c.name for c in supported_clients])}")
         if not supported_clients:
             raise Exception("There are no supported clients for check")
         client_type = supported_clients[0]

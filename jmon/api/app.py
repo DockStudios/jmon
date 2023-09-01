@@ -23,4 +23,6 @@ class FlaskApp:
     @app.route('/<path:any>')
     def serve_catchall(any):
         """Return static index page"""
+        if os.path.isfile(os.path.join('jmon', 'ui', any)):
+            return send_file(os.path.join('..', 'ui', any))
         return send_file(os.path.join('..', 'ui', 'index.html'))
