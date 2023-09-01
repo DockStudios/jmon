@@ -84,7 +84,7 @@ class BaseGraphNode:
                 "y": self.y
             },
             "style": {
-                "backgroundColor": self.get_status_color('0.8'),
+                "backgroundColor": self.get_status_color('0.4'),
                 # "height": 150,
                 # "width": 270
             },
