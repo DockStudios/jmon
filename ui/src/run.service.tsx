@@ -15,6 +15,10 @@ class CheckService {
     return client.get(`/checks/${name}/environments/${environment}/runs/${runTimestamp}/artifacts/artifact.log`);
   }
 
+  getGraphDataById(name, environment, runTimestamp) {
+    return client.get(`/checks/${name}/environments/${environment}/runs/${runTimestamp}/step-graph-data`);
+  }
+
   triggerRun(name, environment) {
     return client.post(`/checks/${name}/environments/${environment}/trigger`);
   }

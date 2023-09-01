@@ -63,6 +63,19 @@ class BaseStep:
         """Return current status"""
         return self._status
 
+    def as_dict(self):
+        """Return information about step"""
+        return {
+            "name": self.id,
+            "description": self.description,
+            "log": "",
+            "status": self.status.value,
+            "children": [
+                child.as_dict()
+                for child in self.get_child_steps()
+            ]
+        }
+
     def get_child_steps(self):
         """Get child steps"""
         # Return cached child steps
