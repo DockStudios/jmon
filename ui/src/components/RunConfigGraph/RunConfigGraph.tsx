@@ -19,6 +19,7 @@ class RunConfigGraph extends Component {
           panOnDrag={true}
           nodes={this.props.nodes}
           edges={this.props.edges}
+          fitView={true}
           proOptions={{ hideAttribution: true }} />
       </div>
     );
