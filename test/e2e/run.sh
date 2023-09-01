@@ -14,7 +14,7 @@ sleep 30
 docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml up --quiet-pull createbucket dbupgrade
 
 # Run tests
-docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml up --quiet-pull --build --exit-code-from testrunner
+docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml up --quiet-pull --build --exit-code-from testrunner server testrunner scheduler agent flower
 rc=$?
 
 # Get logs from testrunner
