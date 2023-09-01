@@ -14,7 +14,7 @@ class RunConfigGraph extends Component {
   render() {
     return (
       <div style={{ width: '100vh', height: '60%', minHeight: '800px' }}>
-        <ReactFlow nodes={this.props.nodes} edges={this.props.edges} />
+        <ReactFlow nodesDraggable={false} panOnDrag={true} nodes={this.props.nodes} edges={this.props.edges} />
       </div>
     );
   }
