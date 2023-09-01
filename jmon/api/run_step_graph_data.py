@@ -65,13 +65,21 @@ class BaseGraphNode:
         """Return element data"""
         return {
             "id": self.id,
-            "type": "rectangle",
-            "text": self.step_data.get("description") if len(self.step_data.get("description")) < 70 else f'{self.step_data.get("description")[0:70]}...',
-            "fill": self.get_status_color('0.8'),
-            "stroke": self.get_status_color('1.0'),
-            "fontColor": "#FFF",
-            "x": self.x,
-            "y": self.y
+            "data": {
+                "label": self.step_data.get("description") if len(self.step_data.get("description")) < 70 else f'{self.step_data.get("description")[0:70]}...'
+            },
+            "position": {
+                "x": self.x,
+                "y": self.y
+            },
+            "style": {
+                "backgroundColor": self.get_status_color('0.8'),
+                # "height": 150,
+                # "width": 270
+            },
+            "className": "light",
+            "parentNode": self.root_step.column_id,
+            # "extent": "parent"
         }
 
     def get_child_steps(self):
@@ -117,39 +125,11 @@ class BaseGraphNode:
         if not self.connecting_node:
             return {}
 
-        # Three types of lines:
-        # - parent to child element
-        # - child to sibling element
-        # - element to new root
-
-        # Default connect to right
-        to_side = "right"
-        # For sibling child steps, connect via bottom, or if difference in X position is too small
-        if isinstance(self, ChildStepNode) and (self.step_itx > 0 or (self.x - self.connecting_node.x) <= 60):
-            to_side = "bottom"
-
-        # Connect to left when connecting to a root, otherwise top
-        from_side =  "top"
-        if isinstance(self, RootGraphData):
-            from_side = "left"
-
         return {
-            "id": f"u{self.id}",
-            "type": "line",
-            "points": [],
-            "stroke": "#7D878F",
-            "connectType": "elbow",
-            "strokeWidth": 2,
-            "cornersRadius": "3",
-            "from": self.id,
-            "to": self.connecting_node.id,
-            "fromSide": from_side,
-            "toSide": to_side,
-            "strokeType": "line",
-            "backArrow": "filled",
-            "forwardArrow": ""
+            "id": f"e{self.connecting_node.id}-{self.id}",
+            "source": self.connecting_node.id,
+            "target": self.id
         }
-
 
 
 class ChildStepNode(BaseGraphNode):
@@ -202,6 +182,11 @@ class RootGraphData(BaseGraphNode):
         """Return ID"""
         return f"s{self.step_itx + 1}"
 
+    @property
+    def column_id(self):
+        """Return column ID"""
+        return str(self.step_itx + 1)
+
     def __init__(self, graph_generator, previous_root_step, *args, **kwargs):
         """Store member variables and setup children"""
         self.max_child_depth = 1
@@ -226,15 +211,20 @@ class RootGraphData(BaseGraphNode):
     def get_column_data(self):
         """Return column data"""
         return {
-            "id": self.step_itx + 1,
-            "type": "$sgroup",
-            "groupChildren": self.get_child_step_ids(),
-            "style": {
-                "fill": self.get_status_color("0.05")
+            "id": self.column_id,
+            "data": {
+                "label": self.step_data.get("name")
             },
-            "x": self.step_itx * (self.WIDTH - 1.25),
-            "y": 80,
-            "width": self.WIDTH
+            "position": {
+                "x": self.x,
+                "y": self.y
+            },
+            "className": "light",
+            "style": {
+                "backgroundColor": self.get_status_color("0.05"),
+                "width": self.WIDTH,
+                "height": self.graph_generator.height
+            }
         }
 
 
@@ -271,33 +261,10 @@ class GraphGenerator:
             lines += root_step_obj.get_all_lines()
             headers.append(root_step_obj.get_header_data())
 
-        width = self.column_width * len(self.root_step_objects)
-        layout = [
-            [
-                step_itx + 1
-                for step_itx, _ in enumerate(self.root_step_objects)
-            ]
-        ]
-
-        return [
-            {
-                "id": "main",
-                "type": "$swimlane",
-                "height": self.height,
-                "width": width,
-                "header": {
-                    "closable": False,
-                    "text": ""
-                },
-                "layout": layout,
-                "subHeaderCols": {
-                    "headers": headers
-                }
-            },
-            *column_data,
-            *graph_elements,
-            *lines
-        ]
+        return {
+            "nodes": column_data + graph_elements,
+            "edges": lines
+        }
 
 
 @FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/runs/<timestamp>/step-graph-data', methods=["GET"])

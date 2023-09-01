@@ -17,7 +17,10 @@ class RunView extends React.Component {
     this.state = {
       run: {artifacts: [], status: undefined},
       log: "",
-      graphData: []
+      graphData: {
+        nodes: [],
+        edges: []
+      }
     };
     this.retrieveRun = this.retrieveRun.bind(this);
     this.screenshotFromArtifact = this.screenshotFromArtifact.bind(this);
@@ -96,7 +99,7 @@ class RunView extends React.Component {
             item
             xs={12} md={12} lg={12} xl={12}
           >
-            <RunConfigGraph graphData={this.state.graphData}></RunConfigGraph>
+            <RunConfigGraph nodes={this.state.graphData.nodes} edges={this.state.graphData.edges}></RunConfigGraph>
 
           </Grid>
           <Grid
