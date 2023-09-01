@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import ReactFlow from 'reactflow';
 
 import 'reactflow/dist/style.css';
+import './graph.css';
 
 
 class RunConfigGraph extends Component {
