@@ -34,7 +34,7 @@ class BaseGraphNode:
     @property
     def y(self):
         """Return Y co-ordinate"""
-        return (self.step_tree_itx * 130) + 20
+        return 50 + (self.step_tree_itx * 130)
 
     def __init__(self, step_data, root_step, step_itx, connecting_node):
         self.step_data = step_data
@@ -184,7 +184,7 @@ class RootGraphData(BaseGraphNode):
 
     @property
     def step_tree_itx(self):
-        return 1
+        return 0
 
     @property
     def column_x(self):
@@ -248,7 +248,7 @@ class GraphGenerator:
         """Generate graph nodes"""
         previous_root_step = None
         self.column_width = 300
-        self.height = 730
+        self.height = 400
 
         self.root_step_objects = []
         for root_step_itx, root_step_data in enumerate(step_data):
