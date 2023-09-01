@@ -85,12 +85,9 @@ class BaseGraphNode:
             },
             "style": {
                 "backgroundColor": self.get_status_color('0.4'),
-                # "height": 150,
-                # "width": 270
             },
             "className": "light",
             "parentNode": self.root_step.column_id,
-            # "extent": "parent"
             "sourcePosition": from_side,
             "targetPosition": to_side,
         }
