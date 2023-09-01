@@ -1,5 +1,18 @@
 # Changelog
 
+# [4.11.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.10.2...v4.11.0) (2023-09-01)
+
+
+### Bug Fixes
+
+* Fix output in run with available client types with list of names, rather than stringified enums ([f99d0bd](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f99d0bd65ccf4537315b2744d7f177dc5cfc9751)), closes [#10](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/10)
+
+
+### Features
+
+* Initial draft showing run graph with steps and status of steps in run overview ([34b8eae](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/34b8eae370cd4336d924e1db16a6f8d41cfbcd53)), closes [#10](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/10)
+* Store run steps with status in s3 ([8f8c1c9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/8f8c1c99b788a6826c74606c58de46905303dc45)), closes [#10](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/10)
+
 ## [4.10.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.10.1...v4.10.2) (2023-08-31)
 
 
