@@ -91,10 +91,8 @@ class BaseGraphNode:
             "className": "light",
             "parentNode": self.root_step.column_id,
             # "extent": "parent"
-            "position": {
-                "sourcePosition": from_side,
-                "targetPosition": to_side,
-            }
+            "sourcePosition": from_side,
+            "targetPosition": to_side,
         }
 
     def get_child_steps(self):
