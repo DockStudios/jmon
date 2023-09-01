@@ -29,7 +29,7 @@ class BaseGraphNode:
     @property
     def x(self):
         """Return X co-ordinate"""
-        return self.root_step.column_x + 20 + (((self.root_step.WIDTH - 120) / self.root_step.max_child_depth) * (self.depth - 1))
+        return 20 + (((self.root_step.WIDTH - 120) / self.root_step.max_child_depth) * (self.depth - 1))
 
     @property
     def y(self):
@@ -216,7 +216,7 @@ class RootGraphData(BaseGraphNode):
                 "label": self.step_data.get("name")
             },
             "position": {
-                "x": self.x,
+                "x": self.column_x,
                 "y": self.y
             },
             "className": "light",
