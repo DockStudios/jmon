@@ -24,6 +24,6 @@ docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker
 echo "---------------------------------------------------"
 set -x
 
-docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml down -v
+docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml down -v >/dev/null
 
 exit $rc
