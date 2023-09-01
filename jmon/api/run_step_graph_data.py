@@ -63,6 +63,17 @@ class BaseGraphNode:
 
     def get_element_data(self):
         """Return element data"""
+
+        from_side = "right"
+        # For sibling child steps, connect via bottom, or if difference in X position is too small
+        if isinstance(self, ChildStepNode) and (self.step_itx > 0 or (self.x - self.connecting_node.x) <= 60):
+            from_side = "bottom"
+
+        # Connect to left when connecting to a root, otherwise top
+        to_side =  "top"
+        if isinstance(self, RootGraphData):
+            to_side = "left"
+
         return {
             "id": self.id,
             "data": {
@@ -80,6 +91,10 @@ class BaseGraphNode:
             "className": "light",
             "parentNode": self.root_step.column_id,
             # "extent": "parent"
+            "position": {
+                "sourcePosition": from_side,
+                "targetPosition": to_side,
+            }
         }
 
     def get_child_steps(self):
