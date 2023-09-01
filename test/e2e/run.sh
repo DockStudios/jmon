@@ -5,7 +5,7 @@ set -x
 
 docker_compose_project=jmon-e2e
 
-docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml up --build --exit-code-from testrunner
+docker-compose --env-file=./.env -p $docker_compose_project -f ./test/e2e/docker-compose.yml up --quiet-pull --build --exit-code-from testrunner
 rc=$?
 
 # Get logs from testrunner
