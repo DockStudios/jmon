@@ -17,7 +17,7 @@ class TestApiTriggerCheck(EndToEndBaseTest):
         """Setup test, start selenium"""
         self._display = display.Display(visible=False)
         self._browser_factory = BrowserFactory.get()
-        self._browser = self._browser_factory.get_browser(ClientType.BROWSER_CHROME)
+        self._browser = self._browser_factory.get_browser(ClientType.BROWSER_FIREFOX)
         self._selenium = self._browser.selenium_instance
 
     def _create_and_trigger_run(self, name, working):
