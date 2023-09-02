@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.0...v4.11.1) (2023-09-02)
+
+
+### Bug Fixes
+
+* Update dependabot config to mark as fix, so package changes are released ([ff80743](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/ff80743b7d835d95e4045f17b1f6325469f8f2c4))
+
 # [4.11.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.10.2...v4.11.0) (2023-09-01)
 
 
