@@ -1,0 +1,88 @@
+version: '3'
+
+services:
+
+  database:
+    extends:
+      file: ../../docker-compose.yml
+      service: database
+    env_file:
+     - ../../.env
+
+  broker:
+    extends:
+      file: ../../docker-compose.yml
+      service: broker
+    env_file:
+     - ../../.env
+
+  redis:
+    extends:
+      file: ../../docker-compose.yml
+      service: redis
+    env_file:
+     - ../../.env
+
+  minio:
+    extends:
+      file: ../../docker-compose.yml
+      service: minio
+    env_file:
+     - ../../.env
+
+  createbucket:
+    extends:
+      file: ../../docker-compose.yml
+      service: createbucket
+    env_file:
+     - ../../.env
+
+  dbupgrade:
+    extends:
+      file: ../../docker-compose.yml
+      service: dbupgrade
+    env_file:
+     - ../../.env
+
+  server:
+    extends:
+      file: ../../docker-compose.yml
+      service: server
+    env_file:
+     - ../../.env
+
+  scheduler:
+    extends:
+      file: ../../docker-compose.yml
+      service: scheduler
+    env_file:
+     - ../../.env
+
+  flower:
+    extends:
+      file: ../../docker-compose.yml
+      service: flower
+    env_file:
+     - ../../.env
+
+  agent:
+    extends:
+      file: ../../docker-compose.yml
+      service: agent
+    env_file:
+     - ../../.env
+
+  testrunner:
+    build:
+      context: ../../
+      dockerfile: Dockerfile.server
+
+    # Install pytest, wait for services and run pytest
+    command: bash -c "pip3 install pytest >/dev/null && sleep 2 && pytest -vvv ./jmon/test/e2e"
+    env_file:
+     - ../../.env
+    links:
+     - database
+     - broker
+     - redis
+     - server
