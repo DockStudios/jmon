@@ -1,24 +1,13 @@
 
-from pyvirtualdisplay import display
 from selenium.webdriver.common.by import By
 
-from jmon.client_type import ClientType
 from jmon.models.run import RunTriggerType
-from jmon.runner import BrowserFactory
-from jmon.test.e2e import EndToEndBaseTest
+from jmon.test.e2e import EndToEndSeleniumTest
 import jmon.models.check
 import jmon.tasks.perform_check
 
 
-class TestApiTriggerCheck(EndToEndBaseTest):
-
-
-    def setup_method(self, method):
-        """Setup test, start selenium"""
-        self._display = display.Display(visible=False)
-        self._browser_factory = BrowserFactory.get()
-        self._browser = self._browser_factory.get_browser(ClientType.BROWSER_FIREFOX)
-        self._selenium = self._browser.selenium_instance
+class TestApiTriggerCheck(EndToEndSeleniumTest):
 
     def _create_and_trigger_run(self, name, working):
         """Create run and trigger check"""

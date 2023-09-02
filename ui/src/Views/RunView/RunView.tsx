@@ -77,7 +77,7 @@ class RunView extends React.Component {
             }
           }}
         >
-          <a href={imageUrl}>
+          <a id={"run-image-" + artifactName} href={imageUrl}>
             <span>{artifactName}</span>
             <img className='artifact-image' src={imageUrl} />
           </a>
@@ -91,7 +91,7 @@ class RunView extends React.Component {
   render() {
     return (
       <Container  maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-        <Typography component="h2" variant="h5">
+        <Typography id="run-title" component="h2" variant="h5">
           {this.props.match.checkName} - {this.props.match.environmentName} - {this.props.match.runTimestamp}
         </Typography>
         <Grid container spacing={3} sx={{textAlign: 'left'}}>
@@ -111,7 +111,7 @@ class RunView extends React.Component {
               Log
             </Typography>
             <code>
-              <pre>{this.state.log}</pre>
+              <pre id="run-log">{this.state.log}</pre>
             </code>
           </Grid>
 
