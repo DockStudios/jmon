@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.2...v4.11.3) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @testing-library/jest-dom from 5.16.5 to 6.1.3 in /ui ([c138cad](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/c138cad4cc038470673d5320b182aa2c7c5b43d7))
+
 ## [4.11.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.1...v4.11.2) (2023-09-09)
 
 
