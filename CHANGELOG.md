@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.4](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.3...v4.11.4) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump pillow from 9.4.0 to 10.0.0 ([c690bb7](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/c690bb7cfb6277718c89e4d26c0f3aad85057e42))
+
 ## [4.11.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.2...v4.11.3) (2023-09-09)
 
 
