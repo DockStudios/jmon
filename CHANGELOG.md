@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.1...v4.11.2) (2023-09-09)
+
+
+### Bug Fixes
+
+* **deps:** bump @mui/x-data-grid from 5.17.25 to 6.12.1 in /ui ([30e00fd](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/30e00fdc11ce064fd0f8d5c89a6f8df7d9d07960))
+
 ## [4.11.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.0...v4.11.1) (2023-09-02)
 
 
