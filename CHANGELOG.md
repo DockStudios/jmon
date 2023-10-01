@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.5](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.4...v4.11.5) (2023-10-01)
+
+
+### Bug Fixes
+
+* Pin werkzeug package to fix import of url_quote in flask ([9e9ca49](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/9e9ca494c30cd79d4fe73bb656872594a256122a))
+
 ## [4.11.4](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.3...v4.11.4) (2023-09-09)
 
 
