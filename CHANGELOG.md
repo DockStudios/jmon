@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.11.6](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.5...v4.11.6) (2023-10-01)
+
+
+### Bug Fixes
+
+* **deps:** bump @fontsource/roboto from 4.5.8 to 5.0.8 in /ui ([fa61fee](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/fa61feec333e8585c92bd36bb41696d1a19e9bf6))
+* **deps:** bump @mui/material from 5.11.10 to 5.14.11 in /ui ([5a8bb69](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/5a8bb6916693e14ce886c4dba4f2c4a56f7cbfcc))
+* **deps:** bump web-vitals from 2.1.4 to 3.5.0 in /ui ([f9be913](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f9be913101d14cc45a2c0042df954eb1d190d3f3))
+
 ## [4.11.5](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.4...v4.11.5) (2023-10-01)
 
 
