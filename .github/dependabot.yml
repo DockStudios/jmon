@@ -5,7 +5,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/ui"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: fix
       prefix-development: chore
@@ -14,7 +14,7 @@ updates:
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     commit-message:
       prefix: fix
       prefix-development: chore
