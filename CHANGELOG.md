@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.11.7](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.6...v4.11.7) (2023-11-18)
+
+
+### Bug Fixes
+
+* **deps:** bump pyyaml from 6.0 to 6.0.1 ([ad2cdeb](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/ad2cdeb8fc98c4995de3ce7974505bd36ec821c0))
+
 ## [4.11.6](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.5...v4.11.6) (2023-10-01)
 
 
