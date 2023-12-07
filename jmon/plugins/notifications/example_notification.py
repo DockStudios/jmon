@@ -25,6 +25,10 @@ class ExampleNotification(NotificationPlugin):
         """Handle every failure"""
         logger.debug(f"{check_name} is failing")
 
+    def on_every_timeout(self, check_name, run_status, run_log, attributes, **future_kwargs):
+        """Handle every timeout"""
+        logger.debug(f"{check_name} exceeded the check timeout")
+
     def on_complete(self, check_name, run_status, run_log, attributes, **future_kwargs):
         """Handle every run completion"""
         logger.debug(f"{check_name} has run with status: {run_status}")

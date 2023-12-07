@@ -143,6 +143,11 @@ class Run:
             if is_new_state:
                 methods_to_call.append("on_first_failure")
 
+        elif run_status is StepStatus.TIMEOUT:
+            methods_to_call.append("on_every_timeout")
+            if is_new_state:
+                methods_to_call.append("on_first_timeout")
+
         for notification_plugin in NotificationLoader.get_instance().get_plugins():
             logger.debug(f"Processing notification plugin: {notification_plugin}")
             for method_to_call in methods_to_call:
@@ -151,6 +156,8 @@ class Run:
                     getattr(notification_plugin(), method_to_call)(
                         check_name=self._check.name,
                         run_status=run_status,
+                        environment_name=self._check.environment.name,
+                        run_timestamp=self._db_run.timestamp_id,
                         run_log=self.logger.read_log_stream(),
                         attributes=self.check.attributes
                     )
