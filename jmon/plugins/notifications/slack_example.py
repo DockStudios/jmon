@@ -59,7 +59,7 @@ class SlackExample(NotificationPlugin):
 
     def on_first_success(self, check_name, attributes, **kwargs):
         """Post slack message on success"""
-        self._post_message(f"{check_name} is back to normal :checkmark:", attributes)
+        self._post_message(f"{check_name} is back to normal :white_check_mark:", attributes)
 
     def on_check_queue_timeout(self, check_count, **kwargs):
         """Handle queue timeout"""
