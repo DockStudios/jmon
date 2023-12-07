@@ -4,31 +4,31 @@ from jmon.logger import logger
 
 class NotificationPlugin:
 
-    def on_first_failure(self, check_name, run_status, run_log, attributes):
+    def on_first_failure(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on first failure"""
         pass
 
-    def on_every_failure(self, check_name, run_status, run_log, attributes):
+    def on_every_failure(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on each failure"""
         pass
 
-    def on_first_success(self, check_name, run_status, run_log, attributes):
+    def on_first_success(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on first success after a failure"""
         pass
 
-    def on_every_success(self, check_name, run_status, run_log, attributes):
+    def on_every_success(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on every success"""
         pass
 
-    def on_first_timeout(self, check_name, run_status, run_log, attributes):
+    def on_first_timeout(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on first timeout (following any non-timeout result)"""
         pass
 
-    def on_every_timeout(self, check_name, run_status, run_log, attributes):
+    def on_every_timeout(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on every timeout"""
         pass
 
-    def on_complete(self, check_name, run_status, run_log, attributes):
+    def on_complete(self, check_name, environment_name, run_timestamp, run_status, run_log, attributes):
         """Handle result on run completion"""
         pass
 

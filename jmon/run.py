@@ -156,6 +156,8 @@ class Run:
                     getattr(notification_plugin(), method_to_call)(
                         check_name=self._check.name,
                         run_status=run_status,
+                        environment_name=self._check.environment.name,
+                        run_timestamp=self._db_run.timestamp_id,
                         run_log=self.logger.read_log_stream(),
                         attributes=self.check.attributes
                     )
