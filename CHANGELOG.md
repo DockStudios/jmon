@@ -1,5 +1,18 @@
 # Changelog
 
+# [4.12.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.7...v4.12.0) (2023-12-07)
+
+
+### Bug Fixes
+
+* Fix emoji used in slack message for recovery in example slack plugin ([7373707](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/7373707d961941ccc5a01a7390d9dcb707680120)), closes [#108](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/108)
+
+
+### Features
+
+* Add environment name, run timestamp to notification plugin calls. Add environment to slack notifications and link to failed runs. ([940405a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/940405aa1d1b1d1f86ed4bb962ad2c7bb011344a)), closes [#107](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/107)
+* Add notification hooks for timed out status of check. ([1a406bf](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/1a406bf7a091455e7a0d126d23bb9cacdbfee1c7)), closes [#109](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/109)
+
 ## [4.11.7](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.6...v4.11.7) (2023-11-18)
 
 
