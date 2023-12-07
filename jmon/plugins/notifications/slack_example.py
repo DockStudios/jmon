@@ -57,6 +57,10 @@ class SlackExample(NotificationPlugin):
         """Post slack message on failure"""
         self._post_message(f"{check_name} has failed :alarm:", attributes)
 
+    def on_first_timeout(self, check_name, attributes, **kwargs):
+        """Post slack message on failure"""
+        self._post_message(f"{check_name} has timed out :alarm:", attributes)
+
     def on_first_success(self, check_name, attributes, **kwargs):
         """Post slack message on success"""
         self._post_message(f"{check_name} is back to normal :white_check_mark:", attributes)

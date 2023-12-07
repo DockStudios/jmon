@@ -143,6 +143,11 @@ class Run:
             if is_new_state:
                 methods_to_call.append("on_first_failure")
 
+        elif run_status is StepStatus.TIMEOUT:
+            methods_to_call.append("on_every_timeout")
+            if is_new_state:
+                methods_to_call.append("on_first_timeout")
+
         for notification_plugin in NotificationLoader.get_instance().get_plugins():
             logger.debug(f"Processing notification plugin: {notification_plugin}")
             for method_to_call in methods_to_call:

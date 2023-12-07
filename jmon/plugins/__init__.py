@@ -17,7 +17,15 @@ class NotificationPlugin:
         pass
 
     def on_every_success(self, check_name, run_status, run_log, attributes):
-        """Handle result on success failure"""
+        """Handle result on every success"""
+        pass
+
+    def on_first_timeout(self, check_name, run_status, run_log, attributes):
+        """Handle result on first timeout (following any non-timeout result)"""
+        pass
+
+    def on_every_timeout(self, check_name, run_status, run_log, attributes):
+        """Handle result on every timeout"""
         pass
 
     def on_complete(self, check_name, run_status, run_log, attributes):
