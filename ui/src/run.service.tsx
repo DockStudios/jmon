@@ -1,10 +1,16 @@
+import { Dayjs } from 'dayjs';
 import client from './client.tsx';
 
 
 class CheckService {
 
-  listByCheck(name, environment) {
-    return client.get(`/checks/${name}/environments/${environment}/runs`);
+  listByCheck(name: string, environment: string, fromDate: Dayjs, toDate: Dayjs) {
+    return client.get(`/checks/${name}/environments/${environment}/runs`, {
+      params: {
+        from_date: fromDate.toISOString(),
+        to_date: toDate.toISOString()
+      }
+    });
   }
 
   getById(name, environment, runTimestamp) {
