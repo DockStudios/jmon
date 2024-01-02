@@ -99,7 +99,10 @@ class RunView extends React.Component {
             item
             xs={12} md={12} lg={12} xl={12}
           >
-            <RunConfigGraph nodes={this.state.graphData.nodes} edges={this.state.graphData.edges}></RunConfigGraph>
+            <RunConfigGraph
+              nodes={this.state.graphData.nodes}
+              edges={this.state.graphData.edges}>
+            </RunConfigGraph>
 
           </Grid>
           <Grid
