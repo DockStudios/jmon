@@ -3,11 +3,13 @@ import { Paper, TableBody, TableCell, TableContainer, TableHead, TableRow, Typog
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
+import { DatePicker } from '@mui/x-date-pickers';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
 import runService from '../../run.service.tsx';
 import checkService from '../../check.service.tsx';
 import { withRouter } from '../../withRouter';
+import dayjs from 'dayjs';
 
 
 const columns: GridColDef[] = [
@@ -47,13 +49,17 @@ class CheckView extends React.Component {
       runs: [],
       detailsRows: [],
       manualTriggerState: null,
-      manualTriggerId: null
+      manualTriggerId: null,
+      fromDate: dayjs().subtract(7, 'day'),
+      toDate: dayjs().add(1, 'day'),
     };
     this.retrieveRuns = this.retrieveRuns.bind(this);
     this.getRunDetails = this.getRunDetails.bind(this);
     this.onRowClick = this.onRowClick.bind(this);
     this.triggerRun = this.triggerRun.bind(this);
     this.checkManualRunStatus = this.checkManualRunStatus.bind(this);
+    this.setFromDate = this.setFromDate.bind(this);
+    this.setToDate = this.setToDate.bind(this);
   }
 
   componentDidMount() {
@@ -62,8 +68,24 @@ class CheckView extends React.Component {
     this.getRunDetails();
   }
 
+  setFromDate(newDate) {
+    this.setState((state) => Object.assign({}, state, {fromDate: newDate}), () => {
+      this.retrieveRuns();
+    });
+  }
+  setToDate(newDate) {
+    this.setState((state) => Object.assign({}, state, {fromDate: newDate}), () => {
+      this.retrieveRuns();
+    });
+  }
+
   retrieveRuns() {
-    new runService().listByCheck(this.props.match.checkName, this.props.match.environmentName).then((runRes) => {
+    new runService().listByCheck(
+      this.props.match.checkName,
+      this.props.match.environmentName,
+      this.state.fromDate,
+      this.state.toDate,
+    ).then((runRes) => {
       this.setState((state) => {
         return {
           runs: Object.keys(runRes.data).map((key) => {return {timestamp: key, result: runRes.data[key]}}),
@@ -191,6 +213,18 @@ class CheckView extends React.Component {
               }
             }}
           >
+            <DatePicker
+              label="From date"
+              value={this.state.fromDate}
+              onChange={this.setFromDate}
+              />
+            <DatePicker
+              label="To date"
+              value={this.state.toDate}
+              onChange={this.setToDate}
+              />
+            <br />
+
             <div style={{ height: 800, width: '100%' }}>
               <DataGrid
                 rows={this.state.runs}

@@ -1,4 +1,6 @@
 
+import datetime
+
 from flask import request
 
 from jmon.models.run import RunTriggerType
@@ -16,7 +18,32 @@ def get_check_runs(check_name, environment_name):
     if error:
         return error, 404
 
+    from_date = request.args.get("from_date")
+    to_date = request.args.get("to_date")
+
+    if from_date:
+        # Strip zulu, if present
+        if from_date.endswith('Z'):
+            from_date = from_date[:-1]
+        try:
+            from_date = datetime.datetime.fromisoformat(from_date)
+        except:
+            return {"status": "error", "msg": "Invalid from_date parameter"}, 400
+    if to_date:
+        # Strip zulu, if present
+        if to_date.endswith('Z'):
+            to_date = to_date[:-1]
+        try:
+            to_date = datetime.datetime.fromisoformat(to_date)
+        except:
+            return {"status": "error", "msg": "Invalid to_date parameter"}, 400
+
     return {
         run.timestamp_id: run.status.value
-        for run in Run.get_by_check(check=check, trigger_type=RunTriggerType.SCHEDULED)
+        for run in Run.get_by_check(
+            check=check,
+            trigger_type=RunTriggerType.SCHEDULED,
+            from_date=from_date,
+            to_date=to_date
+        )
     }, 200
