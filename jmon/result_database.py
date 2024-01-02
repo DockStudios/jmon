@@ -3,7 +3,10 @@ import datetime
 import redis
 
 import jmon.config
+from jmon.heatmap_timeframe import HeatmapTimeframe, HeatmapTimeframeFactory
 from jmon.result_timeframe import ResultTimeframe
+import jmon.models.check
+import jmon.run
 
 
 class ResultMetric:
@@ -101,6 +104,52 @@ class ResultMetricLatestStatus(ResultMetric):
             return False
         # Default to None (not run), assuming the metric doesn't exist
         return None
+
+
+class ResultMetricHeatmapSuccessRate(ResultMetric):
+    """Metric for success rate over time frame"""
+
+    def _get_key(self, success: bool, check: 'jmon.models.check.Check', timeframe: HeatmapTimeframe, timestamp: datetime):
+        """Get key from check"""
+        suffix = "success" if success else "failure"
+        return f"jmon_result_heatmap_{check.name}_{check.environment.name}_{timeframe.get_from_timestamp(timestamp)}_{suffix}"
+
+    def write(self, result_database: 'ResultDatabase', run: 'jmon.run.Run'):
+        """Write results to redis"""
+        for timeframe in HeatmapTimeframeFactory.get_all():
+            key_ = self._get_key(success=run.success, check=run.check, timeframe=timeframe, timestamp=run._db_run.timestamp)
+            res = result_database.connection.incr(key_, amount=1)
+            # If result is 1,
+            # then the key has been created and expiry should be set
+            if res == 1:
+                result_database.connection.expire(
+                    key_,
+                    timeframe.expiry
+                )
+
+    def read(self, result_database: 'ResultDatabase', check: 'jmon.models.check.Check', timeframe: HeatmapTimeframe, timestamp: datetime):
+        """Get latest check result status"""
+        # Get passes/fails
+        successes = result_database.connection.get(self._get_key(
+            success=True, check=check, timeframe=timeframe, timestamp=timestamp
+        ))
+        if successes is None:
+            successes = 0
+        else:
+            successes = int(successes)
+
+        failures = result_database.connection.get(self._get_key(
+            success=False, check=check, timeframe=timeframe, timestamp=timestamp
+        ))
+        if failures is None:
+            failures = 0
+        else:
+            failures = int(failures)
+
+        if (failures + successes) == 0:
+            return None
+
+        return successes / (successes + failures)
 
 
 class ResultDatabase:
