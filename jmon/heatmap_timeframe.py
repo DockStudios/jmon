@@ -1,43 +1,45 @@
 
+from abc import ABC, abstractmethod
 from typing import Dict, List
 from datetime import datetime, timedelta
 
 from jmon.config import Config
 
 
-class HeatmapTimeframe:
+class HeatmapTimeframe(ABC):
     """Handle properties of result timeframes"""
 
-    def __init__(self, name: str, format: str, expiry: timedelta, max_delta: timedelta, label_format: str):
-        """Store member variables"""
-        self._name = name
-        self._format = format
-        self._expiry = expiry
-        self._max_delta = max_delta
-        self._label_format = label_format
-
     @property
+    @abstractmethod
     def name(self) -> str:
         """Return name"""
-        return self._name
+        ...
 
     @property
+    @abstractmethod
     def format(self) -> str:
         """Return format"""
-        return self._format
+        ...
 
     @property
+    @abstractmethod
     def expiry(self) -> timedelta:
         """Return expiry"""
-        return self._expiry
+        ...
 
+    @abstractmethod
     def get_label(self, date: datetime):
         """Get label"""
-        return date.strptime(self._label_format)
+        return date.strftime(self.label_format)
 
-    def enabled_for_timeframe(self, from_date, to_date) -> bool:
+    @property
+    @abstractmethod
+    def max_delta(self) -> timedelta:
+        ...
+
+    def enabled_for_timeframe(self, from_date: datetime, to_date: datetime) -> bool:
         """Check if timeframe is available for from/to date"""
-        return (to_date - from_date) <= self._max_delta
+        return abs(to_date - from_date) <= self.max_delta
 
     def get_from_timestamp(self, date: datetime):
         """Return redis timestamp"""
@@ -45,42 +47,112 @@ class HeatmapTimeframe:
 
     def get_data_points(self, from_date: datetime, to_date: datetime) -> List[datetime]:
         """Return datetime points for timeframe within range"""
-        return []
+        current_date = from_date
+        points = []
+        while current_date <= to_date:
+            points.append(current_date)
+            current_date = self.increment_date(current_date)
+        return points
 
+    @abstractmethod
+    def increment_date(self, current_date: datetime) -> datetime:
+        ...
+
+
+class HeatmapTimeframeHour(HeatmapTimeframe):
+
+    @property
+    def name(self) -> str:
+        return "hour"
+
+    def get_label(self, date: datetime):
+        """Get label"""
+        return date.strftime("%H:00")
+
+    @property
+    def max_delta(self) -> timedelta:
+        return timedelta(hours=36)
+
+    @property
+    def expiry(self) -> timedelta:
+        return timedelta(minutes=Config().RESULT_RETENTION_MINS)
+
+    @property
+    def format(self) -> str:
+        """Return format"""
+        return "%Y%m%d%H"
+
+    def increment_date(self, current_date: datetime) -> datetime:
+        return current_date + timedelta(hours=1)
+
+
+class HeatmapTimeframeDay(HeatmapTimeframe):
+
+    @property
+    def name(self) -> str:
+        return "day"
+
+    def get_label(self, date: datetime):
+        """Get label"""
+        return date.strftime("%d %b")
+
+    @property
+    def max_delta(self) -> timedelta:
+        return timedelta(days=60)
+
+    @property
+    def expiry(self) -> timedelta:
+        return timedelta(minutes=Config().RESULT_RETENTION_MINS)
+
+    @property
+    def format(self) -> str:
+        """Return format"""
+        return "%Y%m%d"
+
+    def increment_date(self, current_date: datetime) -> datetime:
+        return current_date + timedelta(hours=24)
+
+
+class HeatmapTimeframeMonth(HeatmapTimeframe):
+
+    @property
+    def name(self) -> str:
+        return "month"
+
+    def get_label(self, date: datetime):
+        """Get label"""
+        return date.strftime("%b %Y")
+
+    @property
+    def max_delta(self) -> timedelta:
+        return timedelta(weeks=240)
+
+    @property
+    def expiry(self) -> timedelta:
+        return timedelta(weeks=53)
+
+    @property
+    def format(self) -> str:
+        """Return format"""
+        return "%Y%m"
+
+    def increment_date(self, current_date: datetime) -> datetime:
+        if current_date.month == 12:
+            return datetime(year=current_date.year + 1, month=1, day=1)
+        return datetime(year=current_date.year, month=current_date.month + 1, day=1)
 
 
 class HeatmapTimeframeFactory:
     """Factory class for returning heatmap timeframe instances"""
 
-    _DEFINITIONS = {
-        timeframe.name: timeframe
+    _DEFINITIONS: Dict[str, HeatmapTimeframe] = [
+        timeframe
         for timeframe in [
-            HeatmapTimeframe(
-                name="hour",
-                format="%Y%m%d%H",
-                expiry=timedelta(minutes=Config().RESULT_RETENTION_MINS),
-                max_delta=timedelta(hours=36),
-                delta=timedelta(hours=1),
-                label_format="%H:00"
-            ),
-            HeatmapTimeframe(
-                name="day",
-                format="%Y%m%d",
-                expiry=timedelta(minutes=Config().RESULT_RETENTION_MINS),
-                max_delta=timedelta(days=60),
-                delta=timedelta(hours=24),
-                label_format="%d %b"
-            ),
-            HeatmapTimeframe(
-                name="month",
-                format="%Y%m",
-                expiry=timedelta(weeks=53),
-                max_delta=timedelta(weeks=24),
-                label_format="%b %Y",
-                delta=relativetime,
-            ),
+            HeatmapTimeframeHour(),
+            HeatmapTimeframeDay(),
+            HeatmapTimeframeMonth(),
         ]
-    }
+    ]
 
     @classmethod
     def get_by_time_difference(cls, from_date, to_date):
@@ -92,11 +164,12 @@ class HeatmapTimeframeFactory:
     @classmethod
     def get_all(cls):
         """Return all result timeframes"""
-        return [
-            inst for inst in cls._DEFINITIONS.values()
-        ]
+        return cls._DEFINITIONS
 
     @classmethod
     def get_by_name(cls, name):
         """Return timeframe by name"""
-        return cls._DEFINITIONS.get(name)
+        for timeframe in cls._DEFINITIONS:
+            if timeframe.name == name:
+                return timeframe
+        return None

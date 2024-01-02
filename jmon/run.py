@@ -9,7 +9,7 @@ from jmon.logger import logger
 from jmon.artifact_storage import ArtifactStorage
 from jmon.run_step_data import RunStepData
 from jmon.plugins import NotificationLoader
-from jmon.result_database import ResultMetricAverageSuccessRate, ResultDatabase, ResultMetricHeatmapSuccessRate, ResultMetricLatestStatus
+import jmon.result_database
 import jmon.models.run
 from jmon.run_logger import RunLogger
 from jmon.step_status import StepStatus
@@ -108,13 +108,13 @@ class Run:
 
         if self._db_run.trigger_type is jmon.models.run.RunTriggerType.SCHEDULED:
             # Create metrics for scheduled runs
-            result_database = ResultDatabase()
-            average_success_metric = ResultMetricAverageSuccessRate()
+            result_database = jmon.result_database.ResultDatabase()
+            average_success_metric = jmon.result_database.ResultMetricAverageSuccessRate()
             average_success_metric.write(result_database=result_database, run=self)
-            latest_status_metric = ResultMetricLatestStatus()
+            latest_status_metric = jmon.result_database.ResultMetricLatestStatus()
             latest_status_metric.write(result_database=result_database, run=self)
 
-            heatmap_timeframe_metrics = ResultMetricHeatmapSuccessRate()
+            heatmap_timeframe_metrics = jmon.result_database.ResultMetricHeatmapSuccessRate()
             heatmap_timeframe_metrics.write(result_database=result_database, run=self)
 
             # Send notifications using plugins

@@ -10,6 +10,7 @@ import runService from '../../run.service.tsx';
 import checkService from '../../check.service.tsx';
 import { withRouter } from '../../withRouter';
 import dayjs from 'dayjs';
+import Chart from "react-apexcharts";
 
 
 const columns: GridColDef[] = [
@@ -50,8 +51,9 @@ class CheckView extends React.Component {
       detailsRows: [],
       manualTriggerState: null,
       manualTriggerId: null,
-      fromDate: dayjs().subtract(7, 'day'),
-      toDate: dayjs().add(1, 'day'),
+      fromDate: dayjs().subtract(7, 'day').set('second', 0).set('minute', 0).set('hour', 0),
+      toDate: dayjs().set('second', 59).set('minute', 59).set('hour', 23),
+      heatmapData: [],
     };
     this.retrieveRuns = this.retrieveRuns.bind(this);
     this.getRunDetails = this.getRunDetails.bind(this);
@@ -74,7 +76,7 @@ class CheckView extends React.Component {
     });
   }
   setToDate(newDate) {
-    this.setState((state) => Object.assign({}, state, {fromDate: newDate}), () => {
+    this.setState((state) => Object.assign({}, state, {toDate: newDate}), () => {
       this.retrieveRuns();
     });
   }
@@ -86,13 +88,33 @@ class CheckView extends React.Component {
       this.state.fromDate,
       this.state.toDate,
     ).then((runRes) => {
-      this.setState((state) => {
-        return {
+      this.setState((state) => Object.assign(
+        {},
+        state,
+        {
           runs: Object.keys(runRes.data).map((key) => {return {timestamp: key, result: runRes.data[key]}}),
-          detailsRows: state.detailsRows
-        };
-      });
+        })
+      );
     });
+
+    new checkService().getHeatmapData(
+      this.props.match.checkName,
+      this.props.match.environmentName,
+      this.state.fromDate,
+      this.state.toDate,
+    ).then((heatmapDataRes) => {
+      this.setState((state) => Object.assign(
+        {},
+        state,
+        {
+          heatmapData: [
+            {
+              name: "Uptime",
+              data: heatmapDataRes.data
+            }
+          ]
+        }));
+    })
   }
 
   triggerRun() {
@@ -224,6 +246,52 @@ class CheckView extends React.Component {
               onChange={this.setToDate}
               />
             <br />
+
+            <Chart
+              options={{
+                plotOptions: {
+                  heatmap: {
+                    colorScale: {
+                      ranges: [{
+                          from: 0,
+                          to: 90,
+                          color: '#00A100',
+                          // name: 'low',
+                        },
+                        {
+                          from: 90,
+                          to: 99.0,
+                          color: '#128FD9',
+                          name: 'medium',
+                        },
+                        {
+                          from: 99.0,
+                          to: 99.99,
+                          color: '#FFB200',
+                          name: 'high',
+                        },
+                        ,
+                        {
+                          from: 99.99,
+                          to: 100.0,
+                          color: '#ccffcc',
+                          name: 'high',
+                        },
+                        {
+                          from: null,
+                          to: null,
+                          color: '#eeeeee',
+                          name: 'No runs',
+                        }
+                      ]
+                    }
+                  }
+                }
+              }}
+              series={this.state.heatmapData}
+              type="heatmap"
+              width="500"
+            />
 
             <div style={{ height: 800, width: '100%' }}>
               <DataGrid

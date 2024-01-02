@@ -1,3 +1,4 @@
+import { Dayjs } from 'dayjs';
 import client from './client.tsx';
 
 class CheckService {
@@ -15,6 +16,15 @@ class CheckService {
       args = `timeframe=${timeframe}`;
     }
     return client.get(`/checks/${name}/environments/${environment}/results?${args}`);
+  }
+
+  getHeatmapData(name: string, environment: string, fromDate: Dayjs, toDate: Dayjs) {
+    return client.get(`/checks/${name}/environments/${environment}/heatmap-data`, {
+      params: {
+        from_date: fromDate.toISOString(),
+        to_date: toDate.toISOString()
+      }
+    });
   }
 }
 

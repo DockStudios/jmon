@@ -149,7 +149,7 @@ class ResultMetricHeatmapSuccessRate(ResultMetric):
         if (failures + successes) == 0:
             return None
 
-        return successes / (successes + failures)
+        return (successes / (successes + failures)) * 100.0
 
 
 class ResultDatabase:
