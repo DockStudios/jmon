@@ -27,12 +27,16 @@ class Run(jmon.database.Base):
         return session.query(cls).filter(cls.check==check).order_by(cls.timestamp.desc()).limit(1).first()
 
     @classmethod
-    def get_by_check(cls, check, limit=None, trigger_type=None):
+    def get_by_check(cls, check, limit=None, trigger_type=None, from_date=None, to_date=None):
         """Get all runs by check"""
         session = jmon.database.Database.get_session()
         runs = session.query(cls).filter(cls.check==check).order_by(cls.timestamp.desc())
         if trigger_type:
             runs = runs.where(cls.trigger_type==trigger_type)
+        if from_date:
+            runs = runs.where(cls.timestamp>from_date)
+        if to_date:
+            runs = runs.where(cls.timestamp<to_date)
         if limit:
             runs = runs.limit(limit)
         return [run for run in runs]
