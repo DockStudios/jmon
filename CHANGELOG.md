@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.12.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.12.0...v4.12.1) (2024-01-02)
+
+
+### Bug Fixes
+
+* Update background of graph in RunView to gray ([f743116](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/f7431162f8a0c51a0032239c7176eecd7f999789)), closes [#111](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/111)
+
 # [4.12.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.11.7...v4.12.0) (2023-12-07)
 
 
