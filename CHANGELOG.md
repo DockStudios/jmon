@@ -1,5 +1,12 @@
 # Changelog
 
+# [4.13.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.12.1...v4.13.0) (2024-01-02)
+
+
+### Features
+
+* Add datetime picker to list view and to_date/from_date argument to run list API ([72e33cf](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/72e33cf5dc84880f1388fe4ddb5619ddd1884d27)), closes [#113](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/113)
+
 ## [4.12.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.12.0...v4.12.1) (2024-01-02)
 
 
