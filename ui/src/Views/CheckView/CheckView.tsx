@@ -235,65 +235,70 @@ class CheckView extends React.Component {
               }
             }}
           >
-            <DatePicker
+            <DateTimePicker
               label="From date"
               value={this.state.fromDate}
               onChange={this.setFromDate}
               />
-            <DatePicker
+            <DateTimePicker
               label="To date"
               value={this.state.toDate}
               onChange={this.setToDate}
               />
             <br />
 
-            <Chart
-              options={{
-                plotOptions: {
-                  heatmap: {
-                    colorScale: {
-                      ranges: [{
-                          from: 0,
-                          to: 90,
-                          color: '#00A100',
-                          // name: 'low',
-                        },
-                        {
-                          from: 90,
-                          to: 99.0,
-                          color: '#128FD9',
-                          name: 'medium',
-                        },
-                        {
-                          from: 99.0,
-                          to: 99.99,
-                          color: '#FFB200',
-                          name: 'high',
-                        },
-                        ,
-                        {
-                          from: 99.99,
-                          to: 100.0,
-                          color: '#ccffcc',
-                          name: 'high',
-                        },
-                        {
-                          from: null,
-                          to: null,
-                          color: '#eeeeee',
-                          name: 'No runs',
-                        }
-                      ]
+            <div style={{ height: 800, width: '100%' }}>
+
+              <Chart
+                options={{
+                  dataLabels: {
+                    enabled: true
+                  },
+                  plotOptions: {
+                    heatmap: {
+                      colorScale: {
+                        ranges: [
+                          {
+                            from: -1,
+                            to: -1,
+                            color: '#eeeeee',
+                            name: 'No runs',
+                          },
+                          {
+                            from: 0,
+                            to: 90,
+                            color: '#DC143C',
+                            // name: 'low',
+                          },
+                          {
+                            from: 90,
+                            to: 99.0,
+                            color: '#FF8C00',
+                            name: 'medium',
+                          },
+                          {
+                            from: 99.0,
+                            to: 99.999,
+                            color: '#FFD700',
+                            name: 'high',
+                          },
+                          ,
+                          {
+                            from: 99.999,
+                            to: 100.0,
+                            color: '#ccffcc',
+                            name: 'high',
+                          },
+                        ]
+                      }
                     }
                   }
-                }
-              }}
-              series={this.state.heatmapData}
-              type="heatmap"
-              width="500"
-            />
+                }}
+                series={this.state.heatmapData}
+                type="heatmap"
+                width="800"
+              />
 
-            <div style={{ height: 800, width: '100%' }}>
               <DataGrid
                 rows={this.state.runs}
                 columns={columns}
