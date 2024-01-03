@@ -3,7 +3,7 @@ import { Paper, TableBody, TableCell, TableContainer, TableHead, TableRow, Typog
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
 import runService from '../../run.service.tsx';
