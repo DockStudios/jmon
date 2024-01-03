@@ -268,7 +268,6 @@ class CheckView extends React.Component {
                             from: 0,
                             to: 90,
                             color: '#DC143C',
-                            // name: 'low',
                           },
                           {
                             from: 90,
@@ -296,7 +295,8 @@ class CheckView extends React.Component {
                 }}
                 series={this.state.heatmapData}
                 type="heatmap"
-                width="800"
+                width="100%"
+                height="150"
               />
 
               <DataGrid
