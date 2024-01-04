@@ -1,9 +1,11 @@
+import datetime
 
 from flask import request
-import yaml
 
 from jmon.database import Database
 from jmon.errors import CheckCreateError
+from jmon.heatmap_timeframe import HeatmapTimeframeFactory
+from jmon.result_database import ResultDatabase, ResultMetricHeatmapSuccessRate
 
 from . import FlaskApp
 from .utils import get_check_and_environment_by_name, require_api_key
@@ -101,3 +103,51 @@ def disable_check(check_name, environment_name):
     return {
         "status": "ok", "msg": "Disabled check"
     }, 200
+
+
+@FlaskApp.app.route('/api/v1/checks/<check_name>/environments/<environment_name>/heatmap-data', methods=["GET"])
+def get_check_heatmap_data(check_name, environment_name):
+    """Get heatmap data"""
+    check, _, error = get_check_and_environment_by_name(
+        check_name=check_name, environment_name=environment_name)
+    if error:
+        return error, 404
+
+    from_date = request.args.get("from_date")
+    to_date = request.args.get("to_date")
+    if not from_date or not to_date:
+        return {"status": "error", "msg": "from_date and to_date must be specified"}
+
+    if from_date:
+        # Strip zulu, if present
+        if from_date.endswith('Z'):
+            from_date = from_date[:-1]
+        try:
+            from_date = datetime.datetime.fromisoformat(from_date)
+        except:
+            return {"status": "error", "msg": "Invalid from_date parameter"}, 400
+    if to_date:
+        # Strip zulu, if present
+        if to_date.endswith('Z'):
+            to_date = to_date[:-1]
+        try:
+            to_date = datetime.datetime.fromisoformat(to_date)
+        except:
+            return {"status": "error", "msg": "Invalid to_date parameter"}, 400
+
+    timeframe = HeatmapTimeframeFactory.get_by_time_difference(from_date=from_date, to_date=to_date)
+    result_database = ResultDatabase()
+    heatmap_metric = ResultMetricHeatmapSuccessRate()
+
+    return [
+        {
+            "x": timeframe.get_label(data_point),
+            "y": heatmap_metric.read(
+                result_database=result_database,
+                check=check,
+                timeframe=timeframe,
+                timestamp=data_point
+            )
+        }
+        for data_point in timeframe.get_data_points(from_date=from_date, to_date=to_date)
+    ]
