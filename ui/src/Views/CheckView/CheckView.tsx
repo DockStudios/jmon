@@ -3,13 +3,14 @@ import { Paper, TableBody, TableCell, TableContainer, TableHead, TableRow, Typog
 import Container from '@mui/material/Container';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
-import { DatePicker } from '@mui/x-date-pickers';
+import { DateTimePicker } from '@mui/x-date-pickers';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import * as React from 'react';
 import runService from '../../run.service.tsx';
 import checkService from '../../check.service.tsx';
 import { withRouter } from '../../withRouter';
 import dayjs from 'dayjs';
+import Chart from "react-apexcharts";
 
 
 const columns: GridColDef[] = [
@@ -50,8 +51,9 @@ class CheckView extends React.Component {
       detailsRows: [],
       manualTriggerState: null,
       manualTriggerId: null,
-      fromDate: dayjs().subtract(7, 'day'),
-      toDate: dayjs().add(1, 'day'),
+      fromDate: dayjs().subtract(7, 'day').set('second', 0).set('minute', 0).set('hour', 0),
+      toDate: dayjs().set('second', 59).set('minute', 59).set('hour', 23),
+      heatmapData: [],
     };
     this.retrieveRuns = this.retrieveRuns.bind(this);
     this.getRunDetails = this.getRunDetails.bind(this);
@@ -74,7 +76,7 @@ class CheckView extends React.Component {
     });
   }
   setToDate(newDate) {
-    this.setState((state) => Object.assign({}, state, {fromDate: newDate}), () => {
+    this.setState((state) => Object.assign({}, state, {toDate: newDate}), () => {
       this.retrieveRuns();
     });
   }
@@ -86,13 +88,33 @@ class CheckView extends React.Component {
       this.state.fromDate,
       this.state.toDate,
     ).then((runRes) => {
-      this.setState((state) => {
-        return {
+      this.setState((state) => Object.assign(
+        {},
+        state,
+        {
           runs: Object.keys(runRes.data).map((key) => {return {timestamp: key, result: runRes.data[key]}}),
-          detailsRows: state.detailsRows
-        };
-      });
+        })
+      );
     });
+
+    new checkService().getHeatmapData(
+      this.props.match.checkName,
+      this.props.match.environmentName,
+      this.state.fromDate,
+      this.state.toDate,
+    ).then((heatmapDataRes) => {
+      this.setState((state) => Object.assign(
+        {},
+        state,
+        {
+          heatmapData: [
+            {
+              name: "Uptime",
+              data: heatmapDataRes.data
+            }
+          ]
+        }));
+    })
   }
 
   triggerRun() {
@@ -213,12 +235,12 @@ class CheckView extends React.Component {
               }
             }}
           >
-            <DatePicker
+            <DateTimePicker
               label="From date"
               value={this.state.fromDate}
               onChange={this.setFromDate}
               />
-            <DatePicker
+            <DateTimePicker
               label="To date"
               value={this.state.toDate}
               onChange={this.setToDate}
@@ -226,6 +248,57 @@ class CheckView extends React.Component {
             <br />
 
             <div style={{ height: 800, width: '100%' }}>
+
+              <Chart
+                options={{
+                  dataLabels: {
+                    enabled: true
+                  },
+                  plotOptions: {
+                    heatmap: {
+                      colorScale: {
+                        ranges: [
+                          {
+                            from: -1,
+                            to: -1,
+                            color: '#eeeeee',
+                            name: 'No runs',
+                          },
+                          {
+                            from: 0,
+                            to: 90,
+                            color: '#DC143C',
+                          },
+                          {
+                            from: 90,
+                            to: 99.0,
+                            color: '#FF8C00',
+                            name: 'medium',
+                          },
+                          {
+                            from: 99.0,
+                            to: 99.999,
+                            color: '#FFD700',
+                            name: 'high',
+                          },
+                          ,
+                          {
+                            from: 99.999,
+                            to: 100.0,
+                            color: '#ccffcc',
+                            name: 'high',
+                          },
+                        ]
+                      }
+                    }
+                  }
+                }}
+                series={this.state.heatmapData}
+                type="heatmap"
+                width="100%"
+                height="150"
+              />
+
               <DataGrid
                 rows={this.state.runs}
                 columns={columns}
