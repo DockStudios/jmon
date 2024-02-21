@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.14.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.14.0...v4.14.1) (2024-02-21)
+
+
+### Bug Fixes
+
+* Add 'init' to agent container in docker compose. ([e4b3843](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e4b384319397ed940b00f85aa71bf3dbff3909f0)), closes [#115](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/115)
+
 # [4.14.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.13.0...v4.14.0) (2024-02-21)
 
 
