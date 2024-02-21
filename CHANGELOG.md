@@ -1,5 +1,13 @@
 # Changelog
 
+# [4.14.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.13.0...v4.14.0) (2024-02-21)
+
+
+### Features
+
+* Add heatmap showing historical uptime percentages ([3d620bc](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/3d620bcb3ecc9f9734564d9b778662d4dc12ec26)), closes [#114](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/114)
+* Store pass/fail in redis for each tiemframe to be shown on heatmap. Add draft API for returning data ([d1f26bd](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d1f26bd58597bb0ac74d9d05fea359324d65caf1)), closes [#114](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/114)
+
 # [4.13.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.12.1...v4.13.0) (2024-01-02)
 
 
