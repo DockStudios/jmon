@@ -116,6 +116,7 @@ services:
     # Concurrency should always be set to 1 - to add more concurrency,
     # scale the agent containers
     command: celery -A jmon.worker.app worker -Q default,requests,chrome,firefox --concurrency=1 --loglevel=INFO
+    init: true
     env_file:
      - .env
     restart: always
@@ -127,3 +128,4 @@ services:
     # Mount noficiation plugins
     volumes:
      - ./jmon/plugins/notifications:/app/jmon/plugins/notifications:ro
+
