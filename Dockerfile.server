@@ -35,8 +35,9 @@ RUN wget "https://www.googleapis.com/download/storage/v1/b/chromium-browser-snap
 RUN apt-get update && apt-get install --assume-yes libpq-dev gcc && apt-get clean all
 
 WORKDIR /app
+COPY requirements-server.txt .
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install -r requirements-server.txt
 
 COPY . .
 COPY --from=builder /app/build /app/jmon/ui
