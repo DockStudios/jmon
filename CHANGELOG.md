@@ -1,5 +1,12 @@
 # Changelog
 
+# [4.15.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.14.1...v4.15.0) (2024-03-02)
+
+
+### Features
+
+* Add Sentry integration ([397c4d5](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/397c4d52cfec9f0412949bc04a783ee8d076b76e)), closes [#119](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/119)
+
 ## [4.14.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.14.0...v4.14.1) (2024-02-21)
 
 
