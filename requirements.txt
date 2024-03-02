@@ -9,13 +9,11 @@ redis==4.4.2
 sqlalchemy==1.4.39
 alembic==1.12.0
 psycopg2==2.9.5
-Flask==2.2.2
 PyYAML==6.0.1
 flower==2.0.1
 celery-redbeat==2.0.0
 boto3==1.26.70
 botocore==1.29.70
-flask-cors==3.0.10
 jsonpath-python==1.0.6
 psutil==5.9.5
-werkzeug==2.3.7
+sentry-sdk[celery]==1.40.6

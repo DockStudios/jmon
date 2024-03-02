@@ -101,6 +101,9 @@ class Config:
     RESULT_RETENTION_MINS = int(os.environ.get("RESULT_RETENTION_MINS", "525600"))
     RESULT_ARTIFACT_RETENTION_DAYS = int(os.environ.get("RESULT_ARTIFACT_RETENTION_DAYS", "365"))
 
+    SENTRY_DSN = os.environ.get("SENTRY_DSN")
+    SENTRY_ENVIRONMENT = os.environ.get("SENTRY_ENVIRONMENT", "prod")
+
     @classmethod
     def get(cls):
         """Get instance of config"""
