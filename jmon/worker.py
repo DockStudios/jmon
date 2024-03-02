@@ -1,5 +1,7 @@
 
 import celery.signals
+import sentry_sdk
+from sentry_sdk.integrations.celery import CeleryIntegration
 
 from jmon import app
 import jmon.tasks.perform_check
@@ -9,6 +11,7 @@ import jmon.tasks.remove_expired_runs
 import jmon.tasks.update_artifact_lifecycle_rules
 import jmon.tasks.check_queue_timeouts
 import jmon.runner
+import jmon.config
 
 
 # Register tasks with celery
@@ -26,6 +29,21 @@ app.conf.worker_prefetch_multiplier = 1
 # Set maximum tasks per worker to avoid memory leaks.
 # The source of these leaks is not entirely known
 app.conf.worker_max_tasks_per_child = 100
+
+@celery.signals.celeryd_init.connect
+def init_sentry(**kwargs):
+    """Initialise sentry"""
+    if jmon.config.Config.get().SENTRY_DSN:
+        sentry_sdk.init(
+            dsn=jmon.config.Config.get().SENTRY_DSN,
+            enable_tracing=True,
+            integrations=[
+                CeleryIntegration(
+                    monitor_beat_tasks=True
+                )
+            ],
+            environment=jmon.config.Config.get().SENTRY_ENVIRONMENT,
+        )
 
 
 @celery.signals.worker_process_init.connect
