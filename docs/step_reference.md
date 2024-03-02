@@ -400,3 +400,36 @@ This can be placed in the root of the check, e.g.
 
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`, `REQUESTS`
+
+## DNSStep
+
+Key: `dns`
+
+
+Directive for checking a DNS response
+
+This should generally always be used as a first directive of a step.
+
+It can be used multiple times during a check.
+
+This can be placed in the root of the check, e.g.
+```
+- dns: www.bbc.co.uk
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- dns:
+    domain: www.bbc.co.uk
+    type: TXT
+    name_servers:
+     - 8.8.8.8
+     - 1.1.1.1
+    protocol: tcp
+    lifetime: 2
+    port: 53
+
+```
+
+
+Client Support: `REQUESTS`
