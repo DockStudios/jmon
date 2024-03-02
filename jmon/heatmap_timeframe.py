@@ -59,6 +59,41 @@ class HeatmapTimeframe(ABC):
         ...
 
 
+class HeatmapTimeframeFiveMinute(HeatmapTimeframe):
+
+    MINUTE_INTERVAL = 5
+
+    @property
+    def name(self) -> str:
+        return "15-minute"
+
+    def get_label(self, date: datetime):
+        """Get label"""
+        return date.strftime("%H:%M")
+
+    @property
+    def max_delta(self) -> timedelta:
+        return timedelta(hours=2)
+
+    @property
+    def expiry(self) -> timedelta:
+        return timedelta(minutes=Config().RESULT_RETENTION_MINS)
+
+    @property
+    def format(self) -> str:
+        """Return format"""
+        return "%Y%m%d%H%M"
+
+    def get_from_timestamp(self, date: datetime):
+        """Return redis timestamp"""
+        # Round date down to nearest 15 minutes
+        date = date - timedelta(minutes=date.minute % self.MINUTE_INTERVAL)
+        return date.strftime(self.format)
+
+    def increment_date(self, current_date: datetime) -> datetime:
+        return current_date + timedelta(minutes=self.MINUTE_INTERVAL)
+
+
 class HeatmapTimeframeHour(HeatmapTimeframe):
 
     @property
@@ -148,6 +183,7 @@ class HeatmapTimeframeFactory:
     _DEFINITIONS: Dict[str, HeatmapTimeframe] = [
         timeframe
         for timeframe in [
+            HeatmapTimeframeFiveMinute(),
             HeatmapTimeframeHour(),
             HeatmapTimeframeDay(),
             HeatmapTimeframeMonth(),
