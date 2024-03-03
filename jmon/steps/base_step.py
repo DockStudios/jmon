@@ -125,6 +125,14 @@ class BaseStep:
             return True
         return False
 
+    def _check_valid_dns_response(self, response):
+        """Check that the execution argument is a valid DNS repsonse"""
+        if response is None:
+            self.set_status(StepStatus.FAILED)
+            self._logger.error("This step requires a DNS step to have been performed")
+            return True
+        return False
+
     def get_supported_clients(self, supported_clients):
         """Return filtered list of supported clients"""
         supported_clients = [
@@ -181,14 +189,19 @@ class BaseStep:
         """Return whether timeout has been reached"""
         return self._run.get_remaining_time().total_seconds() <= 0
 
-    def inject_variables_into_string(self, source_string):
-        """Inject run variables into source string"""
-        if type(source_string) is str:
+    def inject_variables_into_string(self, source):
+        """Inject run variables into source string/list"""
+        if type(source) is str:
             try:
-                source_string = source_string.format(**self._run.variables)
+                source = source.format(**self._run.variables)
             except KeyError:
-                self._logger.warn(f"Could not inject variables on string: {source_string} due to missing variable")
-        return source_string
+                self._logger.warn(f"Could not inject variables on string: {source} due to missing variable")
+        elif type(source) is list:
+            source = [
+                self.inject_variables_into_string(source_itx)
+                for source_itx in source
+            ]
+        return source
 
     def execute(self, execution_method, state: StepState):
         """Execute the current step and then execute each of the child steps"""
