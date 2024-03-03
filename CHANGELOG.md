@@ -1,5 +1,15 @@
 # Changelog
 
+# [4.16.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.15.0...v4.16.0) (2024-03-03)
+
+
+### Features
+
+* Add check for verifying DNS response records ([5a768d9](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/5a768d91f4831024fb739aeebdf2c38c3ffe1505)), closes [#116](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/116)
+* Add DNS step to perform DNS query ([56453bf](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/56453bf18ab975d46e829f9aff902f9eea6aa9a3)), closes [#116](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/116)
+* Add support for checking CNAMEs in DNS resolution ([659f526](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/659f5263660f982264e2cd811899676189052ae4)), closes [#116](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/116)
+* Add support for checking count and minimum count of DNS records ([06fc604](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/06fc604513f64ae6e8ef0b9d48b10c9e92da2c42)), closes [#116](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/116)
+
 # [4.15.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.14.1...v4.15.0) (2024-03-02)
 
 
