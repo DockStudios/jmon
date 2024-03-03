@@ -1,12 +1,27 @@
 
-class StepState:
+import abc
+from typing import Optional
 
+import dns.resolver
+
+
+class StepState(abc.ABC):
+
+    @abc.abstractmethod
+    def __init__(self, response):
+        """Store initial state"""
+        ...
+
+    @abc.abstractmethod
     def clone_to_child(self):
         """Clone current state to state for child step"""
-        raise NotImplementedError
+        ...
 
+    @abc.abstractmethod
     def integrate_from_child(self, child):
-        raise NotImplementedError
+        """Integrate child state back into current state"""
+        ...
+
 
 class SeleniumStepState(StepState):
 
@@ -28,15 +43,20 @@ class SeleniumStepState(StepState):
 
 class RequestsStepState(StepState):
 
-    def __init__(self, response):
+    def __init__(self, response, dns_response: Optional['dns.resolver.Answer']):
         """Store state member variables"""
         self.response = response
+        self.dns_response = dns_response
 
     def clone_to_child(self):
         """Clone current state to state for child step"""
-        return RequestsStepState(response=self.response)
+        return RequestsStepState(
+            response=self.response,
+            dns_response=self.dns_response
+        )
 
-    def integrate_from_child(self, child):
+    def integrate_from_child(self, child: 'RequestsStepState'):
         """Integrate child state back into current state"""
         # Copy response back to parent object
         self.response = child.response
+        self.dns_response = child.dns_response

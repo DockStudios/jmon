@@ -4,6 +4,7 @@ from jmon.client_type import ClientType
 from jmon.logger import logger
 from jmon.step_state import RequestsStepState, SeleniumStepState
 from jmon.steps.base_step import BaseStep
+from jmon.steps.dns_step import DNSStep
 from jmon.steps.goto_step import GotoStep
 from jmon.steps.find_step import FindStep
 from jmon.steps.check_step import CheckStep
@@ -33,6 +34,7 @@ class RootStep(BaseStep):
             CheckStep,
             ActionStep,
             CallPluginStep,
+            DNSStep,
         ]
 
     @property

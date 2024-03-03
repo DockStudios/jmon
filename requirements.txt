@@ -17,3 +17,4 @@ botocore==1.29.70
 jsonpath-python==1.0.6
 psutil==5.9.5
 sentry-sdk[celery]==1.40.6
+dnspython==2.6.1

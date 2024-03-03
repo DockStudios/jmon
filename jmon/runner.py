@@ -297,7 +297,7 @@ class Runner:
             run.start_timer()
             status = run.root_step.execute(
                 execution_method='execute_requests',
-                state=RequestsStepState(None)
+                state=RequestsStepState(None, None)
             )
         elif ClientType.BROWSER_FIREFOX in supported_clients or ClientType.BROWSER_CHROME in supported_clients:
 

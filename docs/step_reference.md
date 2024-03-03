@@ -380,6 +380,56 @@ Variables provided by callable plugins can be used in the type value, e.g.
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
 
+#### DnsRecordsCheck
+
+Key: `records`
+
+
+Directive for verifying the responses from DNS query.
+
+One of the following validation attributes must be used:
+* equals - Checks records match exactly
+* contains - Checks that the provided records exist in the response
+* count - Checks the number of records in the response
+* min_count - Checks the minimum number of records in the response
+* cname - Ensure a CNAME is present in the check
+
+```
+- dns: www.google.co.uk
+- check:
+    records:
+      equals: 216.58.212.196
+
+- check:
+    records:
+      contains: [212.58.237.1, 212.58.235.1]
+
+# Ensure record points to CNAME
+- check:
+    records:
+      cname: www.bbc.co.uk.pri.bbc.co.uk.
+
+# Ensure that at 3 records exist
+- check:
+    records:
+      count: 3
+
+# Ensure that at least 3 records exist
+- check:
+    records:
+      min_count: 3
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    records:
+      equals: '{an_output_variable}'
+```
+
+
+Client Support: `REQUESTS`
+
 ## CallPluginStep
 
 Key: `call_plugin`
@@ -400,3 +450,36 @@ This can be placed in the root of the check, e.g.
 
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`, `REQUESTS`
+
+## DNSStep
+
+Key: `dns`
+
+
+Directive for checking a DNS response
+
+This should generally always be used as a first directive of a step.
+
+It can be used multiple times during a check.
+
+This can be placed in the root of the check, e.g.
+```
+- dns: www.bbc.co.uk
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- dns:
+    domain: www.bbc.co.uk
+    type: TXT
+    name_servers:
+     - 8.8.8.8
+     - 1.1.1.1
+    protocol: tcp
+    lifetime: 2
+    port: 53
+
+```
+
+
+Client Support: `REQUESTS`
