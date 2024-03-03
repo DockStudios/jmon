@@ -56,8 +56,6 @@ class DNSStep(BaseStep):
         """Return list of supported clients"""
         # Support all client types
         return [
-            # ClientType.BROWSER_FIREFOX,
-            # ClientType.BROWSER_CHROME,
             ClientType.REQUESTS
         ]
 
@@ -133,7 +131,7 @@ class DNSStep(BaseStep):
 
         # Get requests call method, based on provided method
         try:
-            state.response = resolver.query(**kwargs)
+            state.dns_response = resolver.query(**kwargs)
         except Exception as exc:
             self.set_status(StepStatus.FAILED)
             self._logger.error(str(exc).split("\n")[0])

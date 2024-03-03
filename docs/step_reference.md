@@ -380,6 +380,39 @@ Variables provided by callable plugins can be used in the type value, e.g.
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
 
+#### DnsRecordsCheck
+
+Key: `records`
+
+
+Directive for verifying the responses from DNS query.
+
+One of two validation attributes must be used:
+* equals - Checks records match exactly
+* contains - Checks that the provided records exist in the response
+
+```
+- dns: www.google.co.uk
+- check:
+    records:
+      equals: 216.58.212.196
+
+- dns: www.bbc.co.uk
+- check:
+    records:
+      contains: [212.58.237.1, 212.58.235.1]
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    records:
+      equals: '{an_output_variable}'
+```
+
+
+Client Support: `REQUESTS`
+
 ## CallPluginStep
 
 Key: `call_plugin`
