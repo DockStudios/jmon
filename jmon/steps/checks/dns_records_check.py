@@ -14,6 +14,8 @@ class DnsRecordsCheckMatchType(Enum):
     """DNS record value match types"""
     EQUALS = "equals"
     CONTAINS = "contains"
+    COUNT = "count"
+    MIN_COUNT = "min_count"
 
 
 UNSET = object()
@@ -23,9 +25,11 @@ class DnsRecordsCheck(BaseCheck):
     """
     Directive for verifying the responses from DNS query.
 
-    One of two validation attributes must be used:
+    One of the following validation attributes must be used:
     * equals - Checks records match exactly
     * contains - Checks that the provided records exist in the response
+    * count - Checks the number of records in the response
+    * min_count - Checks the minimum number of records in the response
 
     ```
     - dns: www.google.co.uk
@@ -37,6 +41,18 @@ class DnsRecordsCheck(BaseCheck):
     - check:
         records:
           contains: [212.58.237.1, 212.58.235.1]
+
+    # Ensure that at 3 records exist
+    - dns: www.bbc.co.uk
+    - check:
+        records:
+          count: 3
+
+    # Ensure that at least 3 records exist
+    - dns: www.bbc.co.uk
+    - check:
+        records:
+          min_count: 3
     ```
 
     Variables provided by callable plugins can be used in the type value, e.g.
@@ -71,37 +87,44 @@ class DnsRecordsCheck(BaseCheck):
 
     def _extract_selector_match_type(self):
         """Return extractor and match type"""
-        match_type = None
-        match_value = None
-
         equal_value = self._config.get(DnsRecordsCheckMatchType.EQUALS.value, UNSET)
         if equal_value != UNSET:
-            match_type = DnsRecordsCheckMatchType.EQUALS
-            match_value = equal_value
+            # If a single record was supplied, convert to list
+            if type(equal_value) is str:
+                equal_value = [equal_value]
+
+            return DnsRecordsCheckMatchType.EQUALS, equal_value
 
         contains_value = self._config.get(DnsRecordsCheckMatchType.CONTAINS.value, UNSET)
         if contains_value != UNSET:
-            match_type = DnsRecordsCheckMatchType.CONTAINS
-            match_value = contains_value
+            # If a single record was supplied, convert to list
+            if type(contains_value) is str:
+                contains_value = [contains_value]
 
-        # If a single record was supplied, convert to list
-        if type(match_value) is str:
-            match_value = [match_value]
+            return DnsRecordsCheckMatchType.CONTAINS, contains_value
 
-        return match_type, match_value
+        count = self._config.get(DnsRecordsCheckMatchType.COUNT.value, UNSET)
+        if count != UNSET:
+            return DnsRecordsCheckMatchType.COUNT, count
+
+        count_min = self._config.get(DnsRecordsCheckMatchType.MIN_COUNT.value, UNSET)
+        if count_min != UNSET:
+            return DnsRecordsCheckMatchType.MIN_COUNT, count_min
+
+        return None, None
 
     def _validate_step(self):
         """Check step is valid"""
         if type(self._config) is not dict:
             raise StepValidationError(
-                "DNS response check must be a dictionary containing either 'contains' or 'equals'"
+                "DNS response check must be a dictionary containing either 'contains', 'equals', 'count' or 'min_count'"
             )
 
         # Attempt to extract matchtor, which can raise an StepValidationError
         match_type, _ = self._extract_selector_match_type()
         if match_type is None:
             raise StepValidationError(
-                "DNS response check provider a comparator. Either 'contains' or 'equals'"
+                "DNS response check provider a comparator. Either 'contains', 'equals', 'count' or 'min_count'"
             )
 
     def _result_matches(self, state: RequestsStepState):
@@ -126,6 +149,12 @@ class DnsRecordsCheck(BaseCheck):
             ]
             if not_found:
                 return False, f"Could not find IPs '{', '.join(not_found)}' in actual value '{','.join(actual_value)}'"
+        if match_type is DnsRecordsCheckMatchType.COUNT:
+            if len(actual_value) != match_value:
+                return False, f"Number of records is not {match_value}: {', '.join(actual_value)}"
+        if match_type is DnsRecordsCheckMatchType.MIN_COUNT:
+            if len(actual_value) < match_value:
+                return False, f"Number of records is less than {match_value}: {', '.join(actual_value)}"
         return True, None
 
     def execute_requests(self, state: RequestsStepState):
