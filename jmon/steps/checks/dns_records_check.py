@@ -14,6 +14,7 @@ class DnsRecordsCheckMatchType(Enum):
     """DNS record value match types"""
     EQUALS = "equals"
     CONTAINS = "contains"
+    CNAME = "cname"
     COUNT = "count"
     MIN_COUNT = "min_count"
 
@@ -30,6 +31,7 @@ class DnsRecordsCheck(BaseCheck):
     * contains - Checks that the provided records exist in the response
     * count - Checks the number of records in the response
     * min_count - Checks the minimum number of records in the response
+    * cname - Ensure a CNAME is present in the check
 
     ```
     - dns: www.google.co.uk
@@ -37,19 +39,21 @@ class DnsRecordsCheck(BaseCheck):
         records:
           equals: 216.58.212.196
 
-    - dns: www.bbc.co.uk
     - check:
         records:
           contains: [212.58.237.1, 212.58.235.1]
 
+    # Ensure record points to CNAME
+    - check:
+        records:
+          cname: www.bbc.co.uk.pri.bbc.co.uk.
+
     # Ensure that at 3 records exist
-    - dns: www.bbc.co.uk
     - check:
         records:
           count: 3
 
     # Ensure that at least 3 records exist
-    - dns: www.bbc.co.uk
     - check:
         records:
           min_count: 3
@@ -103,6 +107,10 @@ class DnsRecordsCheck(BaseCheck):
 
             return DnsRecordsCheckMatchType.CONTAINS, contains_value
 
+        cname_value = self._config.get(DnsRecordsCheckMatchType.CNAME.value, UNSET)
+        if cname_value != UNSET:
+            return DnsRecordsCheckMatchType.CNAME, cname_value
+
         count = self._config.get(DnsRecordsCheckMatchType.COUNT.value, UNSET)
         if count != UNSET:
             return DnsRecordsCheckMatchType.COUNT, count
@@ -117,14 +125,14 @@ class DnsRecordsCheck(BaseCheck):
         """Check step is valid"""
         if type(self._config) is not dict:
             raise StepValidationError(
-                "DNS response check must be a dictionary containing either 'contains', 'equals', 'count' or 'min_count'"
+                "DNS response check must be a dictionary containing either 'contains', 'equals', 'cname', 'count' or 'min_count'"
             )
 
         # Attempt to extract matchtor, which can raise an StepValidationError
         match_type, _ = self._extract_selector_match_type()
         if match_type is None:
             raise StepValidationError(
-                "DNS response check provider a comparator. Either 'contains', 'equals', 'count' or 'min_count'"
+                "DNS response check provider a comparator. Either 'contains', 'equals', 'cname', 'count' or 'min_count'"
             )
 
     def _result_matches(self, state: RequestsStepState):
@@ -155,6 +163,15 @@ class DnsRecordsCheck(BaseCheck):
         if match_type is DnsRecordsCheckMatchType.MIN_COUNT:
             if len(actual_value) < match_value:
                 return False, f"Number of records is less than {match_value}: {', '.join(actual_value)}"
+        if match_type is DnsRecordsCheckMatchType.CNAME:
+            found = False
+            for responses in state.dns_response.response.answer:
+                for itx in responses:
+                    if itx.to_text() == match_value:
+                        found = True
+            if not found:
+                response_display = ", ".join([", ".join([r.to_text() for r in response]) for response in state.dns_response.response.answer])
+                return False, f"Could not find CNAME {match_value} in responses: {response_display}"
         return True, None
 
     def execute_requests(self, state: RequestsStepState):

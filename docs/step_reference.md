@@ -392,6 +392,7 @@ One of the following validation attributes must be used:
 * contains - Checks that the provided records exist in the response
 * count - Checks the number of records in the response
 * min_count - Checks the minimum number of records in the response
+* cname - Ensure a CNAME is present in the check
 
 ```
 - dns: www.google.co.uk
@@ -399,19 +400,21 @@ One of the following validation attributes must be used:
     records:
       equals: 216.58.212.196
 
-- dns: www.bbc.co.uk
 - check:
     records:
       contains: [212.58.237.1, 212.58.235.1]
 
+# Ensure record points to CNAME
+- check:
+    records:
+      cname: www.bbc.co.uk.pri.bbc.co.uk.
+
 # Ensure that at 3 records exist
-- dns: www.bbc.co.uk
 - check:
     records:
       count: 3
 
 # Ensure that at least 3 records exist
-- dns: www.bbc.co.uk
 - check:
     records:
       min_count: 3
