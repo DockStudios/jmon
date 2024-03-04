@@ -1,5 +1,12 @@
 # Changelog
 
+# [4.17.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.16.0...v4.17.0) (2024-03-04)
+
+
+### Features
+
+* Add heatmap timeframe for 15 minute intervals ([e695c3b](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/e695c3bd84b89d27757d3ff46f15407b68927b68)), closes [#120](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/120)
+
 # [4.16.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.15.0...v4.16.0) (2024-03-03)
 
 
