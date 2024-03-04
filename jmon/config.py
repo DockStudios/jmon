@@ -70,6 +70,8 @@ class Config:
     REDIS_PORT = int(os.environ.get('REDIS_PORT', 0))
     REDIS_INSTANCE = os.environ.get('REDIS_INSTANCE')
 
+    VICTORIAMETRICS_URL = os.environ.get("VICTORIAMETRICS_URL")
+
     # Whether to cache browser between runs.
     # This is experimental and might be unstable.
     # Use on non-production environment

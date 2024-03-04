@@ -45,34 +45,6 @@ class AgentTaskClaim(ResultMetric):
         return False
 
 
-class ResultMetricAverageSuccessRate(ResultMetric):
-    """Metric for average success rate"""
-
-    def _get_name(self):
-        """Get name of metric"""
-        return "jmon_result_metric_average_availability"
-
-    def _get_key(self, check, success):
-        """Get key from check"""
-        success_key_part = "success" if success else "failure"
-        return f"{check.name}_{check.environment.name}_{success_key_part}"
-
-    def write(self, result_database, run):
-        """Increment count for success/failure for run"""
-        result_database.connection.hincrby(self._get_name(), self._get_key(run.check, run.success))
-
-    def read(self, result_database, check):
-        """Get success rate fraction"""
-        # Get average successes/failures
-        successes = int(result_database.connection.hget(self._get_name(), self._get_key(check, True)) or 0)
-        failures = int(result_database.connection.hget(self._get_name(), self._get_key(check, False)) or 0)
-
-        # Handle no checks
-        if (successes + failures) == 0:
-            return None
-        return successes / (successes + failures)
-
-
 class ResultMetricLatestStatus(ResultMetric):
     """Metric for latest result status"""
 

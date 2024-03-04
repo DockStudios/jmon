@@ -4,6 +4,7 @@ import datetime
 from io import StringIO
 import logging
 import os
+from typing import Optional
 
 from jmon.logger import logger
 from jmon.artifact_storage import ArtifactStorage
@@ -14,6 +15,8 @@ import jmon.models.run
 from jmon.run_logger import RunLogger
 from jmon.step_status import StepStatus
 from jmon.steps.root_step import RootStep
+import jmon.timeseries_database
+import jmon.config
 
 
 class Run:
@@ -27,13 +30,21 @@ class Run:
 
         self._logger = RunLogger(run=self, enable_log=True)
         self._root_step = RootStep(run=self, config=self.check.steps, parent=None, run_logger=self._logger)
-        self._start_time = None
+        self._start_time: Optional[datetime.datetime] = None
+        self._end_time: Optional[datetime.datetime] = None
         self._variables = {}
 
     @property
     def run_model(self):
         """Return run model"""
         return self._db_run
+
+    @property
+    def execution_time(self) -> float:
+        """Return execution time in seconds"""
+        if self._start_time is None or self._end_time is None:
+            return None
+        return (self._end_time - self._start_time).total_seconds()
 
     @property
     def variables(self):
@@ -93,6 +104,7 @@ class Run:
 
     def end(self, run_status):
         """End logging and upload"""
+        self._end_time = datetime.datetime.now()
         self._db_run.set_status(run_status)
 
         self.logger.cleanup()
@@ -109,13 +121,18 @@ class Run:
         if self._db_run.trigger_type is jmon.models.run.RunTriggerType.SCHEDULED:
             # Create metrics for scheduled runs
             result_database = jmon.result_database.ResultDatabase()
-            average_success_metric = jmon.result_database.ResultMetricAverageSuccessRate()
-            average_success_metric.write(result_database=result_database, run=self)
             latest_status_metric = jmon.result_database.ResultMetricLatestStatus()
             latest_status_metric.write(result_database=result_database, run=self)
 
             heatmap_timeframe_metrics = jmon.result_database.ResultMetricHeatmapSuccessRate()
             heatmap_timeframe_metrics.write(result_database=result_database, run=self)
+
+            # Write victoria metrics
+            victoria_metrics = jmon.timeseries_database.VictoriaMetricsDatabase(
+                url=jmon.config.Config.get().VICTORIAMETRICS_URL
+            )
+            run_result_metric = jmon.timeseries_database.RunResultMetricWriter()
+            run_result_metric.write(result_database=victoria_metrics, run=self)
 
             # Send notifications using plugins
             self.send_notifications(run_status)
