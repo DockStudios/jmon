@@ -109,8 +109,6 @@ class TimeSeriesMetric(abc.ABC):
 
 class TimeSeriesMetricWriter(TimeSeriesMetric):
 
-    TIME_SERIES_METRIC_NAME = "jmon_result"
-
     @abc.abstractmethod
     def _get_write_properties(self, run: 'jmon.run.Run') -> Dict[str, str]:
         """Get properties to use when writing to time series database"""

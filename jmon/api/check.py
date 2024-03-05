@@ -137,7 +137,6 @@ def get_check_heatmap_data(check_name, environment_name):
             return {"status": "error", "msg": "Invalid to_date parameter"}, 400
 
     timeframe = HeatmapTimeframeFactory.get_by_time_difference(from_date=from_date, to_date=to_date)
-    result_database = ResultDatabase()
 
     timeseries_db = TimeSeriesDatabaseFactory.get_database()
 
