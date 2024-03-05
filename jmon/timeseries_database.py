@@ -162,7 +162,7 @@ class AverageCheckSuccessResultReader(TimeSeriesMetricReader):
         return "avg_over_time"
 
     def get_data(self, result_database: 'TimeSeriesDatabase', check: 'jmon.models.check.Check',
-                 from_date: Optional[datetime.datetime]=None, to_date: Optional[datetime.datetime]=None):
+                 from_date: Optional[datetime.datetime]=None, to_date: Optional[datetime.datetime]=None) -> Optional[float]:
         """Return average success percentage"""
         if from_date is None:
             from_date = datetime.datetime.fromtimestamp(0)
@@ -177,6 +177,13 @@ class AverageCheckSuccessResultReader(TimeSeriesMetricReader):
             from_date=from_date,
             metric="success"
         )
+
+    def get_heatmap_data(self, *args, **kwargs):
+        """Wrap data - convert to percentage and default to -1"""
+        val = self.get_data(*args, **kwargs)
+        if val is None:
+            return -1
+        return round(val * 100.0, 3)
 
 
 class RunResultMetricWriter(TimeSeriesMetricWriter):

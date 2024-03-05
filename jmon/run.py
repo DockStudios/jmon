@@ -124,9 +124,6 @@ class Run:
             latest_status_metric = jmon.result_database.ResultMetricLatestStatus()
             latest_status_metric.write(result_database=result_database, run=self)
 
-            heatmap_timeframe_metrics = jmon.result_database.ResultMetricHeatmapSuccessRate()
-            heatmap_timeframe_metrics.write(result_database=result_database, run=self)
-
             # Write victoria metrics
             victoria_metrics = jmon.timeseries_database.VictoriaMetricsDatabase(
                 url=jmon.config.Config.get().VICTORIAMETRICS_URL
