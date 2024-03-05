@@ -10,7 +10,7 @@ function run_docker_compose_command() {
 }
 
 # Bring up databases
-run_docker_compose_command up --quiet-pull -d database broker redis minio
+run_docker_compose_command up --quiet-pull -d database broker redis minio victoriametrics
 # Wait
 sleep 30
 
