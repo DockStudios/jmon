@@ -72,6 +72,8 @@ services:
      - .env
     links:
      - database
+     - redis
+     - victoriametrics
 
   server:
     build:
