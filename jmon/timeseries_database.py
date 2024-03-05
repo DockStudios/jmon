@@ -122,6 +122,7 @@ class TimeSeriesMetricReader(TimeSeriesMetric):
         ...
 
     def _query_data(self, result_database: 'TimeSeriesDatabase',
+                    check: 'jmon.models.check.Check',
                     filters: Dict[str, str],
                     from_date: datetime.datetime, to_date: datetime.datetime,
                     metric: str) -> float:
@@ -130,7 +131,13 @@ class TimeSeriesMetricReader(TimeSeriesMetric):
             f'{key}="{value}"'
             for key, value in filters.items()
         ])
-        query_string = f'{self._get_read_function()}({self.TIME_SERIES_METRIC_NAME}_{metric}{{{filter_string}}})'
+        lookback_seconds = (to_date - from_date).total_seconds()
+        query_string = f'{self._get_read_function()}({self.TIME_SERIES_METRIC_NAME}_{metric}{{{filter_string}}}[{lookback_seconds}s])'
+        # Since the metric is performing the lookback to start date,
+        # as this appears to be more reliable than having a very large "step",
+        # handling look backs over 1 month (or since start 1970).
+        # The metric _must_ have a data point from the start-to
+        from_date = (to_date - datetime.timedelta(seconds=check.get_interval() * 2))
         return result_database.read_metric(query=query_string, from_date=from_date, to_date=to_date)
 
 
@@ -149,14 +156,14 @@ class AverageCheckSuccessResultReader(TimeSeriesMetricReader):
         if to_date is None:
             to_date = datetime.datetime.now()
 
-        val = self._query_data(
+        return self._query_data(
             result_database=result_database,
+            check=check,
             filters={"check": check.name, "environment": check.environment.name},
             to_date=to_date,
             from_date=from_date,
             metric="success"
         )
-        return val * 100.0
 
 
 class RunResultMetricWriter(TimeSeriesMetricWriter):
