@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.17.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.17.0...v4.17.1) (2024-03-05)
+
+
+### Bug Fixes
+
+* Remove example sentry DNS ([6cb3755](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6cb37559a6c77e143b3073286aa60a20ca35a445))
+
 # [4.17.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.16.0...v4.17.0) (2024-03-04)
 
 
