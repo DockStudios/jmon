@@ -33,7 +33,6 @@ def get_check_results(check_name, environment_name):
 
     result_database = ResultDatabase()
     timeseries_db = TimeSeriesDatabaseFactory.get_database()
-    average_success = None
     average_success = AverageCheckSuccessResultReader().get_data(
         result_database=timeseries_db, check=check,
         from_date=timeframe.get_from_timestamp() if timeframe else None
