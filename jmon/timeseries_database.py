@@ -6,6 +6,7 @@ from typing import Dict, List, Optional
 import requests
 
 import jmon.config
+from jmon.errors import UnableToPushMetricVictoriaMetricsError
 from jmon.heatmap_timeframe import HeatmapTimeframe, HeatmapTimeframeFactory
 from jmon.result_timeframe import ResultTimeframe
 import jmon.models.check
@@ -53,7 +54,7 @@ class VictoriaMetricsDatabase(TimeSeriesDatabase):
         res = requests.post(self._url + "/write", data=data)
 
         if res.status_code != 204:
-            return False
+            raise UnableToPushMetricVictoriaMetricsError(f"Unable to push metric to victoriametrics: {res.status_code}")
 
         return True
 
