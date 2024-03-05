@@ -57,7 +57,24 @@ class VictoriaMetricsDatabase(TimeSeriesDatabase):
 
         return True
 
-    def read_metric(self, query: str, from_date: datetime.datetime, to_date: datetime.datetime) -> Optional[float]:
+    def read_metric(self, query: str, date: datetime.datetime, step: str=None) -> Optional[float]:
+        """Read metric from database"""
+        params = {
+            "query": query,
+            "time": date.isoformat() + 'Z',
+        }
+        if step:
+            params["step"] = step
+        res = requests.get(self._url + "/prometheus/api/v1/query", params=params)
+
+        # Try to obtain data from result
+        results = res.json().get("data", {}).get("result", [])
+        if results:
+            if values := results[0].get("value", []):
+                return float(values[1])
+        return None
+
+    def read_metrics(self, query: str, from_date: datetime.datetime, to_date: datetime.datetime) -> List[float]:
         """Read metric from database"""
         res = requests.get(self._url + "/prometheus/api/v1/query_range", params={
             "query": query,
@@ -69,9 +86,10 @@ class VictoriaMetricsDatabase(TimeSeriesDatabase):
         # Try to obtain data from result
         results = res.json().get("data", {}).get("result", [])
         if results:
-            if values := results[0].get("values", []):
-                return float(values[0][1])
-        return None
+            return [
+                float(r[1]) for r in results[0].get("values", [])
+            ]
+        return []
 
 
 class TimeSeriesDatabaseFactory:
@@ -121,11 +139,11 @@ class TimeSeriesMetricReader(TimeSeriesMetric):
         """Get function for querying metrics"""
         ...
 
-    def _query_data(self, result_database: 'TimeSeriesDatabase',
-                    check: 'jmon.models.check.Check',
-                    filters: Dict[str, str],
-                    from_date: datetime.datetime, to_date: datetime.datetime,
-                    metric: str) -> float:
+    def _query_value(self, result_database: 'TimeSeriesDatabase',
+                     check: 'jmon.models.check.Check',
+                     filters: Dict[str, str],
+                     from_date: datetime.datetime, to_date: datetime.datetime,
+                     metric: str) -> float:
         """Query data from datasource"""
         filter_string = ", ".join([
             f'{key}="{value}"'
@@ -133,12 +151,7 @@ class TimeSeriesMetricReader(TimeSeriesMetric):
         ])
         lookback_seconds = (to_date - from_date).total_seconds()
         query_string = f'{self._get_read_function()}({self.TIME_SERIES_METRIC_NAME}_{metric}{{{filter_string}}}[{lookback_seconds}s])'
-        # Since the metric is performing the lookback to start date,
-        # as this appears to be more reliable than having a very large "step",
-        # handling look backs over 1 month (or since start 1970).
-        # The metric _must_ have a data point from the start-to
-        from_date = (to_date - datetime.timedelta(seconds=check.get_interval() * 2))
-        return result_database.read_metric(query=query_string, from_date=from_date, to_date=to_date)
+        return result_database.read_metric(query=query_string, date=to_date)
 
 
 class AverageCheckSuccessResultReader(TimeSeriesMetricReader):
@@ -156,7 +169,7 @@ class AverageCheckSuccessResultReader(TimeSeriesMetricReader):
         if to_date is None:
             to_date = datetime.datetime.now()
 
-        return self._query_data(
+        return self._query_value(
             result_database=result_database,
             check=check,
             filters={"check": check.name, "environment": check.environment.name},
