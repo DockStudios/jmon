@@ -1,6 +1,6 @@
 
 from abc import ABC, abstractmethod
-from typing import Dict, List
+from typing import Dict, List, Optional
 from datetime import datetime, timedelta
 
 from jmon.config import Config
@@ -28,7 +28,7 @@ class HeatmapTimeframe(ABC):
         ...
 
     @abstractmethod
-    def get_label(self, date: datetime):
+    def get_label(self, date: datetime) -> str:
         """Get label"""
         return date.strftime(self.label_format)
 
@@ -67,7 +67,7 @@ class HeatmapTimeframeFiveMinute(HeatmapTimeframe):
     def name(self) -> str:
         return "15-minute"
 
-    def get_label(self, date: datetime):
+    def get_label(self, date: datetime) -> str:
         """Get label"""
         return date.strftime("%H:%M")
 
@@ -100,7 +100,7 @@ class HeatmapTimeframeHour(HeatmapTimeframe):
     def name(self) -> str:
         return "hour"
 
-    def get_label(self, date: datetime):
+    def get_label(self, date: datetime) -> str:
         """Get label"""
         return date.strftime("%H:00")
 
@@ -127,7 +127,7 @@ class HeatmapTimeframeDay(HeatmapTimeframe):
     def name(self) -> str:
         return "day"
 
-    def get_label(self, date: datetime):
+    def get_label(self, date: datetime) -> str:
         """Get label"""
         return date.strftime("%d %b")
 
@@ -154,7 +154,7 @@ class HeatmapTimeframeMonth(HeatmapTimeframe):
     def name(self) -> str:
         return "month"
 
-    def get_label(self, date: datetime):
+    def get_label(self, date: datetime) -> str:
         """Get label"""
         return date.strftime("%b %Y")
 
@@ -191,19 +191,19 @@ class HeatmapTimeframeFactory:
     ]
 
     @classmethod
-    def get_by_time_difference(cls, from_date, to_date):
+    def get_by_time_difference(cls, from_date, to_date) -> HeatmapTimeframe:
         """Get timeframe based on time difference"""
         for instance in cls.get_all():
             if instance.enabled_for_timeframe(from_date=from_date, to_date=to_date):
                 return instance
 
     @classmethod
-    def get_all(cls):
+    def get_all(cls) -> Dict[str, HeatmapTimeframe]:
         """Return all result timeframes"""
         return cls._DEFINITIONS
 
     @classmethod
-    def get_by_name(cls, name):
+    def get_by_name(cls, name) -> Optional[HeatmapTimeframe]:
         """Return timeframe by name"""
         for timeframe in cls._DEFINITIONS:
             if timeframe.name == name:

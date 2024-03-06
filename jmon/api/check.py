@@ -5,7 +5,8 @@ from flask import request
 from jmon.database import Database
 from jmon.errors import CheckCreateError
 from jmon.heatmap_timeframe import HeatmapTimeframeFactory
-from jmon.result_database import ResultDatabase, ResultMetricHeatmapSuccessRate
+from jmon.result_database import ResultDatabase
+from jmon.timeseries_database import AverageCheckSuccessResultReader, TimeSeriesDatabaseFactory
 
 from . import FlaskApp
 from .utils import get_check_and_environment_by_name, require_api_key
@@ -136,17 +137,17 @@ def get_check_heatmap_data(check_name, environment_name):
             return {"status": "error", "msg": "Invalid to_date parameter"}, 400
 
     timeframe = HeatmapTimeframeFactory.get_by_time_difference(from_date=from_date, to_date=to_date)
-    result_database = ResultDatabase()
-    heatmap_metric = ResultMetricHeatmapSuccessRate()
+
+    timeseries_db = TimeSeriesDatabaseFactory.get_database()
 
     return [
         {
             "x": timeframe.get_label(data_point),
-            "y": heatmap_metric.read(
-                result_database=result_database,
+            "y": AverageCheckSuccessResultReader().get_heatmap_data(
+                result_database=timeseries_db,
                 check=check,
-                timeframe=timeframe,
-                timestamp=data_point
+                from_date=data_point,
+                to_date=timeframe.increment_date(data_point)
             )
         }
         for data_point in timeframe.get_data_points(from_date=from_date, to_date=to_date)

@@ -1,4 +1,5 @@
 
+from time import sleep
 from selenium.webdriver.common.by import By
 
 from jmon.models.run import RunTriggerType
@@ -36,6 +37,9 @@ interval: 6000
         self._create_and_trigger_run("semi_working_check", working=True)
         self._create_and_trigger_run("semi_working_check", working=True)
         self._create_and_trigger_run("semi_working_check", working=False)
+
+        # Wait for data to be avaiable in victoriametrics
+        sleep(30)
 
         # Go to homepage
         self._selenium.get(self.BASE_URL)

@@ -16,3 +16,4 @@ services:
      - broker
      - redis
      - server
+     - victoriametrics
