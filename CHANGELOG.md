@@ -1,5 +1,13 @@
 # Changelog
 
+# [4.18.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.17.1...v4.18.0) (2024-03-06)
+
+
+### Features
+
+* Move result metrics to victoriametrics ([d1f326f](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d1f326feaf5433cf9edf29267a4319272d2295a5)), closes [#122](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/122)
+* Update heatmap data API to use victoriametrics to obtain data ([2f46f2c](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/2f46f2ce0fe6f72ecbf4daea9b0cfcf0c0d63f18)), closes [#122](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/122)
+
 ## [4.17.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.17.0...v4.17.1) (2024-03-05)
 
 
