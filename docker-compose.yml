@@ -26,12 +26,19 @@ services:
       RABBITMQ_DEFAULT_PASS: $BROKER_PASSWORD
 
   redis:
-    image: redis:latest
+    image: redis:7
 
     restart: always
     command: redis-server --appendonly yes --requirepass $REDIS_PASSWORD
     env_file:
      - .env
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:v1.99.0
+    restart: always
+    command: -retentionPeriod=1y
+    volumes:
+     - victoriametrics:/victoria-metrics-data
 
   minio:
     image: minio/minio
@@ -66,6 +73,8 @@ services:
      - .env
     links:
      - database
+     - redis
+     - victoriametrics
 
   server:
     build:
@@ -82,6 +91,7 @@ services:
      - database
      - broker
      - redis
+     - victoriametrics
 
   scheduler:
     build: .
@@ -94,6 +104,7 @@ services:
      - broker
      - minio
      - redis
+     - victoriametrics
 
   flower:
     build: .
@@ -125,7 +136,10 @@ services:
      - broker
      - minio
      - redis
+     - victoriametrics
     # Mount noficiation plugins
     volumes:
      - ./jmon/plugins/notifications:/app/jmon/plugins/notifications:ro
 
+volumes:
+  victoriametrics:

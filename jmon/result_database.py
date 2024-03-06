@@ -45,34 +45,6 @@ class AgentTaskClaim(ResultMetric):
         return False
 
 
-class ResultMetricAverageSuccessRate(ResultMetric):
-    """Metric for average success rate"""
-
-    def _get_name(self):
-        """Get name of metric"""
-        return "jmon_result_metric_average_availability"
-
-    def _get_key(self, check, success):
-        """Get key from check"""
-        success_key_part = "success" if success else "failure"
-        return f"{check.name}_{check.environment.name}_{success_key_part}"
-
-    def write(self, result_database, run):
-        """Increment count for success/failure for run"""
-        result_database.connection.hincrby(self._get_name(), self._get_key(run.check, run.success))
-
-    def read(self, result_database, check):
-        """Get success rate fraction"""
-        # Get average successes/failures
-        successes = int(result_database.connection.hget(self._get_name(), self._get_key(check, True)) or 0)
-        failures = int(result_database.connection.hget(self._get_name(), self._get_key(check, False)) or 0)
-
-        # Handle no checks
-        if (successes + failures) == 0:
-            return None
-        return successes / (successes + failures)
-
-
 class ResultMetricLatestStatus(ResultMetric):
     """Metric for latest result status"""
 
@@ -104,52 +76,6 @@ class ResultMetricLatestStatus(ResultMetric):
             return False
         # Default to None (not run), assuming the metric doesn't exist
         return None
-
-
-class ResultMetricHeatmapSuccessRate(ResultMetric):
-    """Metric for success rate over time frame"""
-
-    def _get_key(self, success: bool, check: 'jmon.models.check.Check', timeframe: HeatmapTimeframe, timestamp: datetime):
-        """Get key from check"""
-        suffix = "success" if success else "failure"
-        return f"jmon_result_heatmap_{check.name}_{check.environment.name}_{timeframe.get_from_timestamp(timestamp)}_{suffix}"
-
-    def write(self, result_database: 'ResultDatabase', run: 'jmon.run.Run'):
-        """Write results to redis"""
-        for timeframe in HeatmapTimeframeFactory.get_all():
-            key_ = self._get_key(success=run.success, check=run.check, timeframe=timeframe, timestamp=run._db_run.timestamp)
-            res = result_database.connection.incr(key_, amount=1)
-            # If result is 1,
-            # then the key has been created and expiry should be set
-            if res == 1:
-                result_database.connection.expire(
-                    key_,
-                    timeframe.expiry
-                )
-
-    def read(self, result_database: 'ResultDatabase', check: 'jmon.models.check.Check', timeframe: HeatmapTimeframe, timestamp: datetime):
-        """Get latest check result status"""
-        # Get passes/fails
-        successes = result_database.connection.get(self._get_key(
-            success=True, check=check, timeframe=timeframe, timestamp=timestamp
-        ))
-        if successes is None:
-            successes = 0
-        else:
-            successes = int(successes)
-
-        failures = result_database.connection.get(self._get_key(
-            success=False, check=check, timeframe=timeframe, timestamp=timestamp
-        ))
-        if failures is None:
-            failures = 0
-        else:
-            failures = int(failures)
-
-        if (failures + successes) == 0:
-            return -1
-
-        return round((successes / (successes + failures)) * 100.0, 3)
 
 
 class ResultDatabase:

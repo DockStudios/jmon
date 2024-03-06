@@ -25,3 +25,11 @@ class EnvironmentHasRegisteredChecksError(JmonError):
 
 class StepValidationError(JmonError):
     """A validation error occurred with step"""
+
+    pass
+
+
+class UnableToPushMetricVictoriaMetricsError(JmonError):
+    """Unable to push metric to victoriametrics"""
+
+    pass

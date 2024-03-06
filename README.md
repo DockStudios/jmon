@@ -36,6 +36,9 @@ cd JMon
 # Modify any passwords in the .env file to secure the installation
 vi .env
 
+# Review docs/CONFIG.md for any configuration values that you wish to change.
+# Ensure the victoriametrics retention period matches you desired value in docker-compose.yml
+
 # Startup
 docker-compose up -d
 

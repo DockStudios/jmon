@@ -1,12 +1,14 @@
 
+from datetime import datetime
 from flask import request
 import yaml
 
 from jmon.result_database import (
-    ResultDatabase, ResultMetricAverageSuccessRate,
+    ResultDatabase,
     ResultMetricLatestStatus
 )
 from jmon.result_timeframe import ResultTimeframeFactory
+from jmon.timeseries_database import AverageCheckSuccessResultReader, TimeSeriesDatabaseFactory, VictoriaMetricsDatabase
 
 from . import FlaskApp
 from .utils import get_check_and_environment_by_name
@@ -30,12 +32,11 @@ def get_check_results(check_name, environment_name):
         return error, 404
 
     result_database = ResultDatabase()
-    average_success = None
-    if timeframe:
-        average_success = check.get_success_rate(timeframe.get_from_timestamp())
-    else:
-        average_success = ResultMetricAverageSuccessRate().read(
-            result_database=result_database, check=check)
+    timeseries_db = TimeSeriesDatabaseFactory.get_database()
+    average_success = AverageCheckSuccessResultReader().get_data(
+        result_database=timeseries_db, check=check,
+        from_date=timeframe.get_from_timestamp() if timeframe else None
+    )
 
     return {
         "average_success": average_success,
