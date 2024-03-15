@@ -6,6 +6,8 @@ updates:
     directory: "/ui"
     schedule:
       interval: "weekly"
+    # Disable version updates, only creating pull requests for security updates
+    open-pull-requests-limit: 0
     commit-message:
       prefix: fix
       prefix-development: chore
@@ -15,6 +17,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    # Disable version updates, only creating pull requests for security updates
+    open-pull-requests-limit: 0
     commit-message:
       prefix: fix
       prefix-development: chore
