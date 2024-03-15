@@ -1,5 +1,12 @@
 # Changelog
 
+# [4.19.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.18.2...v4.19.0) (2024-03-15)
+
+
+### Features
+
+* Add support for specifying timeout in DNS step ([5d06e5c](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/5d06e5c3038473a0cdc42fcdc6ac57f84f97f74e)), closes [#128](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/128)
+
 ## [4.18.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.18.1...v4.18.2) (2024-03-15)
 
 
