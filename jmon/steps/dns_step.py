@@ -37,6 +37,7 @@ class DNSStep(BaseStep):
         protocol: tcp
         lifetime: 2
         port: 53
+        timeout: 5
 
     ```
     """
@@ -67,6 +68,7 @@ class DNSStep(BaseStep):
         self._lifetime = self.DEFAULTS["lifetime"]
         self._port = self.DEFAULTS["port"]
         self._protocol = self.DEFAULTS["protocol"]
+        self._timeout = self.DEFAULTS["timeout"]
 
         if type(self._config) is str:
             self._domain = self._config
@@ -78,6 +80,7 @@ class DNSStep(BaseStep):
             self._protocol = self._config.get("protocol", self.DEFAULTS["protocol"]).lower()
             self._port = self._config.get("port", self.DEFAULTS["port"])
             self._lifetime = self._config.get("port", self.DEFAULTS["lifetime"])
+            self._timeout = self._config.get("timeout", self.DEFAULTS["timeout"])
 
         # Handle user passing a single server, rather than a list
         if type(self._servers) is str:
@@ -120,7 +123,7 @@ class DNSStep(BaseStep):
         if self._servers:
             resolver.nameservers = self._servers
         resolver.port = self._port
-        resolver.port = self._port
+        resolver.timeout = self._timeout
         kwargs = {
             "qname": self._domain,
             "rdtype": dns.rdatatype.from_text(self._type),

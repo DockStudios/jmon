@@ -478,6 +478,7 @@ Variables provided by callable plugins can be used in the type value, e.g.
     protocol: tcp
     lifetime: 2
     port: 53
+    timeout: 5
 
 ```
 
