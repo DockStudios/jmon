@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.18.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.18.1...v4.18.2) (2024-03-15)
+
+
+### Bug Fixes
+
+* Add volume for minio in docker-compose. PLEASE SEE MIGRATION.md for important information for upgrading ([d501797](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d501797e4224458cba583f79b784d2a17b7af83f)), closes [#127](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/127)
+
 ## [4.18.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.18.0...v4.18.1) (2024-03-15)
 
 
