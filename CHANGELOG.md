@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.18.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.18.0...v4.18.1) (2024-03-15)
+
+
+### Bug Fixes
+
+* Add docker-compose volume for postgres/redis - SEE MIGRATION.md FOR INFORMATION BEFORE UPGRADING ([aa2b393](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/aa2b39315e83051248ea5612e2f88c305e03f808)), closes [#123](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/123)
+* Pin postgres docker image to major version ([6d429cc](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/6d429ccb5efa80f0f5856727a6ea6778b996d002)), closes [#123](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/123)
+
 # [4.18.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.17.1...v4.18.0) (2024-03-06)
 
 
