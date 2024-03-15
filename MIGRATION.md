@@ -1,3 +1,45 @@
+# v4.18.2
+
+In the release of 4.18.2, a docker-compose volume for minio has been implemented.
+
+To avoid data-loss, the following script can be used to backup data from minio and restore to the new docker-comopose volumes.
+
+For installations that are not using docker-compose, this can be ignored.
+
+```
+MINIO_VOLUME=/data
+
+
+# Determine amount of database that requires backing up
+docker-compose exec minio du -hs $MINIO_VOLUME
+
+# Determine a location with enough space
+BACKUP_LOCATION=/backup
+echo "If running this as a script, verify that $BACKUP_LOCATION exists, as has enough space to contain the above space"
+read
+
+# Stop the stack
+docker-compose stop
+
+# Backup minio data
+mkdir $BACKUP_LOCATION/minio
+sudo docker-compose cp --archive minio:$MINIO_VOLUME/. $BACKUP_LOCATION/minio/
+
+# Check out desired release, following README
+
+# Bring up stack, without starting
+docker-compose up --no-start
+
+# Copy data back to volumes
+sudo docker-compose cp --archive $BACKUP_LOCATION/minio/. minio:$MINIO_VOLUME/
+
+# Bring up stack
+docker-compose up -d
+
+# Verify the data has been copied
+docker-compose exec minio du -hs $MINIO_VOLUME
+```
+
 # v4.18.1
 
 In the release of 4.18.1, docker-compose volumes for postgres and redis have been implemented.
