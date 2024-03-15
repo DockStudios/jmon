@@ -19,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-      include:
-        - image: ${{ github.repository }}
-          dockerfile: Dockerfile
-        - image: ${{ github.repository }}-server
-          dockerfile: Dockerfile.server
+        include:
+          - image: ${{ github.repository }}
+            dockerfile: Dockerfile
+          - image: ${{ github.repository }}-server
+            dockerfile: Dockerfile.server
 
     permissions:
       contents: read
