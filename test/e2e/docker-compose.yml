@@ -8,7 +8,7 @@ services:
       dockerfile: Dockerfile.server
 
     # Install pytest, wait for services and run pytest
-    command: bash -c "pip3 install pytest >/dev/null && sleep 2 && pytest -vvv ./jmon/test/e2e"
+    command: bash -c "pip3 install -r requirements-tests.txt >/dev/null && sleep 2 && pytest -vvv ./test/e2e"
     env_file:
      - ./.env
     links:
