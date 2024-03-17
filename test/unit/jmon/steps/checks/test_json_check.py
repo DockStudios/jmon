@@ -167,4 +167,16 @@ class TestJsonCheck:
             "Full Response: ['first', 'some_value', 'other']\n"
         ])
         assert step._status is jmon.step_status.StepStatus.FAILED
- 
+
+    def test_execution_requests_no_state(self, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
+        """Test execution requests without response state"""
+        step = get_json_step({"equals": "value"})
+        mock_state = unittest.mock.MagicMock()
+        mock_state.response = None
+
+        step.execute(execution_method="execute_requests", state=mock_state)
+        assert mock_logger.read_log_stream() == '\n'.join([
+            'Root -> CheckJson: Step failed',
+            'Root -> CheckJson: This step requires a request to have been made\n',
+        ])
+        assert step._status is jmon.step_status.StepStatus.FAILED
