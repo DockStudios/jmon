@@ -1,5 +1,4 @@
 
-import datetime
 from typing import Any, Callable
 import unittest.mock
 
@@ -12,35 +11,15 @@ import jmon.steps.checks
 import jmon.errors
 import jmon.client_type
 import jmon.run_logger
+from test.unit.jmon.steps.fixtures import mock_run, mock_logger, mock_root_step
 
-
-class MockLogger(jmon.run_logger.RunLogger):
-
-    @property
-    def _format(self):
-        return '%(message)s'
-
-@pytest.fixture
-def mock_run():
-    run = unittest.mock.MagicMock()
-    run.get_remaining_time.return_value = datetime.timedelta(minutes=1)
-    yield run
-
-@pytest.fixture
-def mock_logger():
-    logger = MockLogger(run=None, enable_log=True)
-    yield logger
-    logger.cleanup()
-
-@pytest.fixture
-def mock_root_step(mock_logger):
-    yield jmon.steps.RootStep(run=None, config=None, parent=None, run_logger=mock_logger)
 
 @pytest.fixture
 def get_json_step(mock_run, mock_root_step, mock_logger) -> Callable[[Any], 'jmon.steps.checks.JsonCheck']:
     def inner(config):
         return jmon.steps.checks.JsonCheck(parent=mock_root_step, config=config, run=mock_run, run_logger=mock_logger)
     return inner
+
 
 class TestJsonCheck:
 
