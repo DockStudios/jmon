@@ -51,3 +51,9 @@ stages:
  - build
  - test
  - deploy
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_MESSAGE =~ /^chore\(release\):.*/
+      when: never
+    - when: always
