@@ -1,5 +1,13 @@
 # Changelog
 
+## [4.19.4](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.3...v4.19.4) (2024-03-17)
+
+
+### Bug Fixes
+
+* Fix default domain value, raised when invalid config is passed to DNS step ([ca98138](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/ca98138f2f8f0dac8a53aab5ca872ffe1037f70b)), closes [#129](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/129)
+* Fix obtaining lifetime override, instead of port value ([403f56e](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/403f56ebe81c7d3d8f9c062bfb259f922cacf0f2)), closes [#129](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/129)
+
 ## [4.19.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.2...v4.19.3) (2024-03-17)
 
 
