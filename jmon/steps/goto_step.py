@@ -9,6 +9,7 @@ from jmon.step_state import RequestsStepState, SeleniumStepState
 from jmon.step_status import StepStatus
 from jmon.steps.base_step import BaseStep
 from jmon.logger import logger
+from jmon.utils import UNSET
 
 
 class GotoStep(BaseStep):
@@ -40,8 +41,14 @@ class GotoStep(BaseStep):
         url: https://example.com/api/search
         headers:
           X-Api-Key: MyApiKey
-        body: {'query': 'test'}
+        json: {'query': 'test'}
         method: POST
+    - goto:
+        url: https://example.com/api/search
+        headers:
+          X-Api-Key: MyApiKey
+        body: "Some body string"
+        method: PUT
     ```
     Variables can also be used inside the header values, URL and body
     """
@@ -69,11 +76,13 @@ class GotoStep(BaseStep):
         """Calculate config"""
         super().__init__(run, config, parent, run_logger)
         self._method = "get"
-        self._body = None
+        self._body = UNSET
+        self._json = UNSET
         self._headers = {}
         if type(self._config) is dict:
             self._method = self._config.get("method", "get").lower()
-            self._json = self._config.get("body")
+            self._body = self._config.get("body", UNSET)
+            self._json = self._config.get("json", UNSET)
             self._headers = self._config.get("headers", {})
 
     def _validate_step(self):
@@ -144,7 +153,7 @@ class GotoStep(BaseStep):
         }
 
         # Attempt to inject variables into body
-        if self._body:
+        if self._json is not UNSET:
             def inject_variables_in_structure(structure):
                 """Inject variables"""
                 # If item is a string, replace value directly and return
@@ -160,13 +169,11 @@ class GotoStep(BaseStep):
                         structure[itx] = inject_variables_in_structure(val)
 
                 return structure
+            self._json = inject_variables_in_structure(self._json)
+            request_kwargs["json"] = self._json
 
-            self._body = inject_variables_in_structure(self._body)
-
-        # If body is a dictionary or list, send as json
-        if type(self._body) in [list, dict]:
-            request_kwargs["json"] = self._body
-        else:
+        if self._body is not UNSET:
+            self._body = self.inject_variables_into_string(self._body)
             request_kwargs["data"] = self._body
 
         # Get requests call method, based on provided method
