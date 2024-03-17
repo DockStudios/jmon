@@ -79,7 +79,7 @@ class DNSStep(BaseStep):
             self._servers = self._config.get("name_servers")
             self._protocol = self._config.get("protocol", self.DEFAULTS["protocol"]).lower()
             self._port = self._config.get("port", self.DEFAULTS["port"])
-            self._lifetime = self._config.get("port", self.DEFAULTS["lifetime"])
+            self._lifetime = self._config.get("lifetime", self.DEFAULTS["lifetime"])
             self._timeout = self._config.get("timeout", self.DEFAULTS["timeout"])
 
         # Handle user passing a single server, rather than a list
