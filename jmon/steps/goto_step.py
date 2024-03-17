@@ -183,11 +183,11 @@ class GotoStep(BaseStep):
             self.set_status(StepStatus.FAILED)
             self._logger.error(str(exc).split("\n")[0])
 
-
     def execute_selenium(self, state: SeleniumStepState):
         """Goto URL"""
         try:
             state.selenium_instance.get(self.url)
+            state.element = state.selenium_instance
         except selenium.common.exceptions.WebDriverException as exc:
             self.set_status(StepStatus.FAILED)
             self._logger.error(str(exc).split("\n")[0])
