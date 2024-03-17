@@ -33,14 +33,14 @@ For a list of upcoming features and issues being worked on, please see https://g
 git clone https://github.com/DockStudios/JMon
 cd JMon
 
-# Modify any passwords in the .env file to secure the installation
+# Modify JMon version and any passwords in the .env file to secure the installation
 vi .env
 
 # Review docs/CONFIG.md for any configuration values that you wish to change.
 # Ensure the victoriametrics retention period matches you desired value in docker-compose.yml
 
 # Startup
-docker-compose up -d
+docker-compose up --pull -d
 
 # Add check for W3Schools
 # If an API key has been configured, use the header argument to curl:
@@ -177,7 +177,27 @@ Create unique API key (see `.env`). Alternatively, disable API key access by rem
 Before performing an upgrade, ensure to check the release for database changes.
 If there are any database changes, it is safest to stop the jmon application (agents, scheduler and server).
 
-To upgrade using docker-compose run:
+### Re-built images
+
+To upgrade using re-built images using docker-compose run:
+```
+# Stop docker-compose stack
+docker-compose stop
+
+# Adjust JMon version in .env
+vi .env
+
+# Bring up application, rebuilding the containers
+## Initially perform DB migration
+docker-compose up --pull database dbmigrate
+
+## Bring up remaining application
+docker-compose up --pull
+```
+
+### Custom images
+
+To upgrade using custom built images, run:
 ```
 # Stop docker-compose stack
 docker-compose stop

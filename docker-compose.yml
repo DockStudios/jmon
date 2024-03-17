@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   database:
     image: postgres:16
 
@@ -83,6 +82,7 @@ services:
      - victoriametrics
 
   server:
+    image: ghcr.io/dockstudios/jmon-server:$JMON_RELEASE
     build:
       context: .
       dockerfile: Dockerfile.server
@@ -100,6 +100,7 @@ services:
      - victoriametrics
 
   scheduler:
+    image: ghcr.io/dockstudios/jmon:$JMON_RELEASE
     build: .
     command: celery -A jmon.scheduler.app beat -S redbeat.RedBeatScheduler  --loglevel=INFO
     env_file:
@@ -113,6 +114,7 @@ services:
      - victoriametrics
 
   flower:
+    image: ghcr.io/dockstudios/jmon:$JMON_RELEASE
     build: .
     command: celery -A jmon.app flower --host=0.0.0.0 --broker_api=http://guest:guest@${BROKER_HOST}:15672/api/vhost
     ports:
@@ -127,6 +129,7 @@ services:
      - redis
 
   agent:
+    image: ghcr.io/dockstudios/jmon:$JMON_RELEASE
     build: .
     # Specify the test types as queues (requests, chrome, firefox)
     # At least once agent must have the 'default' queue
