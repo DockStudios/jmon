@@ -31,7 +31,7 @@ class FindStep(BaseStep):
      - goto: https://example.com
      - find:
        - tag: input
-       - url: https://example.com/?followed=redirect
+         placeholder: https://example.com/?followed=redirect
     ```
 
     Find elements can be nested to find elements within other elements. E.g.:
@@ -165,10 +165,11 @@ Actual config: {config}
 
             tag = config.get('tag')
             description = f"by {xpath_key}: {xpath_value}"
-            if not tag:
-                tag = '*'
-            else:
+            if tag:
+                tag = self.inject_variables_into_string(tag)
                 description += f" and tag: {tag}"
+            else:
+                tag = '*'
 
             # Search by XPATH
             by_type = By.XPATH
