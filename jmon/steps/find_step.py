@@ -31,7 +31,7 @@ class FindStep(BaseStep):
      - goto: https://example.com
      - find:
        - tag: input
-       - url: https://example.com/?followed=redirect
+         placeholder: https://example.com/?followed=redirect
     ```
 
     Find elements can be nested to find elements within other elements. E.g.:

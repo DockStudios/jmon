@@ -5,10 +5,12 @@ import pytest
 
 import test.unit.jmon.mock_run_logger
 import jmon.steps
+import jmon.run
+
 
 @pytest.fixture
 def mock_run():
-    run = unittest.mock.MagicMock()
+    run = unittest.mock.MagicMock(spec=jmon.run.Run)
     run.get_remaining_time.return_value = datetime.timedelta(minutes=1)
     yield run
 
