@@ -6,6 +6,11 @@ from time import sleep
 from jmon.logger import logger
 
 
+# Unset object, for handling default values
+# for optional arguments
+UNSET = object()
+
+
 class RetryStatus(Enum):
     """Retry return status enum"""
     ONLY_IF_CONDITION_FAILURE = "ONLY_IF_CONDITION_FAILURE"

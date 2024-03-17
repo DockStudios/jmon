@@ -15,7 +15,7 @@ run_docker_compose_command up --quiet-pull -d database broker redis minio victor
 sleep 30
 
 # Run migration apps and wait for completion
-run_docker_compose_command up --quiet-pull createbucket dbupgrade
+run_docker_compose_command up --quiet-pull --build createbucket dbupgrade
 
 # Run tests
 run_docker_compose_command up --quiet-pull --build --exit-code-from testrunner server testrunner scheduler agent flower

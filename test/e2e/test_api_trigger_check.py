@@ -4,7 +4,7 @@ from time import sleep
 
 from selenium.webdriver.common.by import By
 
-from jmon.test.e2e import EndToEndSeleniumTest
+from test.e2e import EndToEndSeleniumTest
 import jmon.models.check
 import jmon.models.run
 

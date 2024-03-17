@@ -15,7 +15,7 @@ import jmon.database
 import jmon.config
 from jmon.errors import CheckCreateError, StepValidationError
 import jmon.models
-from jmon.steps.root_step import RootStep
+import jmon.steps.root_step
 import jmon.run
 from jmon.logger import logger
 
@@ -105,7 +105,7 @@ class Check(jmon.database.Base):
         # Create root step and perform check to ensure
         # steps are valid
         try:
-            root_step = RootStep(run=None, config=instance.steps, parent=None)
+            root_step = jmon.steps.root_step.RootStep(run=None, config=instance.steps, parent=None)
             root_step.validate_steps()
         except StepValidationError as exc:
             raise CheckCreateError(str(exc))
@@ -213,7 +213,7 @@ class Check(jmon.database.Base):
                 steps += get_all_steps(child)
             return steps
 
-        root_step = RootStep(run=jmon.run.Run(check=self), config=self.steps, parent=None)
+        root_step = jmon.steps.root_step.RootStep(run=jmon.run.Run(check=self), config=self.steps, parent=None)
         steps = get_all_steps(root_step)
         return len(steps)
 
@@ -354,7 +354,7 @@ class Check(jmon.database.Base):
         if self.client:
             supported_clients = [self.client]
 
-        root_step = RootStep(run=jmon.run.Run(check=self), config=self.steps, parent=None)
+        root_step = jmon.steps.root_step.RootStep(run=jmon.run.Run(check=self), config=self.steps, parent=None)
 
         supported_clients = root_step.get_supported_clients(supported_clients)
         return supported_clients

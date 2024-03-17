@@ -12,9 +12,9 @@ from jmon.run_step_data import RunStepData
 from jmon.plugins import NotificationLoader
 import jmon.result_database
 import jmon.models.run
-from jmon.run_logger import RunLogger
+import jmon.run_logger
 from jmon.step_status import StepStatus
-from jmon.steps.root_step import RootStep
+import jmon.steps.root_step
 import jmon.timeseries_database
 import jmon.config
 
@@ -28,8 +28,8 @@ class Run:
 
         self._artifact_paths = []
 
-        self._logger = RunLogger(run=self, enable_log=True)
-        self._root_step = RootStep(run=self, config=self.check.steps, parent=None, run_logger=self._logger)
+        self._logger = jmon.run_logger.RunLogger(run=self, enable_log=True)
+        self._root_step = jmon.steps.root_step.RootStep(run=self, config=self.check.steps, parent=None, run_logger=self._logger)
         self._start_time: Optional[datetime.datetime] = None
         self._end_time: Optional[datetime.datetime] = None
         self._variables = {}
