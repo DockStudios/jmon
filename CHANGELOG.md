@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.19.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.1...v4.19.2) (2024-03-17)
+
+
+### Bug Fixes
+
+* Stop internal errors when checking JSON for a non-JSON response ([8764399](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/8764399b18c0d31f4ab032a5857237c8fc9d4dcc)), closes [#106](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/106)
+
 ## [4.19.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.0...v4.19.1) (2024-03-17)
 
 
