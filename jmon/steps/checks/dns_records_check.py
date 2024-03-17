@@ -8,6 +8,7 @@ from jmon.errors import StepValidationError
 from jmon.step_state import RequestsStepState
 from jmon.step_status import StepStatus
 from jmon.steps.checks.base_check import BaseCheck
+from jmon.utils import UNSET
 
 
 class DnsRecordsCheckMatchType(Enum):
@@ -17,9 +18,6 @@ class DnsRecordsCheckMatchType(Enum):
     CNAME = "cname"
     COUNT = "count"
     MIN_COUNT = "min_count"
-
-
-UNSET = object()
 
 
 class DnsRecordsCheck(BaseCheck):

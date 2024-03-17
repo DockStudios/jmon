@@ -3,7 +3,7 @@ import os
 
 import requests
 
-from jmon.test.e2e import EndToEndBaseTest
+from test.e2e import EndToEndBaseTest
 import jmon.models.check
 
 

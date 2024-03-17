@@ -1,4 +1,7 @@
 
+from typing import Optional, Union
+import logging
+
 from jmon.logger import logger
 from jmon.step_logger import StepLogger
 from jmon.step_state import StepState
@@ -18,7 +21,7 @@ class BaseStep:
     """Allow some step types to debug/info logging"""
     SHOULD_INFO_DEBUG_LOG = True
 
-    def __init__(self, run, config, parent, run_logger=None):
+    def __init__(self, run, config, parent: Optional['BaseStep'], run_logger: Optional[Union['StepLogger', 'logging.Logger']]=None):
         """Store member variables"""
         self._config = config
         self._run = run
