@@ -1,6 +1,7 @@
 
 from enum import Enum
 
+import requests.exceptions
 from jsonpath import JSONPath
 
 from jmon.client_type import ClientType
@@ -111,11 +112,15 @@ class JsonCheck(BaseCheck):
                 "json check provider a comparator. Either 'contains' or 'equals'"
             )
 
-    def _result_matches(self, state):
+    def _result_matches(self, state: RequestsStepState):
         """Determine if result is valid"""
         parser, match_type, match_value = self._extract_selector_match_type()
 
-        actual_value = state.response.json()
+        try:
+            actual_value = state.response.json()
+        except requests.exceptions.JSONDecodeError:
+            return False, f"Could not decode json from response body.\nFull response: {state.response.content}"
+
         parser_message = ""
         if parser:
             actual_value = parser.parse(actual_value)
@@ -124,6 +129,8 @@ class JsonCheck(BaseCheck):
             # Handle jsonpath return an array with single element when matching a single value
             if type(actual_value) is list and len(actual_value) == 1:
                 actual_value = actual_value[0]
+
+        parser_message += f"\nFull Response: {state.response.json()}"
 
         # If compare value is a string, inject variables
         # @TODO How can we handle injecting variables to lists/dicts
@@ -143,5 +150,5 @@ class JsonCheck(BaseCheck):
         result, message = self._result_matches(state)
         if not result:
             self.set_status(StepStatus.FAILED)
-            self._logger.error(f"JSON match failed: {message}\nFull Response: {state.response.json()}")
+            self._logger.error(f"JSON match failed: {message}")
 
