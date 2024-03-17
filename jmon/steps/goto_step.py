@@ -161,7 +161,7 @@ class GotoStep(BaseStep):
                     structure = self.inject_variables_into_string(structure)
                 elif type(structure) is dict:
                     # Iterate through keys of a dict and replace each value
-                    for key_, value_ in structure:
+                    for key_, value_ in structure.items():
                         structure[key_] = inject_variables_in_structure(value_)
                 elif type(structure) is list:
                     # Iterate through elements of lists and replace them with injected versions
