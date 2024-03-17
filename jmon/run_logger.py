@@ -44,6 +44,11 @@ class RunLogger:
 
     should_info_debug_log = True
 
+    @property
+    def _format(self):
+        """Return log format"""
+        return '%(asctime)s - %(message)s'
+
     def __init__(self, run, enable_log):
         """Create handler, filter and store member variables"""
         self._logger = logger
@@ -59,7 +64,7 @@ class RunLogger:
         self._log_handler.addFilter(thread_log_filter)
 
         # Add format for user-friendly logs
-        formatter = logging.Formatter('%(asctime)s - %(message)s')
+        formatter = logging.Formatter(self._format)
         self._log_handler.setFormatter(formatter)
         self._logger.addHandler(self._log_handler)
 

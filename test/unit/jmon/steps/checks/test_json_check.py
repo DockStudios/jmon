@@ -4,6 +4,7 @@ from typing import Any, Callable
 import unittest.mock
 
 import pytest
+import requests.exceptions
 
 import jmon.step_status
 import jmon.steps
@@ -15,21 +16,9 @@ import jmon.run_logger
 
 class MockLogger(jmon.run_logger.RunLogger):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._mock_log_lines = []
-
-    def debug(self, msg):
-        self._mock_log_lines.append(('debug', msg))
-
-    def info(self, msg):
-        self._mock_log_lines.append(('info', msg))
-
-    def warn(self, msg):
-        self._mock_log_lines.append(('warn', msg))
-
-    def error(self, msg):
-        self._mock_log_lines.append(('error', msg))
+    @property
+    def _format(self):
+        return '%(message)s'
 
 @pytest.fixture
 def mock_run():
@@ -107,22 +96,75 @@ class TestJsonCheck:
             with pytest.raises(NotImplementedError):
                 step.execute_requests(state=mock_state)
 
-    def test_execution_requests_equals_match(self, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
-        """Test execution requests using equals with valid match"""
-        step = get_json_step({"equals": {"some_dict": "value", "another": {"nested": "value"}}})
-        mock_state = unittest.mock.MagicMock()
-        mock_state.response.json.return_value = {"some_dict": "value", "another": {"nested": "value"}}
-
-        step.execute(execution_method="execute_requests", state=mock_state)
-        assert mock_logger._mock_log_lines == []
-        assert step._status is jmon.step_status.StepStatus.SUCCESS
-
-    def test_execution_requests_equals_mismatch(self, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
+    @pytest.mark.parametrize('config, json_response', [
+        ({"equals": {"some_dict": "value"}}, {"doesnotexist": "value"})
+    ])
+    def test_execution_requests_mismatch(self, config, json_response, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
         """Test execution requests"""
-        step = get_json_step({"equals": {"some_dict": "value"}})
+        step = get_json_step(config)
         mock_state = unittest.mock.MagicMock()
-        mock_state.response.json.return_value = {"doesnotexist": "value"}
+        mock_state.response.json.return_value = json_response
 
         step.execute(execution_method="execute_requests", state=mock_state)
-        assert mock_logger._mock_log_lines == []
+        assert 'Root -> CheckJson: Step failed' in mock_logger.read_log_stream()
+        assert 'Root -> CheckJson: JSON match failed' in mock_logger.read_log_stream()
         assert step._status is jmon.step_status.StepStatus.FAILED
+
+    @pytest.mark.parametrize('config, json_response', [
+        ({"equals": "string match"}, "string match"),
+        ({"equals": ["list", "match"]}, ["list", "match"]),
+        ({"equals": {"some_dict": "value", "another": {"nested": "value"}}}, {"some_dict": "value", "another": {"nested": "value"}}),
+
+        ({"contains": "part"}, "containspartstring"),
+
+        ({"contains": "value"}, ["list", "value", "contains"]),
+        ({"contains": "dictkey"}, {"dictkey": "exists", "another": "value"}),
+
+        # With selector
+        ({"equals": "string match", "selector": "$.nested[0]"}, {"nested": ["string match"]}),
+        ({"equals": ["list", "match"], "selector": "$.nestedlist"}, {"nestedlist": ["list", "match"]}),
+        ({"equals": "value", "selector": "$.another.nested"}, {"some_dict": "value", "another": {"nested": "value"}}),
+
+        ({"contains": "part", "selector": "$.nested"}, {"nested": "containspartstring"}),
+
+        ({"contains": "value", "selector": "$.nested"}, {"nested": ["list", "value", "contains"]}),
+        ({"contains": "dictkey", "selector": "$.nested"}, {"nested": {"dictkey": "exists", "another": "value"}}),
+    ])
+    def test_execution_requests_match(self, config, json_response, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
+        """Test execution requests with valid match"""
+        step = get_json_step(config)
+        mock_state = unittest.mock.MagicMock()
+        mock_state.response.json.return_value = json_response
+
+        step.execute(execution_method="execute_requests", state=mock_state)
+        assert mock_logger.read_log_stream() == ''
+        assert step._status is jmon.step_status.StepStatus.SUCCESS
+ 
+    def test_execution_requests_mismatch_error_log(self, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
+        """Test execution requests error log after failure"""
+        step = get_json_step({"contains": "does_not_exist"})
+        mock_state = unittest.mock.MagicMock()
+        mock_state.response.json.return_value = ["first", "some_value", "other"]
+
+        step.execute(execution_method="execute_requests", state=mock_state)
+        assert mock_logger.read_log_stream() == '\n'.join([
+            'Root -> CheckJson: Step failed',
+            "Root -> CheckJson: JSON match failed: Could not find 'does_not_exist' in actual value '['first', 'some_value', 'other']'",
+            "Full Response: ['first', 'some_value', 'other']\n"
+        ])
+        assert step._status is jmon.step_status.StepStatus.FAILED
+
+    def test_execution_requests_mismatch_error_log_with_selector(self, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
+        """Test execution requests error log after failure with selector"""
+        step = get_json_step({"contains": "does_not_exist", "selector": "$.doesnotexist"})
+        mock_state = unittest.mock.MagicMock()
+        mock_state.response.json.return_value = ["first", "some_value", "other"]
+
+        step.execute(execution_method="execute_requests", state=mock_state)
+        assert mock_logger.read_log_stream() == '\n'.join([
+            'Root -> CheckJson: Step failed',
+            "Root -> CheckJson: JSON match failed: Could not find 'does_not_exist' in actual value '[]', from JSON selector '$.doesnotexist'",
+            "Full Response: ['first', 'some_value', 'other']\n"
+        ])
+        assert step._status is jmon.step_status.StepStatus.FAILED
+ 
