@@ -1,5 +1,12 @@
 # Changelog
 
+## [4.19.3](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.2...v4.19.3) (2024-03-17)
+
+
+### Bug Fixes
+
+* Handle variable replacement in tag name, when placeholder/text is specified in FindStep ([d5ce26a](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d5ce26a3061204da415c6ad33a37b4b9e36f1a83)), closes [#28](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/28)
+
 ## [4.19.2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.1...v4.19.2) (2024-03-17)
 
 
