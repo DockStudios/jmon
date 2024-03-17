@@ -159,3 +159,18 @@ class TestJsonCheck:
             'Root -> CheckJson: This step requires a request to have been made\n',
         ])
         assert step._status is jmon.step_status.StepStatus.FAILED
+
+    def test_execution_requests_invalid_json(self, mock_run, mock_root_step, mock_logger, get_json_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
+        """Test execution requests with invalid JSON response"""
+        step = get_json_step({"contains": "value"})
+        mock_state = unittest.mock.MagicMock()
+        mock_state.response.json.side_effect = requests.exceptions.JSONDecodeError("Invalid JSON", "test doc", 1)
+        mock_state.response.content = "Example Non-JSON response"
+
+        step.execute(execution_method="execute_requests", state=mock_state)
+        assert mock_logger.read_log_stream() == '\n'.join([
+            'Root -> CheckJson: Step failed',
+            "Root -> CheckJson: JSON match failed: Could not decode json from response body.",
+            "Full response: Example Non-JSON response\n"
+        ])
+        assert step._status is jmon.step_status.StepStatus.FAILED
