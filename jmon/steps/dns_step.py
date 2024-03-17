@@ -64,6 +64,7 @@ class DNSStep(BaseStep):
         """Calculate config"""
         super().__init__(run, config, parent, run_logger)
         self._servers = []
+        self._domain = None
         self._type = self.DEFAULTS["type"]
         self._lifetime = self.DEFAULTS["lifetime"]
         self._port = self.DEFAULTS["port"]
