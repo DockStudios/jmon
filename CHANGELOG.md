@@ -1,5 +1,14 @@
 # Changelog
 
+## [4.19.1](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.0...v4.19.1) (2024-03-17)
+
+
+### Bug Fixes
+
+* Fix iteration of items in dict ([9e75840](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/9e7584039691746b651602b1b585e8a97a214190)), closes [#28](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/28)
+* Reset selenium element state after performing Goto ([9785c38](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/9785c386433ad7b2c6e2015f91fd31d8864c2347)), closes [#28](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/28)
+* Split body/json to allow passing JSON string as body in request. ([7e71cb6](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/7e71cb6a7906d5a8cc70fad22891750ea576d233)), closes [#28](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/28)
+
 # [4.19.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.18.2...v4.19.0) (2024-03-15)
 
 
