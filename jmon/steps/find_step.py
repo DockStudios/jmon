@@ -165,10 +165,11 @@ Actual config: {config}
 
             tag = config.get('tag')
             description = f"by {xpath_key}: {xpath_value}"
-            if not tag:
-                tag = '*'
-            else:
+            if tag:
+                tag = self.inject_variables_into_string(tag)
                 description += f" and tag: {tag}"
+            else:
+                tag = '*'
 
             # Search by XPATH
             by_type = By.XPATH
