@@ -96,7 +96,7 @@ class GotoStep(BaseStep):
                 raise StepValidationError("Goto must contain a 'url' attribute")
 
             # Ensure method, if passed, is a valid method
-            valid_methods = ["get", "post", "delete", "patch"]
+            valid_methods = ["get", "post", "delete", "patch", "put"]
             if self._config.get("method", "get").lower() not in valid_methods:
                 raise StepValidationError(f"Goto method must be on of: {', '.join(valid_methods)}")
 
@@ -111,7 +111,7 @@ class GotoStep(BaseStep):
 
             # Check remaining keys
             config_keys = [k for k in self._config.keys()]
-            for valid_key in ["url", "method", "headers", "body"]:
+            for valid_key in ["url", "method", "headers", "body", "json"]:
                 if valid_key in config_keys:
                     config_keys.remove(valid_key)
             if config_keys:

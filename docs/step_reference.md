@@ -39,8 +39,14 @@ For non-browser based tests, additional arguments can be provided to the Goto st
     url: https://example.com/api/search
     headers:
       X-Api-Key: MyApiKey
-    body: {'query': 'test'}
+    json: {'query': 'test'}
     method: POST
+- goto:
+    url: https://example.com/api/search
+    headers:
+      X-Api-Key: MyApiKey
+    body: "Some body string"
+    method: PUT
 ```
 Variables can also be used inside the header values, URL and body
 
@@ -218,6 +224,68 @@ E.g.
 
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
+
+#### WaitAction
+
+Key: `wait`
+
+
+Directive for waiting for page readiness.
+
+Supported wait states:
+ * `visible` - Wait for element to be visible on screen
+ * `clickable` - Wait for element to be clickable
+
+The default wait time is 60s.
+
+E.g.
+```
+- goto: https://example.com
+- find:
+  - id: login
+  - actions:
+    - wait: visible
+```
+
+Specify custom timeout
+```
+- actions:
+   - wait:
+       type: visible
+       # Timeout in seconds
+       timeout: 30
+```
+
+
+Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
+
+#### ReportPerformanceAction
+
+Key: `report-performance`
+
+
+Directive for reporting performance
+
+E.g.
+```
+- goto: https://example.com
+- actions:
+  - report-performance
+```
+
+This sets a "performance" run variable, which contains the following attributes:
+  * pageSize
+  * nrRequests
+  * load
+  * domContentLoaded
+  * firstMeaningfulPaint
+  * firstPaint
+  * firstContentfulPaint
+
+These attributes can be used in plugins
+
+
+Client Support: `BROWSER_CHROME`
 
 ### CheckStep
 
