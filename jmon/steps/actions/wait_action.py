@@ -3,7 +3,7 @@ from enum import Enum
 
 import selenium.common.exceptions
 import selenium.webdriver.support.expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
+import selenium.webdriver.support.wait
 
 from jmon.client_type import ClientType
 from jmon.errors import StepValidationError
@@ -132,7 +132,7 @@ or
             raise Exception("Could not determine wait method for WatiActionType")
 
         try:
-            WebDriverWait(instance, self.get_timeout()).until(until_method(element))
+            selenium.webdriver.support.wait.WebDriverWait(instance, self.get_timeout()).until(until_method(element))
             return True
         except selenium.common.exceptions.TimeoutException:
             return None
