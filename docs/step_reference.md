@@ -273,19 +273,15 @@ E.g.
   - report-performance
 ```
 
-This sets a "performance" run variable, which contains the following attributes:
-  * pageSize
-  * nrRequests
+This sets a "performance" run variable, which contains an instance of PerformanceData with the following attributes:
   * load
-  * domContentLoaded
-  * firstMeaningfulPaint
-  * firstPaint
-  * firstContentfulPaint
+  * dom_content_loaded
+  * interactive
 
-These attributes can be used in plugins
+This object can be used in plugins.
 
 
-Client Support: `BROWSER_CHROME`
+Client Support: `BROWSER_FIREFOX`
 
 ### CheckStep
 
