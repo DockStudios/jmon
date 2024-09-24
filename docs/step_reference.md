@@ -219,6 +219,41 @@ E.g.
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
 
+#### WaitAction
+
+Key: `wait`
+
+
+Directive for waiting for page readiness.
+
+Supported wait states:
+ * `present` - Wait for element to be present on page
+ * `visible` - Wait for element to be visible on screen
+ * `clickable` - Wait for element to be clickable
+
+The default wait time is 60s.
+
+E.g.
+```
+- goto: https://example.com
+- find:
+  - id: login
+  - actions:
+    - wait: visible
+```
+
+Specify custom timeout
+```
+- actions:
+   - wait:
+       type: visible
+       # Timeout in seconds
+       timeout: 30
+```
+
+
+Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
+
 ### CheckStep
 
 Key: `check`
