@@ -15,7 +15,6 @@ from jmon.utils import RetryStatus, retry
 
 
 class WaitActionType(Enum):
-    PRESENT   = "present"
     VISIBLE   = "visible"
     CLICKABLE = "clickable"
 
@@ -25,7 +24,6 @@ class WaitAction(BaseAction):
     Directive for waiting for page readiness.
 
     Supported wait states:
-     * `present` - Wait for element to be present on page
      * `visible` - Wait for element to be visible on screen
      * `clickable` - Wait for element to be clickable
 
@@ -122,9 +120,7 @@ or
         """Perform wait"""
         until_method = None
         wait_type = self.get_wait_type()
-        if wait_type is WaitActionType.PRESENT:
-            until_method = EC.presence_of_element_located
-        elif wait_type is WaitActionType.VISIBLE:
+        if wait_type is WaitActionType.VISIBLE:
             until_method = EC.visibility_of
         elif wait_type is WaitActionType.CLICKABLE:
             until_method = EC.element_to_be_clickable

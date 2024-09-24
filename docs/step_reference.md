@@ -233,7 +233,6 @@ Key: `wait`
 Directive for waiting for page readiness.
 
 Supported wait states:
- * `present` - Wait for element to be present on page
  * `visible` - Wait for element to be visible on screen
  * `clickable` - Wait for element to be clickable
 

@@ -32,10 +32,8 @@ class TestJsonCheck:
 
     @pytest.mark.parametrize('config', [
         "visible",
-        "present",
         "clickable",
         {"type": "visible"},
-        {"type": "present"},
         {"type": "clickable"},
         {"type": "clickable", "timeout": 51},
     ])
@@ -85,8 +83,9 @@ class TestJsonCheck:
                 step.execute_requests(state=mock_state)
 
     @pytest.mark.parametrize('config, method, expected_timeout', [
-        ({"type": "present"}, "presence_of_element_located", 60),
-        ({"type": "present", "timeout": 51}, "presence_of_element_located", 51),
+        ({"type": "visible"}, "visibility_of", 60),
+        ({"type": "clickable"}, "element_to_be_clickable", 60),
+        ({"type": "visible", "timeout": 51}, "visibility_of", 51),
     ])
     def test_execution_selenium(self, config, method, expected_timeout, mock_run, mock_root_step, mock_logger, get_wait_step: Callable[[Any], 'jmon.steps.checks.JsonCheck']):
         """Test execution selenium"""
