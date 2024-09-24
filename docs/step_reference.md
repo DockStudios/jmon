@@ -259,6 +259,34 @@ Specify custom timeout
 
 Client Support: `BROWSER_FIREFOX`, `BROWSER_CHROME`
 
+#### ReportPerformanceAction
+
+Key: `report-performance`
+
+
+Directive for reporting performance
+
+E.g.
+```
+- goto: https://example.com
+- actions:
+  - report-performance
+```
+
+This sets a "performance" run variable, which contains the following attributes:
+  * pageSize
+  * nrRequests
+  * load
+  * domContentLoaded
+  * firstMeaningfulPaint
+  * firstPaint
+  * firstContentfulPaint
+
+These attributes can be used in plugins
+
+
+Client Support: `BROWSER_CHROME`
+
 ### CheckStep
 
 Key: `check`
