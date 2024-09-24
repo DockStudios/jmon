@@ -39,8 +39,14 @@ For non-browser based tests, additional arguments can be provided to the Goto st
     url: https://example.com/api/search
     headers:
       X-Api-Key: MyApiKey
-    body: {'query': 'test'}
+    json: {'query': 'test'}
     method: POST
+- goto:
+    url: https://example.com/api/search
+    headers:
+      X-Api-Key: MyApiKey
+    body: "Some body string"
+    method: PUT
 ```
 Variables can also be used inside the header values, URL and body
 
