@@ -1,5 +1,18 @@
 # Changelog
 
+# [4.20.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.4...v4.20.0) (2024-09-24)
+
+
+### Bug Fixes
+
+* Fix validate for put method and json attribute for "goto" step ([1e3a4f8](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/1e3a4f8317ea5c32952ae93270bd95fc7cffde0d)), closes [#133](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/133)
+
+
+### Features
+
+* Add support to report performance information ([d43b697](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/d43b697efbbe4c23a2fef574ffc45189a8fff84e)), closes [#132](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/132)
+* Add wait action to provide support for waiting for elements ([0562bad](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/0562bad5ec43a5d44d27db5440f237cfefd10771)), closes [#132](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/132)
+
 ## [4.19.4](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.3...v4.19.4) (2024-03-17)
 
 
