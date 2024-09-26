@@ -17,3 +17,21 @@ services:
      - redis
      - server
      - victoriametrics
+     - fakeservice
+
+  fakeservice:
+    build:
+      context: ./
+      dockerfile: Dockerfile.server
+
+    # Install pytest, wait for services and run pytest
+    command: bash -c "cd test/pages && python -m http.server"
+    env_file:
+     - ./.env
+    links:
+     - database
+     - broker
+     - redis
+     - server
+     - victoriametrics
+
