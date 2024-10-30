@@ -49,6 +49,7 @@ class GotoStep(BaseStep):
           X-Api-Key: MyApiKey
         body: "Some body string"
         method: PUT
+        ignore-ssl: true
     ```
     Variables can also be used inside the header values, URL and body
     """
@@ -78,12 +79,14 @@ class GotoStep(BaseStep):
         self._method = "get"
         self._body = UNSET
         self._json = UNSET
+        self._ignore_ssl = False
         self._headers = {}
         if type(self._config) is dict:
             self._method = self._config.get("method", "get").lower()
             self._body = self._config.get("body", UNSET)
             self._json = self._config.get("json", UNSET)
             self._headers = self._config.get("headers", {})
+            self._ignore_ssl = self._config.get("ignore-ssl", False)
 
     def _validate_step(self):
         """Check step is valid"""
@@ -111,7 +114,7 @@ class GotoStep(BaseStep):
 
             # Check remaining keys
             config_keys = [k for k in self._config.keys()]
-            for valid_key in ["url", "method", "headers", "body", "json"]:
+            for valid_key in ["url", "method", "headers", "body", "json", "ignore-ssl"]:
                 if valid_key in config_keys:
                     config_keys.remove(valid_key)
             if config_keys:
@@ -175,6 +178,9 @@ class GotoStep(BaseStep):
         if self._body is not UNSET:
             self._body = self.inject_variables_into_string(self._body)
             request_kwargs["data"] = self._body
+
+        if self._ignore_ssl:
+            request_kwargs["verify"] = False
 
         # Get requests call method, based on provided method
         try:
