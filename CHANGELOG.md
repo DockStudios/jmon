@@ -1,5 +1,12 @@
 # Changelog
 
+# [4.21.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.20.0...v4.21.0) (2024-10-30)
+
+
+### Features
+
+* Add support for ignoring SSL validation for requests checks in goto step ([163fea2](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/163fea2cdd40e692449268333479782f979509b3)), closes [#136](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/136)
+
 # [4.20.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.19.4...v4.20.0) (2024-09-24)
 
 
