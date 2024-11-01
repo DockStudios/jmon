@@ -1,6 +1,6 @@
 -r requirements.txt
 
 Flask==2.2.2
-flask-cors==3.0.10
+flask-cors==5.0.0
 werkzeug==2.3.7
 sentry-sdk[flask]==1.40.6
