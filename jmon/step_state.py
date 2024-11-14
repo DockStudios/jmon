@@ -2,6 +2,7 @@
 import abc
 from typing import Optional
 
+import requests
 import dns.resolver
 
 
@@ -43,7 +44,7 @@ class SeleniumStepState(StepState):
 
 class RequestsStepState(StepState):
 
-    def __init__(self, response, dns_response: Optional['dns.resolver.Answer']):
+    def __init__(self, response: Optional['requests.Response'], dns_response: Optional['dns.resolver.Answer']):
         """Store state member variables"""
         self.response = response
         self.dns_response = dns_response

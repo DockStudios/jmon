@@ -47,6 +47,13 @@ e2e-tests:
     - apk add --no-cache docker-compose bash
     - bash ./test/e2e/run.sh
 
+unit-tests:
+  stage: test
+  before_script:
+    - pip install -r requirements-tests.txt
+  script:
+    - pytest -vvv test/unit
+
 stages:
  - build
  - test

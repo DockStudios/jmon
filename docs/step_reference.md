@@ -47,7 +47,10 @@ For non-browser based tests, additional arguments can be provided to the Goto st
       X-Api-Key: MyApiKey
     body: "Some body string"
     method: PUT
+    # Ignore SSL certificate verification
     ignore-ssl: true
+    # Set timeout (in seconds)
+    timeout: 5
 ```
 Variables can also be used inside the header values, URL and body
 
@@ -489,6 +492,37 @@ Variables provided by callable plugins can be used in the type value, e.g.
 ```
 - check:
     records:
+      equals: '{an_output_variable}'
+```
+
+
+Client Support: `REQUESTS`
+
+#### BodyCheck
+
+Key: `body`
+
+
+Directive for verifying the content of the repsonse body.
+
+One of two validation attributes must be used:
+* equals - Checks the value matches the provided content
+* contains - Checks that the provided value is within the content.
+
+```
+- check:
+    body:
+      contains: 'Some Text'
+
+- check:
+    body:
+      equals: 'Some text'
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    body:
       equals: '{an_output_variable}'
 ```
 

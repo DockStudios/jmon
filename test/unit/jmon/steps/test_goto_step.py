@@ -34,6 +34,9 @@ class TestGotoStep:
         {"url": "https://example.com/someurl", "headers": {"some-header": "headervalue"}, "body": "somebody", "method": "post"},
         {"url": "https://example.com/someurl", "headers": {"some-header": "headervalue"}, "body": "somebody", "method": "delete"},
         {"url": "https://example.com/someurl", "headers": {"some-header": "headervalue"}, "body": "somebody", "method": "patch"},
+
+        # With timeout
+        {"url": "https://example.com/someurl", "headers": {"some-header": "headervalue"}, "timeout": 5},
     ])
     def test_create(self, config, mock_run, mock_root_step, mock_logger, get_goto_step: Callable[[Any], 'jmon.steps.GotoStep']):
         """Test create with valid config"""
@@ -52,6 +55,9 @@ class TestGotoStep:
         # Invalid headers type
         {"url": "https://example.com/someurl", "headers": "string"},
         {"url": "https://example.com/someurl", "headers": ["list"]},
+
+        # Invalid timeout value
+        {"url": "https://example.com/someurl", "timeout": "test"},
     ])
     def test_invalid_config(self, config, mock_run, mock_root_step, mock_logger, get_goto_step: Callable[[Any], 'jmon.steps.GotoStep']):
         """Test create with invalid config"""
@@ -143,7 +149,9 @@ class TestGotoStep:
             "url": "https://some.example.com/url",
             "body": "test body",
             "method": "post",
-            "headers": {"test-header": "header-value"}
+            "headers": {"test-header": "header-value"},
+            "ignore-ssl": True,
+            "timeout": 6,
         })
 
         class MockState:
@@ -165,7 +173,9 @@ class TestGotoStep:
         mock_requests_post.assert_called_once_with(
             url='https://some.example.com/url',
             headers={'test-header': 'header-value'},
-            data='test body'
+            data='test body',
+            verify=False,
+            timeout=6,
         )
 
     def test_requests_full_config_json_success(self, mock_run, mock_root_step, mock_logger, get_goto_step: Callable[[Any], 'jmon.steps.GotoStep']):
@@ -174,7 +184,9 @@ class TestGotoStep:
             "url": "https://some.example.com/url",
             "json": {"some": ["post", "data"]},
             "method": "put",
-            "headers": {"test-header": "header-value"}
+            "headers": {"test-header": "header-value"},
+            "ignore-ssl": True,
+            "timeout": 7,
         })
 
         class MockState:
@@ -196,7 +208,9 @@ class TestGotoStep:
         mock_requests_put.assert_called_once_with(
             url='https://some.example.com/url',
             headers={'test-header': 'header-value'},
-            json={"some": ["post", "data"]}
+            json={"some": ["post", "data"]},
+            verify=False,
+            timeout=7,
         )
 
     def test_execution_requests_failure_log(self, mock_run, mock_root_step, mock_logger, get_goto_step: Callable[[Any], 'jmon.steps.GotoStep']):
