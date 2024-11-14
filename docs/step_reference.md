@@ -498,6 +498,37 @@ Variables provided by callable plugins can be used in the type value, e.g.
 
 Client Support: `REQUESTS`
 
+#### BodyCheck
+
+Key: `body`
+
+
+Directive for verifying the content of the repsonse body.
+
+One of two validation attributes must be used:
+* equals - Checks the value matches the provided content
+* contains - Checks that the provided value is within the content.
+
+```
+- check:
+    body:
+      contains: 'Some Text'
+
+- check:
+    body:
+      equals: 'Some text'
+```
+
+Variables provided by callable plugins can be used in the type value, e.g.
+```
+- check:
+    body:
+      equals: '{an_output_variable}'
+```
+
+
+Client Support: `REQUESTS`
+
 ## CallPluginStep
 
 Key: `call_plugin`
