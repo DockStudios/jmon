@@ -1,4 +1,5 @@
 
+from dataclasses import dataclass
 
 from pyvirtualdisplay import Display
 import selenium
@@ -15,6 +16,13 @@ from jmon.step_status import StepStatus
 from jmon.steps.actions.screenshot_action import ScreenshotAction
 from jmon.config import ChromeHeadlessMode, Config
 from jmon.logger import logger
+
+
+@dataclass
+class BrowserConfig:
+    """Runtime config for browser"""
+
+    IGNORE_SSL: bool
 
 
 class BrowserBase:
@@ -48,12 +56,12 @@ class BrowserBase:
         """Return selenium instance"""
         return self._selenium_instance
 
-    def __init__(self):
+    def __init__(self, browser_config: BrowserConfig):
         """Setup browser"""
         logger.info("Creating new browser")
 
         # Create selenium instance
-        self._selenium_instance = self.selenium_class(**self.get_selenium_kwargs())
+        self._selenium_instance = self.selenium_class(**self.get_selenium_kwargs(browser_config=browser_config))
 
         # Maximise and setup implicit wait
         if self.is_headless:
@@ -77,7 +85,7 @@ class BrowserBase:
         """Perform post-setup configuration"""
         raise NotImplementedError
 
-    def get_selenium_kwargs(self):
+    def get_selenium_kwargs(self, browser_config: BrowserConfig):
         """Return list of kwargs to provide to selenium"""
         raise NotImplementedError
 
@@ -117,7 +125,7 @@ class BrowserChrome(BrowserBase):
     CLIENT_TYPE = ClientType.BROWSER_CHROME
     SELENIUM_CLASS = selenium.webdriver.Chrome
 
-    def get_selenium_kwargs(self):
+    def get_selenium_kwargs(self, browser_config: BrowserConfig):
         """Return kwargs to pass to selenium"""
         options = ChromeOptions()
         options.binary_location = "/opt/chrome-linux/chrome"
@@ -128,6 +136,9 @@ class BrowserChrome(BrowserBase):
         options.add_argument('--disable-application-cache')
         options.add_argument("--disk-cache-size=0")
         options.add_argument("--disk-cache-dir=/dev/null")
+
+        if browser_config.IGNORE_SSL:
+            options.add_argument('--ignore-certificate-errors')
 
         # Set headles mode, if enabled
         if Config.get().CHROME_HEADLESS_MODE is not ChromeHeadlessMode.NONE:
@@ -155,10 +166,12 @@ class BrowserFirefox(BrowserBase):
     CLIENT_TYPE = ClientType.BROWSER_FIREFOX
     SELENIUM_CLASS = selenium.webdriver.Firefox
 
-    def get_selenium_kwargs(self):
+    def get_selenium_kwargs(self, browser_config: BrowserConfig):
         """Return kwargs to pass to selenium"""
         options = FirefoxOptions()
         options.headless = Config.get().FIREFOX_HEADLESS
+        if browser_config.IGNORE_SSL:
+            options.accept_insecure_certs = True
 
         # Create profile for disabling caching
         profile = FirefoxProfile()
@@ -203,17 +216,18 @@ class BrowserFactory:
     def __init__(self):
         """Store member variable"""
         self._browser: BrowserBase = None
+        self._browser_config: BrowserConfig = None
         self._class_mappings = {
             browser_class.CLIENT_TYPE: browser_class
             for browser_class in BrowserBase.__subclasses__()
         }
 
-    def get_browser(self, client_type):
+    def get_browser(self, client_type: ClientType, browser_config: BrowserConfig):
         """Obtain and cache browser"""
         # If a browser is already present
         if self._browser is not None:
             # If it matches the type, ensure it is working and return
-            if client_type is self._browser.client_type:
+            if client_type is self._browser.client_type and browser_config == self._browser_config:
                 try:
                     self._browser.clean()
 
@@ -232,7 +246,8 @@ class BrowserFactory:
                 self.teardown_browser()
 
         # If a cache browser has not been returned, create a new one
-        self._browser = self.get_browser_class_by_client_type(client_type)()
+        self._browser = self.get_browser_class_by_client_type(client_type)(browser_config=browser_config)
+        self._browser_config = browser_config
 
         return self._browser
 
