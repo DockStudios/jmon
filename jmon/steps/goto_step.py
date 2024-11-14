@@ -49,7 +49,10 @@ class GotoStep(BaseStep):
           X-Api-Key: MyApiKey
         body: "Some body string"
         method: PUT
+        # Ignore SSL certificate verification
         ignore-ssl: true
+        # Set timeout (in seconds)
+        timeout: 5
     ```
     Variables can also be used inside the header values, URL and body
     """
@@ -81,12 +84,14 @@ class GotoStep(BaseStep):
         self._json = UNSET
         self._ignore_ssl = False
         self._headers = {}
+        self._timeout = UNSET
         if type(self._config) is dict:
             self._method = self._config.get("method", "get").lower()
             self._body = self._config.get("body", UNSET)
             self._json = self._config.get("json", UNSET)
             self._headers = self._config.get("headers", {})
             self._ignore_ssl = self._config.get("ignore-ssl", False)
+            self._timeout = self._config.get("timeout", UNSET)
 
     def _validate_step(self):
         """Check step is valid"""
@@ -103,6 +108,12 @@ class GotoStep(BaseStep):
             if self._config.get("method", "get").lower() not in valid_methods:
                 raise StepValidationError(f"Goto method must be on of: {', '.join(valid_methods)}")
 
+            if timeout := self._config.get("timeout"):
+                try:
+                    int(timeout)
+                except ValueError:
+                    raise StepValidationError("Goto value for 'timeout' must a number")
+
             # Ensure headers, if present, is a dict and contains only key values of strings
             if type(self._config.get("headers", {})) is not dict:
                 raise StepValidationError("Goto headers must be an object with key-value headers")
@@ -114,7 +125,7 @@ class GotoStep(BaseStep):
 
             # Check remaining keys
             config_keys = [k for k in self._config.keys()]
-            for valid_key in ["url", "method", "headers", "body", "json", "ignore-ssl"]:
+            for valid_key in ["url", "method", "headers", "body", "json", "ignore-ssl", "timeout"]:
                 if valid_key in config_keys:
                     config_keys.remove(valid_key)
             if config_keys:
@@ -181,6 +192,9 @@ class GotoStep(BaseStep):
 
         if self._ignore_ssl:
             request_kwargs["verify"] = False
+
+        if self._timeout is not UNSET:
+            request_kwargs["timeout"] = self._timeout
 
         # Get requests call method, based on provided method
         try:
