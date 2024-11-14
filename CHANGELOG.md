@@ -1,5 +1,13 @@
 # Changelog
 
+# [4.22.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.21.0...v4.22.0) (2024-11-14)
+
+
+### Features
+
+* Add support for checking response body for requests ([80d9a95](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/80d9a95096a0288a9f0486b721116bd67e294914)), closes [#140](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/140)
+* Add support for timeout in "GoTo" step for requests ([317d2e8](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/commit/317d2e8c89a2f097464e1647137de3577bcb0d4a)), closes [#139](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/issues/139)
+
 # [4.21.0](https://gitlab.dockstudios.co.uk/pub/jmon/jmon/compare/v4.20.0...v4.21.0) (2024-10-30)
 
 
